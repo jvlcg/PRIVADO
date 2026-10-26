@@ -117,6 +117,8 @@ Tudo começa com dois cliques em **`A:\IA.cmd`**, que abre o menu. Nada foi inst
 | 3. Perguntar com fonte | busca na biblioteca e o modelo responde citando [1], [2] | no terminal |
 | 4. Imagem, vídeo, música, 3D | ComfyUI (Workflow > Browse Templates) | http://127.0.0.1:8188 |
 | 5. Transcrever áudio | Whisper; gera `.txt` e legenda `.srt` ao lado do arquivo | no terminal |
+| 13. Conselho de IAs | várias IAs respondem e um relator decide a resposta final | http://127.0.0.1:8090 |
+| 14. Medir energia | consumo do PC e custo em reais | no terminal |
 
 Testado neste PC em 25 e 26/10/2026:
 
@@ -129,6 +131,10 @@ Testado neste PC em 25 e 26/10/2026:
 | Transcrição (Whisper) | áudio em português transcrito certo | 2 s |
 | Voz (Piper) | frase em português; o Whisper entendeu de volta | 3 s |
 | OCR (GLM-OCR) | receita lida de uma imagem sem erros | 5 s |
+| Música de 30 s com letra em português (ACE-Step 1.5) | MPB com violão; o Whisper transcreveu a letra certa (`musica-cofre.flac`) | não cronometrado |
+| Objeto 3D a partir de uma foto (Hunyuan3D 2.1) | caneca em `.glb` de 10,5 MB (`caneca-3d.glb`) | 2 min 19 s |
+| Conselho de IAs, pergunta de código | 3 IAs + relator; resposta certa sobre `${pasta}:` no PowerShell | 3 min 17 s |
+| Conselho de IAs com o Qwen3.8 de relator | guia de armazenamento de água; o relator descartou uma dose de iodo 1.000 vezes acima da segura | 13 min 53 s |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 11). Exemplos em `A:\dev\midia-gerada`.
 
@@ -137,6 +143,98 @@ O servidor também é uma API compatível com a da OpenAI em `http://127.0.0.1:8
 Para usar do celular ou de outro PC da rede: `iniciar-servidor.ps1 -Rede` e `iniciar-biblioteca.ps1 -Rede`. Se este PC quebrar, `A:\motores\llama.cpp-outras-maquinas` tem o llama.cpp para Windows sem GPU, Vulkan, Linux, Raspberry Pi, Mac e Android, mais o código-fonte.
 
 Fora do menu: `powershell -ExecutionPolicy Bypass -File A:\scripts\<script>.ps1`. Ajuda: `Get-Help A:\scripts\baixar-modelo.ps1 -Examples`.
+
+## Conselho de IAs
+
+Várias IAs do acervo respondem à mesma pergunta sem ver umas às outras. Depois, um relator compara as respostas, refaz as contas, descarta os erros e escreve a resposta final, dizendo onde houve consenso e onde houve divergência. Como os modelos vêm de laboratórios diferentes (Google, OpenAI, Alibaba), costumam errar em coisas diferentes, e um corrige o outro. No teste, um membro recomendou uma dose de iodo 1.000 vezes acima da segura; o relator refez a conta e descartou o valor.
+
+Como uma pergunta passa pelo conselho:
+
+1. **Triagem.** O Gemma 4 26B identifica o assunto e chama o especialista: código → Qwen3-Coder-Next, saúde → MedGemma 27B, tradução → TranslateGemma.
+2. **Fontes** (opcional). Trechos da biblioteca offline, como no "Perguntar com fonte", lidos por todos.
+3. **Imagem** (opcional). Um modelo que enxerga descreve a foto para os membros que só leem texto.
+4. **Rodada 1.** Cada membro responde sozinho.
+5. **Rodada 2** (modos debate e profundo). Cada membro lê as outras respostas, aponta erros e revisa a sua.
+6. **Relator.** Escreve a resposta final e a seção "Como o conselho decidiu".
+
+A placa de vídeo comporta um modelo grande por vez, então os membros falam em fila; cada troca de modelo leva de 8 a 20 segundos.
+
+| Modo | Quem participa | Tempo |
+| --- | --- | --- |
+| Rodada única (padrão) | Gemma 4 26B, gpt-oss-20b e Qwen3.8 27B (ou o especialista do assunto); relator Gemma 4 26B | 3 a 6 min (medido: 3 min 17 s numa pergunta de código) |
+| Debate | o mesmo, mais a rodada de revisão | cerca do dobro |
+| Profundo | debate, mais raciocínio e o Qwen3.8 27B de relator | 15 a 25 min; para decisões importantes |
+
+Como usar:
+
+- **Painel:** menu, opção 13, abre http://127.0.0.1:8090. Escreva a pergunta, escolha o modo e, se quiser, anexe uma foto. Os cartões mostram o que cada IA disse.
+- **Terminal:** `conselho.ps1 "pergunta"`, `conselho.ps1 "pergunta" -Debate`, `conselho.ps1 "pergunta" -Profundo` e `conselho.ps1 "o que diz esta placa?" -Imagem C:\foto.jpg`.
+- **Outros programas** (Open WebUI, Continue, scripts): API compatível com a da OpenAI em `http://127.0.0.1:8090/v1`, modelos `conselho`, `conselho-debate` e `conselho-profundo`.
+- **Atas:** cada deliberação fica em `A:\dev\conselho` (Markdown), com a resposta de cada IA. Essa pasta não vai para o GitHub.
+- **Trocar o time:** seção `conselho` de `catalogo\modelos.json` (`membros`, `relator`, `relator_profundo`, `especialistas`). Prefira membros de laboratórios diferentes.
+
+## Custo de energia
+
+Este PC não tem sensor de consumo total. O script `medir-energia.ps1` (menu, opção 14) mede a placa de vídeo pelo sensor da NVIDIA e estima o resto (processador, placa-mãe, memória, discos e perdas da fonte) pela carga do processador; a margem de erro é de uns 20%. Para medir na tomada de verdade, use um medidor de tomada (wattímetro). Cada medição fica anotada em `A:\logs\energia.csv`.
+
+Os valores usam R$ 1,00 por kWh, um número redondo com impostos. Troque pela sua tarifa: total da conta ÷ kWh consumidos. Exemplo: `medir-energia.ps1 -Segundos 60 -Tarifa 0.92`.
+
+**Medido em 26/10/2026:**
+
+| Situação | Potência média do PC | Energia | Custo |
+| --- | --- | --- | --- |
+| PC ligado sem uso (com o download do cofre rodando) | 114 W | 114 Wh por hora | R$ 0,11 por hora |
+| Pergunta no chat (Gemma 4 26B, incluindo carregar o modelo) | 160 W por 33 s | 1,4 Wh | R$ 0,0014 |
+| Conselho de IAs, rodada única | 183 W por 3 min 48 s | 11,5 Wh | R$ 0,012 |
+| Conselho com o Qwen3.8 27B de relator | 217 W por 13 min 54 s | 50 Wh | R$ 0,05 |
+
+Com os modelos de texto, a placa de vídeo nunca passou de 118 W: o gargalo é a memória, e o processador faz parte do trabalho.
+
+**Estimado** (no ComfyUI e no treino a placa trabalha no limite dela, 200 W; o PC inteiro fica perto de 330 a 350 W, cerca de 5,5 Wh por minuto):
+
+| Tarefa | Energia | Custo |
+| --- | --- | --- |
+| Imagem (Z-Image, 24 s) | ~2,5 Wh | R$ 0,003 |
+| Objeto 3D (Hunyuan3D, 2 min 19 s) | ~13 Wh | R$ 0,013 |
+| Vídeo de 2 s (Wan 2.2, 9 min) | ~50 Wh | R$ 0,05 |
+| Animação de 81 quadros (Wan Animate 2, 28 min) | ~155 Wh | R$ 0,16 |
+
+**Manutenção do cofre:**
+
+| Tarefa | Energia | Custo |
+| --- | --- | --- |
+| Verificação semanal de novidades (23 s) | 0,7 Wh | menos de R$ 0,01 por mês |
+| Sincronização das atualizações (~150 GB por mês, ~2 h) | ~0,25 kWh | ~R$ 0,25 por mês |
+| Conferência completa do SHA256 (a cada 3 meses, ~1,5 h lendo o HD) | ~0,19 kWh | ~R$ 0,06 por mês |
+| Montagem inicial do cofre (~1,5 TB, ~20 h baixando) | ~2,3 kWh | ~R$ 2,30, uma vez |
+
+**Aprimoramento** (treinar e avaliar os seus modelos):
+
+| Tarefa | Energia | Custo |
+| --- | --- | --- |
+| Treinar uma LoRA de texto (modelo de 4 a 8 bi, 1 a 3 h, ~350 W) | 0,35 a 1,05 kWh | R$ 0,35 a 1,05 |
+| Treinar uma LoRA de imagem (1 a 2 h) | 0,35 a 0,7 kWh | R$ 0,35 a 0,70 |
+| Gerar 1.000 exemplos de treino com um modelo só (Gemma 4 26B) | ~1,4 kWh | ~R$ 1,40 |
+| Gerar 1.000 exemplos revisados pelo conselho | ~11,5 kWh | ~R$ 11,50 |
+| Avaliar um modelo novo com 200 perguntas | ~0,3 kWh | ~R$ 0,30 |
+
+**Por mês**, somando o PC ligado, o uso e a manutenção:
+
+| Perfil | Como usa | Energia | Custo |
+| --- | --- | --- | --- |
+| Leve | 1 h por dia: 20 perguntas, 2 conselhos e 5 imagens | ~4,4 kWh | ~R$ 4,40 |
+| Intenso | 6 h por dia: 100 perguntas, 10 conselhos, 20 imagens e 1 vídeo; 1 LoRA por semana | ~27 kWh | ~R$ 27 |
+| Servidor sempre ligado | 24 h por dia, com o uso intenso | ~89 kWh | ~R$ 89 |
+
+As IAs em si custam centavos: uma resposta do conselho sai por cerca de R$ 0,01. De 75% a 90% da conta é o PC ligado esperando. Para comparar, um chuveiro elétrico de 5.500 W usado 10 minutos por dia gasta uns 27 kWh por mês, o mesmo que o perfil intenso.
+
+Para gastar menos:
+
+1. **Suspenda o PC quando não estiver usando.** Deixá-lo ligado 24 h custa uns R$ 82 por mês só esperando. No Windows: Configurações → Sistema → Energia → Suspender após 30 min. Os scripts de download já impedem a suspensão enquanto baixam.
+2. **Limite a placa de vídeo a 160 W** para vídeo e treino: menos 15% a 20% de energia, alguns por cento mais lento; os modelos de texto não mudam, pois nunca passam de 118 W. No Prompt de Comando como administrador: `nvidia-smi -pl 160` (volta a 200 W ao reiniciar).
+3. **Deixe o HD D: dormir** quando parado: Opções de energia → Disco rígido → Desligar após 20 min (economiza uns 5 W).
+4. **Use o chat para perguntas do dia a dia** e o conselho quando quiser uma segunda opinião. O modo profundo gasta umas 4 vezes mais que a rodada única.
+5. **Se tiver tarifa branca**, rode a sincronização fora do horário de ponta. A verificação semanal (segunda, 10h) já está fora da ponta.
 
 ## Catálogo e atualização constante
 
@@ -181,3 +279,4 @@ O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é u
 - Modelos: API do Hugging Face, consultada em 25/10/2026
 - Bibliotecas: download.kiwix.org
 - Motores: GitHub de ggml-org/llama.cpp, ggml-org/whisper.cpp, comfyanonymous/ComfyUI, ollama/ollama, astral-sh/uv; download.kiwix.org/release
+- Energia: consumo medido neste PC em 26/10/2026 com `medir-energia.ps1`; tarifa: projeção da Aneel de alta média de 8,6% em 2026 (Poder360) e bandeira de outubro de 2026 (Jornal do Brasil). Confira a sua na conta de luz.

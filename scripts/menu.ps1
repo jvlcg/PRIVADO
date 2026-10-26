@@ -18,6 +18,8 @@ while ($true) {
     Write-Host '  5) Transcrever audio (Whisper)'
     Write-Host ' 11) Gerar imagem ou video pelo terminal (com o ComfyUI aberto)'
     Write-Host ' 12) Falar um texto em voz alta (Piper)'
+    Write-Host ' 13) Conselho de IAs: varias IAs respondem e decidem juntas (painel no navegador)'
+    Write-Host ' 14) Medir o consumo de energia do PC (1 minuto parado)'
     Write-Host ' MANTER'
     Write-Host '  6) Status do acervo'
     Write-Host '  7) Verificar novidades e atualizacoes'
@@ -54,6 +56,8 @@ while ($true) {
                 $texto = Read-Host 'Texto para falar'
                 if ($texto) { & "$PSScriptRoot\falar.ps1" $texto -Tocar }
             }
+            '13' { Nova-Janela 'conselho.ps1' '-Servir' }
+            '14' { & "$PSScriptRoot\medir-energia.ps1" -Segundos 60 | Out-Null }
             '0' { return }
         }
     } catch {

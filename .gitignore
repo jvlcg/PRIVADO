@@ -25,6 +25,7 @@
 /dev/audio-gerado/
 /dev/midia-gerada/
 /dev/comfyui/
+/dev/conselho/
 /dev/lora/*/
 /linux/*
 !/linux/configurar-ubuntu.sh

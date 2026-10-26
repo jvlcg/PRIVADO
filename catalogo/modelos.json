@@ -11,6 +11,19 @@
     "enviar_automatico": true,
     "nota": "A sincronização registra no git local as mudanças do catálogo e do estado e, com enviar_automatico = true, envia ao GitHub. O repositório é público (decisão do usuário em 26/10/2026); mude para false para parar de enviar."
   },
+  "conselho": {
+    "nota": "Usado por scripts\\conselho.ps1 (conselho de IAs). A triagem identifica o assunto; se houver especialista para ele, o especialista entra no time no lugar do último membro geral. Os membros falam em fila (um modelo por vez na placa) e o relator compara as respostas e escreve a final. Prefira membros de laboratórios diferentes: erros diferentes se anulam.",
+    "membros": ["gemma-4-26b-a4b", "gpt-oss-20b", "qwen3.8-27b"],
+    "relator": "gemma-4-26b-a4b",
+    "relator_profundo": "qwen3.8-27b",
+    "triagem": "gemma-4-26b-a4b",
+    "max_membros": 3,
+    "especialistas": {
+      "codigo": "qwen3-coder-next",
+      "medicina": "medgemma-27b",
+      "traducao": "translategemma-12b"
+    }
+  },
   "observar_orgs": [
     "Qwen", "google", "deepseek-ai", "mistralai", "openai", "zai-org", "moonshotai", "XiaomiMiMo",
     "microsoft", "meta-llama", "nvidia", "ibm-granite", "black-forest-labs", "Tongyi-MAI", "tencent",

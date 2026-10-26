@@ -426,7 +426,7 @@
                                             "repo_modificado":  "2026-10-19T14:16:08.000Z"
                                         },
                     "deepseek-v4.1-flash":  {
-                                                "completo":  false,
+                                                "completo":  true,
                                                 "repo":  "unsloth/DeepSeek-V4.1-Flash-1017-GGUF",
                                                 "arquivos":  {
                                                                  "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00001-of-00007.gguf":  {
@@ -464,7 +464,19 @@
                                                                                                                                             "tamanho":  1929325664,
                                                                                                                                             "sha256":  "192694fb09612e1200cce9ae35f3645ad39cf8aa43e94417070af9c4f4ecb43b",
                                                                                                                                             "baixado_em":  "2026-10-26T16:30:09"
-                                                                                                                                        }
+                                                                                                                                        },
+                                                                 "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00007-of-00007.gguf":  {
+                                                                                                                                            "destino":  "modelos\\fronteira\\deepseek-v4.1-flash\\DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00007-of-00007.gguf",
+                                                                                                                                            "tamanho":  135172021792,
+                                                                                                                                            "sha256":  "a653c5309b7c74a6c41580aaa8c2d2bbdae0342253bca2cd3fc9e69d05f3d0eb",
+                                                                                                                                            "baixado_em":  "2026-10-26T17:13:34"
+                                                                                                                                        },
+                                                                 "mmproj-F16.gguf":  {
+                                                                                         "destino":  "modelos\\fronteira\\deepseek-v4.1-flash\\mmproj-F16.gguf",
+                                                                                         "tamanho":  971004064,
+                                                                                         "sha256":  "dad8ad13f1d9a25757e121592d7b4f8ca83620d1172048004998b7c0b964b18e",
+                                                                                         "baixado_em":  "2026-10-26T17:13:55"
+                                                                                     }
                                                              },
                                                 "local":  "cofre",
                                                 "repo_sha":  "60ad3651641b5c97679c807e064ab1d7a3ca1455",
@@ -568,7 +580,112 @@
                                             "local":  "cofre",
                                             "repo_sha":  "ee6f4a40737a995bf5818954cfce6d59443b0f04",
                                             "repo_modificado":  "2026-09-23T06:01:28.000Z"
-                                        }
+                                        },
+                    "hunyuan3d-2.1":  {
+                                          "completo":  true,
+                                          "repo":  "Comfy-Org/Hunyuan-3D-2.1",
+                                          "arquivos":  {
+                                                           "hunyuan_3d_v2.1.safetensors":  {
+                                                                                               "destino":  "modelos\\comfyui\\checkpoints\\hunyuan_3d_v2.1.safetensors",
+                                                                                               "tamanho":  7365943290,
+                                                                                               "sha256":  "5f21e98a6cb99b13b5e224abaee33929570fff7af2b6a0060001559a04ba9d72",
+                                                                                               "baixado_em":  "2026-10-26T17:15:32"
+                                                                                           }
+                                                       },
+                                          "local":  "cofre",
+                                          "repo_sha":  "606def5076d38b387b005caf93b5336c56ca99f9",
+                                          "repo_modificado":  "2026-09-23T07:57:12.000Z"
+                                      },
+                    "ace-step-1.5":  {
+                                         "completo":  true,
+                                         "repo":  "Comfy-Org/ACE-Step-1.5",
+                                         "arquivos":  {
+                                                          "checkpoints/ace_step_1.5_turbo_aio.safetensors":  {
+                                                                                                                 "destino":  "modelos\\comfyui\\checkpoints\\ace_step_1.5_turbo_aio.safetensors",
+                                                                                                                 "tamanho":  10025478736,
+                                                                                                                 "sha256":  "67b0f43aa5c51c840bd0228e6a935d8ff416ec87e5df2fc0637da17a561252bc",
+                                                                                                                 "baixado_em":  "2026-10-26T17:17:47"
+                                                                                                             }
+                                                      },
+                                         "local":  "cofre",
+                                         "repo_sha":  "6707deb277e9e0907fd9c14ce6b6f1d695c6a3fc",
+                                         "repo_modificado":  "2026-09-23T08:00:33.000Z"
+                                     },
+                    "glm-5.3-flash":  {
+                                          "completo":  true,
+                                          "repo":  "ggml-org/GLM-5.3-Flash-GGUF",
+                                          "arquivos":  {
+                                                           "GLM-5.3-Flash-Q4_K-00001-of-00002.gguf":  {
+                                                                                                          "destino":  "modelos\\fronteira\\glm-5.3-flash\\GLM-5.3-Flash-Q4_K-00001-of-00002.gguf",
+                                                                                                          "tamanho":  9429856,
+                                                                                                          "sha256":  "a1e9bcead2fce5ca96f5a4ef54dc77ad6dd9ba77ecde57f812e875e6d3e33f07",
+                                                                                                          "baixado_em":  "2026-10-26T17:17:50"
+                                                                                                      },
+                                                           "GLM-5.3-Flash-Q4_K-00002-of-00002.gguf":  {
+                                                                                                          "destino":  "modelos\\fronteira\\glm-5.3-flash\\GLM-5.3-Flash-Q4_K-00002-of-00002.gguf",
+                                                                                                          "tamanho":  181363033792,
+                                                                                                          "sha256":  "27636dd16f76d39aa95db1de081cf458f705f1c78f8f1010b2fac3edc416c116",
+                                                                                                          "baixado_em":  "2026-10-26T18:15:30"
+                                                                                                      },
+                                                           "mmproj-GLM-5.3-Flash-Q8_0.gguf":  {
+                                                                                                  "destino":  "modelos\\fronteira\\glm-5.3-flash\\mmproj-GLM-5.3-Flash-Q8_0.gguf",
+                                                                                                  "tamanho":  652829376,
+                                                                                                  "sha256":  "b15ac9937afb0f6f89f0619edad57439dea658101b65e68cbcb63abec3700d73",
+                                                                                                  "baixado_em":  "2026-10-26T18:15:42"
+                                                                                              }
+                                                       },
+                                          "local":  "cofre",
+                                          "repo_sha":  "119034bc3d9d76eb41f91508e6f9fb19fde42672",
+                                          "repo_modificado":  "2026-10-19T13:40:17.000Z"
+                                      },
+                    "nemotron-3.5-bolt-74b":  {
+                                                  "completo":  true,
+                                                  "repo":  "unsloth/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-GGUF",
+                                                  "arquivos":  {
+                                                                   "UD-Q4_K_XL/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-UD-Q4_K_XL-00001-of-00003.gguf":  {
+                                                                                                                                                      "destino":  "modelos\\llm\\nemotron-3.5-bolt-74b\\NVIDIA-Nemotron-3.5-Bolt-74B-A9B-UD-Q4_K_XL-00001-of-00003.gguf",
+                                                                                                                                                      "tamanho":  7876160,
+                                                                                                                                                      "sha256":  "d6f33b5e8a49ea57a0a3ae922dfd0b3033a19429993d3215fc4992f4270aa2df",
+                                                                                                                                                      "baixado_em":  "2026-10-26T18:15:45"
+                                                                                                                                                  },
+                                                                   "UD-Q4_K_XL/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-UD-Q4_K_XL-00002-of-00003.gguf":  {
+                                                                                                                                                      "destino":  "modelos\\llm\\nemotron-3.5-bolt-74b\\NVIDIA-Nemotron-3.5-Bolt-74B-A9B-UD-Q4_K_XL-00002-of-00003.gguf",
+                                                                                                                                                      "tamanho":  49524981280,
+                                                                                                                                                      "sha256":  "93c8485db6f9e9d26085acc368ca3b0993a36aa870e8f8b7748c1fbd174c6276",
+                                                                                                                                                      "baixado_em":  "2026-10-26T18:27:55"
+                                                                                                                                                  },
+                                                                   "UD-Q4_K_XL/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-UD-Q4_K_XL-00003-of-00003.gguf":  {
+                                                                                                                                                      "destino":  "modelos\\llm\\nemotron-3.5-bolt-74b\\NVIDIA-Nemotron-3.5-Bolt-74B-A9B-UD-Q4_K_XL-00003-of-00003.gguf",
+                                                                                                                                                      "tamanho":  686620928,
+                                                                                                                                                      "sha256":  "f97b7a5443b3f77150a1bf7bac6c00862411ee2f26b7bf57a599fb61dbe867df",
+                                                                                                                                                      "baixado_em":  "2026-10-26T18:28:07"
+                                                                                                                                                  },
+                                                                   "mmproj-BF16.gguf":  {
+                                                                                            "destino":  "modelos\\llm\\nemotron-3.5-bolt-74b\\mmproj-BF16.gguf",
+                                                                                            "tamanho":  1733692672,
+                                                                                            "sha256":  "acad03175d80ce7caea6854795e9ecc978e86d4b4caae0125efba5f970216f4f",
+                                                                                            "baixado_em":  "2026-10-26T18:28:32"
+                                                                                        }
+                                                               },
+                                                  "local":  "cofre",
+                                                  "repo_sha":  "34841e360524d421c564cc3ed247aa04a865473b",
+                                                  "repo_modificado":  "2026-10-16T13:25:22.000Z"
+                                              },
+                    "gpt-oss-120b":  {
+                                         "completo":  true,
+                                         "repo":  "ggml-org/gpt-oss-120b-GGUF",
+                                         "arquivos":  {
+                                                          "gpt-oss-120b-MXFP4.gguf":  {
+                                                                                          "destino":  "modelos\\llm\\gpt-oss-120b\\gpt-oss-120b-MXFP4.gguf",
+                                                                                          "tamanho":  63387346208,
+                                                                                          "sha256":  "582bd40f6886200101f4c4ed9f25f3fe80cc14c86e9e2b37746cd8904a0c622d",
+                                                                                          "baixado_em":  "2026-10-26T18:58:35"
+                                                                                      }
+                                                      },
+                                         "local":  "cofre",
+                                         "repo_sha":  "7200b74bea78b0a2964ef9f3897eefa401e890ff",
+                                         "repo_modificado":  "2026-10-19T14:14:21.000Z"
+                                     }
                 },
     "motores":  {
                     "llama.cpp":  {
