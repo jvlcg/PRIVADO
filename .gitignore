@@ -23,6 +23,7 @@
 /dev/datasets/
 /dev/modelos-proprios/
 /dev/audio-gerado/
+/dev/midia-gerada/
 /dev/lora/*/
 /linux/*
 !/linux/configurar-ubuntu.sh

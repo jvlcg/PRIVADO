@@ -16,6 +16,8 @@ while ($true) {
     Write-Host '  3) Perguntar com fonte (modelo + biblioteca)'
     Write-Host '  4) Gerar imagem, video, musica ou 3D (ComfyUI)'
     Write-Host '  5) Transcrever audio (Whisper)'
+    Write-Host ' 11) Gerar imagem ou video pelo terminal (com o ComfyUI aberto)'
+    Write-Host ' 12) Falar um texto em voz alta (Piper)'
     Write-Host ' MANTER'
     Write-Host '  6) Status do acervo'
     Write-Host '  7) Verificar novidades e atualizacoes'
@@ -42,6 +44,16 @@ while ($true) {
             '8' { Nova-Janela 'sincronizar-cofre.ps1' }
             '9' { & "$PSScriptRoot\verificar-integridade.ps1" }
             '10' { & "$PSScriptRoot\baixar-modelo.ps1" -Listar; & "$PSScriptRoot\baixar-conhecimento.ps1" -Listar }
+            '11' {
+                $tipo = Read-Host 'Imagem (i) ou video (v)?'
+                $texto = Read-Host 'Descreva (de preferencia em ingles)'
+                if ($texto -and $tipo -eq 'v') { & "$PSScriptRoot\gerar.ps1" -Video $texto }
+                elseif ($texto) { & "$PSScriptRoot\gerar.ps1" -Imagem $texto }
+            }
+            '12' {
+                $texto = Read-Host 'Texto para falar'
+                if ($texto) { & "$PSScriptRoot\falar.ps1" $texto -Tocar }
+            }
             '0' { return }
         }
     } catch {

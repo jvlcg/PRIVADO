@@ -1,0 +1,110 @@
+{
+    "1":  {
+              "inputs":  {
+                             "weight_dtype":  "default",
+                             "unet_name":  "z_image_turbo_bf16.safetensors"
+                         },
+              "class_type":  "UNETLoader"
+          },
+    "2":  {
+              "inputs":  {
+                             "device":  "default",
+                             "clip_name":  "qwen_3_4b_fp8_mixed.safetensors",
+                             "type":  "lumina2"
+                         },
+              "class_type":  "CLIPLoader"
+          },
+    "3":  {
+              "inputs":  {
+                             "vae_name":  "ae.safetensors"
+                         },
+              "class_type":  "VAELoader"
+          },
+    "4":  {
+              "inputs":  {
+                             "model":  [
+                                           "1",
+                                           0
+                                       ],
+                             "shift":  3
+                         },
+              "class_type":  "ModelSamplingAuraFlow"
+          },
+    "5":  {
+              "inputs":  {
+                             "clip":  [
+                                          "2",
+                                          0
+                                      ],
+                             "text":  "TEXTO"
+                         },
+              "class_type":  "CLIPTextEncode"
+          },
+    "6":  {
+              "inputs":  {
+                             "conditioning":  [
+                                                  "5",
+                                                  0
+                                              ]
+                         },
+              "class_type":  "ConditioningZeroOut"
+          },
+    "7":  {
+              "inputs":  {
+                             "batch_size":  1,
+                             "width":  1024,
+                             "height":  1024
+                         },
+              "class_type":  "EmptySD3LatentImage"
+          },
+    "8":  {
+              "inputs":  {
+                             "denoise":  1,
+                             "seed":  0,
+                             "negative":  [
+                                              "6",
+                                              0
+                                          ],
+                             "cfg":  1,
+                             "sampler_name":  "res_multistep",
+                             "latent_image":  [
+                                                  "7",
+                                                  0
+                                              ],
+                             "scheduler":  "simple",
+                             "model":  [
+                                           "4",
+                                           0
+                                       ],
+                             "steps":  8,
+                             "positive":  [
+                                              "5",
+                                              0
+                                          ]
+                         },
+              "class_type":  "KSampler"
+          },
+    "9":  {
+              "inputs":  {
+                             "samples":  [
+                                             "8",
+                                             0
+                                         ],
+                             "vae":  [
+                                         "3",
+                                         0
+                                     ]
+                         },
+              "class_type":  "VAEDecode"
+          },
+    "10":  {
+               "inputs":  {
+                              "images":  [
+                                             "9",
+                                             0
+                                         ],
+                              "filename_prefix":  "cofre/imagem"
+                          },
+               "class_type":  "SaveImage"
+           }
+}
