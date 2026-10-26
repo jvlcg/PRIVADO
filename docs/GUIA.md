@@ -167,6 +167,8 @@ O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é u
 
 - Cada arquivo foi conferido pelo SHA256 da fonte. A cada três meses: `verificar-integridade.ps1` (sem `-Rapido`). Em Linux: `sha256sum -c SHA256SUMS.txt`.
 - Regra 3-2-1: SSD (1), espelho no HD D: (2), e falta um HD externo desligado e guardado em outro lugar (3): `copiar-backup.ps1 -Destino E:\COFRE-IA -Tudo`.
+- O HD D: (Seagate ST4000DM004) é SMR: trava com duas gravações grandes ao mesmo tempo, por isso o cofre baixa uma coisa de cada vez. Para a terceira cópia, prefira um HD CMR (linhas NAS, como WD Red Plus ou Seagate IronWolf) ou um SSD.
+- Não suspenda o PC durante a sincronização: em 26/10 ele ficou 12 horas suspenso e os downloads pararam.
 - Licenças com termos próprios (uso pessoal permitido): MedGemma, TranslateGemma, Nemotron, Hunyuan3D (não vale na UE, Reino Unido e Coreia do Sul), LFM2.5.
 - MedGemma erra: use junto com a WikiMed e procure um profissional sempre que puder.
 
