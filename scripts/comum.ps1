@@ -301,6 +301,18 @@ function Preparar-Uv {
     return (Achar-Exe 'uv' 'uv.exe')
 }
 
+# Pede ao Windows para nao suspender por inatividade enquanto este processo roda (downloads longos).
+# Vale so para este processo e acaba sozinho quando ele termina; nao impede suspensao manual.
+function Manter-Acordado {
+    try {
+        if (-not ('SsdIa.Energia' -as [type])) {
+            Add-Type -Namespace SsdIa -Name Energia -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint esFlags);'
+        }
+        # ES_CONTINUOUS (0x80000000) | ES_SYSTEM_REQUIRED (0x1)
+        [void][SsdIa.Energia]::SetThreadExecutionState([uint32]2147483649)
+    } catch {}
+}
+
 # Notificacao do Windows (canto da tela). Falha em silencio se o sistema nao permitir.
 function Notificar($titulo, $texto) {
     try {

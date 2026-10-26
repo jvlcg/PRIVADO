@@ -21,6 +21,7 @@ New-Item -ItemType Directory -Force -Path $PastaLogs | Out-Null
 $log = Join-Path $PastaLogs ("sincronizar-{0}.txt" -f (Get-Date -Format 'yyyy-MM-dd_HHmm'))
 Start-Transcript -Path $log -Force | Out-Null
 $inicio = Get-Date
+Manter-Acordado
 $rc = Raiz-Cofre
 $temCofre = (-not $SoNucleo) -and $rc -and (Test-Path ([IO.Path]::GetPathRoot($rc)))
 if (-not $SoNucleo -and -not $temCofre) { Aviso "Cofre ($rc) indisponivel: sincronizando so o SSD." }

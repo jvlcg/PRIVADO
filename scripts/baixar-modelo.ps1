@@ -77,6 +77,7 @@ foreach ($grupo in ($falta | Group-Object { [IO.Path]::GetPathRoot($_.dest) })) 
 }
 
 # 2. Download, conferencia e registro.
+Manter-Acordado
 $repoInfo = @{}
 foreach ($p in $plano) {
     $m = $p.modelo

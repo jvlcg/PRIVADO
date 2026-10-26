@@ -42,6 +42,7 @@ if ($Id) {
     $sel = @($itens | Where-Object { $Local -eq 'todos' -or (Local-De $_) -eq $Local })
 }
 
+Manter-Acordado
 foreach ($item in $sel) {
     $loc = Local-De $item
     Titulo $item.nome

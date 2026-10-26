@@ -420,6 +420,12 @@
                                                                                                                                             "tamanho":  5780927,
                                                                                                                                             "sha256":  "0c2a2031bd93ebd60aa6a4f3912775ba3990b5f39b24c6edf9ea029d2f387a28",
                                                                                                                                             "baixado_em":  "2026-10-26T00:32:50"
+                                                                                                                                        },
+                                                                 "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00002-of-00007.gguf":  {
+                                                                                                                                            "destino":  "modelos\\fronteira\\deepseek-v4.1-flash\\DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00002-of-00007.gguf",
+                                                                                                                                            "tamanho":  49290279808,
+                                                                                                                                            "sha256":  "605972fece1b43277b9ff86a2cd79c9002ff424caefc507f20b6ccd47ae4ab39",
+                                                                                                                                            "baixado_em":  "2026-10-26T02:55:52"
                                                                                                                                         }
                                                              },
                                                 "local":  "cofre",
