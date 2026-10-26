@@ -898,6 +898,24 @@
                                                 "tamanho":  4261397539,
                                                 "sha256":  "b28e58b24ed55c602265729b34b0c6cc4e12228e6fe2f55df5b5e9eae169b266",
                                                 "baixado_em":  "2026-10-25T23:05:30"
-                                            }
+                                            },
+                         "wikipedia-en":  {
+                                              "arquivo":  "wikipedia_en_all_maxi_2026-08.zim",
+                                              "versao":  "2026-08",
+                                              "local":  "cofre",
+                                              "destino":  "conhecimento\\wikipedia_en_all_maxi_2026-08.zim",
+                                              "tamanho":  127418087648,
+                                              "sha256":  "34162d18b9f96f494eac48a73a309c72e0bc95d85f76be405d0f5de795854aa6",
+                                              "baixado_em":  "2026-10-26T19:26:14"
+                                          },
+                         "gutenberg-en":  {
+                                              "arquivo":  "gutenberg_en_all_2025-11.zim",
+                                              "versao":  "2025-11",
+                                              "local":  "cofre",
+                                              "destino":  "conhecimento\\gutenberg_en_all_2025-11.zim",
+                                              "tamanho":  221251590584,
+                                              "sha256":  "01677c8d554a1cab2cbfd020ac99ebca7dd6c74d3ce0d13f266a2ba603dfaf28",
+                                              "baixado_em":  "2026-10-26T20:46:34"
+                                          }
                      }
 }

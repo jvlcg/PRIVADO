@@ -76,7 +76,8 @@ SISTEMA_MEMBRO = (
     "Voce faz parte de um conselho de IAs que roda offline: varias IAs recebem a mesma pergunta e um relator "
     "junta as respostas depois. Responda em portugues do Brasil, de forma correta e direta, com o essencial "
     "em ate umas 350 palavras (o relator escreve a versao completa). "
-    "Mostre o raciocinio quando houver conta ou logica. Se nao tiver certeza de algo, diga claramente em vez "
+    "Mostre o raciocinio quando houver conta ou logica, com as contas em texto simples, sem LaTeX "
+    "(ex.: 200 W x 4 h = 800 Wh). Se nao tiver certeza de algo, diga claramente em vez "
     "de inventar. Em temas de saude ou seguranca, inclua os sinais de alerta e quando procurar ajuda."
 )
 PEDIDO_REVISAO = (
@@ -94,6 +95,7 @@ SISTEMA_RELATOR = (
     "- Se houver trechos de enciclopedia, priorize o que eles dizem e cite [1], [2]. Sem trechos, nao use "
     "marcadores de citacao.\n"
     "- No corpo da resposta nao fale em 'Resposta 1' ou 'membros'.\n"
+    "- Escreva contas em texto simples, sem LaTeX (ex.: 889 Wh / 0,8 = 1.111 Wh).\n"
     "Termine com uma secao curta '### Como o conselho decidiu': pontos de consenso, divergencias (e o lado "
     "que voce adotou, com o motivo em uma frase) e o grau de confianca (alto, medio ou baixo)."
 )
@@ -741,6 +743,18 @@ $('footer').innerHTML = $('footer').innerHTML.replace('PORTA', location.port || 
 let imagem = null, inicio = 0, tique = null;
 
 function esc(s){return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+// Contas em LaTeX ($...$) viram texto simples: o painel e offline e nao carrega bibliotecas de formulas.
+const SIMBOLOS = {times: '×', div: '÷', approx: '≈', cdot: '·', pm: '±', le: '≤', ge: '≥', neq: '≠', to: '→', rightarrow: '→', quad: ' ', '%': '%'};
+function semLatex(s){
+  return s.replace(/\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$|\\\[([\s\S]+?)\\\]|\\\(([\s\S]+?)\\\)/g, (m, a, b, c, d) => {
+    let t = a || b || c || d;
+    if (b && !/[\\^_]/.test(b)) return m;  // "R$ 5 e R$ 3" e dinheiro, nao formula
+    for (let i = 0; i < 3; i++) t = t.replace(/\\(?:text|mathbf|mathrm|textbf|operatorname)\{([^{}]*)\}/g, '$1');
+    t = t.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, '($1)/($2)').replace(/\\sqrt\{([^{}]*)\}/g, '√($1)');
+    t = t.replace(/\\([a-zA-Z]+|%)/g, (x, n) => SIMBOLOS[n] ?? n).replace(/[{}]/g, '').replace(/\^2/g, '²').replace(/\^3/g, '³');
+    return t.trim();
+  });
+}
 function inline(s){
   return s.replace(/`([^`]+)`/g, '<code>$1</code>')
           .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
@@ -749,7 +763,7 @@ function inline(s){
 }
 const ITEM = /^\s*([-*+]|\d+[.)])\s+/;
 function md(src){
-  const L = esc(src || '').split('\n'); let h = '', i = 0;
+  const L = esc(semLatex(src || '')).split('\n'); let h = '', i = 0;
   while (i < L.length) {
     const l = L[i];
     if (/^\s*```/.test(l)) { const b = []; i++; while (i < L.length && !/^\s*```/.test(L[i])) b.push(L[i++]); i++; h += `<pre><code>${b.join('\n')}</code></pre>`; continue; }
