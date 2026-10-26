@@ -1,0 +1,711 @@
+{
+    "modelos":  {
+                    "gemma-4-12b":  {
+                                        "completo":  true,
+                                        "repo":  "google/gemma-4-12B-it-qat-q4_0-gguf",
+                                        "arquivos":  {
+                                                         "gemma-4-12b-it-qat-q4_0.gguf":  {
+                                                                                              "destino":  "modelos\\llm\\gemma-4-12b\\gemma-4-12b-it-qat-q4_0.gguf",
+                                                                                              "tamanho":  6975879296,
+                                                                                              "sha256":  "93567e57a8fe10b23569b9d9ec38cd005deedf71e29477c421a4b83f418a538b",
+                                                                                              "baixado_em":  "2026-10-25T21:33:47"
+                                                                                          },
+                                                         "mmproj-gemma-4-12b-it-qat-q4_0.gguf":  {
+                                                                                                     "destino":  "modelos\\llm\\gemma-4-12b\\mmproj-gemma-4-12b-it-qat-q4_0.gguf",
+                                                                                                     "tamanho":  175115616,
+                                                                                                     "sha256":  "cb018338a7538a9814d994bfe54644c71eb7ed54e31eae2f721e45fd3c260da7",
+                                                                                                     "baixado_em":  "2026-10-25T21:33:52"
+                                                                                                 }
+                                                     },
+                                        "repo_sha":  "29d097773436b69ff9feafd636ab4cf873786537",
+                                        "repo_modificado":  "2026-07-17T21:24:41.000Z"
+                                    },
+                    "qwen3-embedding-0.6b":  {
+                                                 "completo":  true,
+                                                 "repo":  "Qwen/Qwen3-Embedding-0.6B-GGUF",
+                                                 "arquivos":  {
+                                                                  "Qwen3-Embedding-0.6B-Q8_0.gguf":  {
+                                                                                                         "destino":  "modelos\\embeddings\\qwen3-embedding-0.6b\\Qwen3-Embedding-0.6B-Q8_0.gguf",
+                                                                                                         "tamanho":  639150592,
+                                                                                                         "sha256":  "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+                                                                                                         "baixado_em":  "2026-10-25T21:34:29"
+                                                                                                     }
+                                                              },
+                                                 "repo_sha":  "370f27d7550e0def9b39c1f16d3fbaa13aa67728",
+                                                 "repo_modificado":  "2025-07-14T23:19:36.000Z"
+                                             },
+                    "whisper-large-v3-turbo":  {
+                                                   "completo":  true,
+                                                   "repo":  "ggerganov/whisper.cpp",
+                                                   "arquivos":  {
+                                                                    "ggml-large-v3-turbo-q8_0.bin":  {
+                                                                                                         "destino":  "modelos\\audio\\whisper\\ggml-large-v3-turbo-q8_0.bin",
+                                                                                                         "tamanho":  874188075,
+                                                                                                         "sha256":  "317eb69c11673c9de1e1f0d459b253999804ec71ac4c23c17ecf5fbe24e259a1",
+                                                                                                         "baixado_em":  "2026-10-25T21:34:42"
+                                                                                                     }
+                                                                },
+                                                   "repo_sha":  "5359861c739e955e79d9a303bcbc70fb988958b1",
+                                                   "repo_modificado":  "2024-10-29T18:25:17.000Z"
+                                               },
+                    "gemma-4-26b-a4b":  {
+                                            "completo":  true,
+                                            "repo":  "unsloth/gemma-4-26B-A4B-it-GGUF",
+                                            "arquivos":  {
+                                                             "gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf":  {
+                                                                                                        "destino":  "modelos\\llm\\gemma-4-26b-a4b\\gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf",
+                                                                                                        "tamanho":  17010980576,
+                                                                                                        "sha256":  "ef728c8e0c337fd1067b947af006e38a9ef2419e56feced4fd29b4bf0636e30c",
+                                                                                                        "baixado_em":  "2026-10-25T21:38:09"
+                                                                                                    },
+                                                             "mmproj-F16.gguf":  {
+                                                                                     "destino":  "modelos\\llm\\gemma-4-26b-a4b\\mmproj-F16.gguf",
+                                                                                     "tamanho":  1193058784,
+                                                                                     "sha256":  "418a6d8723067cd712235facbbc5cba6c8fbbd413fc1292d2aace5a027d5a42f",
+                                                                                     "baixado_em":  "2026-10-25T21:38:26"
+                                                                                 }
+                                                         },
+                                            "repo_sha":  "c099eb48e663fd284577b04978a94ffccb261841",
+                                            "repo_modificado":  "2026-07-17T13:00:49.000Z"
+                                        },
+                    "qwen3.8-27b":  {
+                                        "completo":  true,
+                                        "repo":  "unsloth/Qwen3.8-27B-GGUF",
+                                        "arquivos":  {
+                                                         "Qwen3.8-27B-UD-Q4_K_XL.gguf":  {
+                                                                                             "destino":  "modelos\\llm\\qwen3.8-27b\\Qwen3.8-27B-UD-Q4_K_XL.gguf",
+                                                                                             "tamanho":  17559178144,
+                                                                                             "sha256":  "3f227079003add2511437e5b1e94812e363385225bf6a9b47b0054a72bc8b01e",
+                                                                                             "baixado_em":  "2026-10-25T21:42:02"
+                                                                                         },
+                                                         "mmproj-F16.gguf":  {
+                                                                                 "destino":  "modelos\\llm\\qwen3.8-27b\\mmproj-F16.gguf",
+                                                                                 "tamanho":  927607488,
+                                                                                 "sha256":  "cbb841a9ee0636b2ec172f5bb8df2ea8dfeb01e90fe7c6126581d662a0b4e43e",
+                                                                                 "baixado_em":  "2026-10-25T21:42:17"
+                                                                             }
+                                                     },
+                                        "repo_sha":  "4ca720788d1e01f1bff70c033e0d0028fd02e502",
+                                        "repo_modificado":  "2026-08-20T12:04:25.000Z"
+                                    },
+                    "qwen3-coder-next":  {
+                                             "completo":  true,
+                                             "repo":  "unsloth/Qwen3-Coder-Next-GGUF",
+                                             "arquivos":  {
+                                                              "Qwen3-Coder-Next-UD-IQ4_XS.gguf":  {
+                                                                                                      "destino":  "modelos\\codigo\\qwen3-coder-next\\Qwen3-Coder-Next-UD-IQ4_XS.gguf",
+                                                                                                      "tamanho":  38429272064,
+                                                                                                      "sha256":  "abf56d7fe8a0a99c15d220c13de4aa57b69cfba6ef4c2a007b56e34d7b40cd11",
+                                                                                                      "baixado_em":  "2026-10-25T21:50:39"
+                                                                                                  }
+                                                          },
+                                             "repo_sha":  "ce09c67b53bc8739eef83fe67b2f5d293c270632",
+                                             "repo_modificado":  "2026-03-06T14:38:33.000Z"
+                                         },
+                    "mimo-v2.6-distill-9b":  {
+                                                 "completo":  true,
+                                                 "repo":  "bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF",
+                                                 "arquivos":  {
+                                                                  "MiMo-V2.6-Distill-Qwen-9B-Q4_K_M.gguf":  {
+                                                                                                                "destino":  "modelos\\llm\\mimo-v2.6-distill-9b\\MiMo-V2.6-Distill-Qwen-9B-Q4_K_M.gguf",
+                                                                                                                "tamanho":  5841049120,
+                                                                                                                "sha256":  "4bca6f18c73f72270c7a20c2ea2bea581de8246e318714277120369d34048c81",
+                                                                                                                "baixado_em":  "2026-10-25T21:51:53"
+                                                                                                            }
+                                                              },
+                                                 "repo_sha":  "4371da10c84fb26da3592d4cf312d24aa82b7b65",
+                                                 "repo_modificado":  "2026-09-21T22:44:19.000Z",
+                                                 "local":  "cofre"
+                                             },
+                    "z-image-turbo":  {
+                                          "completo":  true,
+                                          "repo":  "Comfy-Org/Z-Image-Turbo",
+                                          "arquivos":  {
+                                                           "split_files/diffusion_models/z_image_turbo_bf16.safetensors":  {
+                                                                                                                               "destino":  "modelos\\imagem\\diffusion_models\\z_image_turbo_bf16.safetensors",
+                                                                                                                               "tamanho":  12309866400,
+                                                                                                                               "sha256":  "2407613050b809ffdff18a4ac99af83ea6b95443ecebdf80e064a79c825574a6",
+                                                                                                                               "baixado_em":  "2026-10-25T21:54:25"
+                                                                                                                           },
+                                                           "split_files/text_encoders/qwen_3_4b_fp8_mixed.safetensors":  {
+                                                                                                                             "destino":  "modelos\\imagem\\text_encoders\\qwen_3_4b_fp8_mixed.safetensors",
+                                                                                                                             "tamanho":  5631994051,
+                                                                                                                             "sha256":  "72450b19758172c5a7273cf7de729d1c17e7f434a104a00167624cba94f68f15",
+                                                                                                                             "baixado_em":  "2026-10-25T21:55:35"
+                                                                                                                         },
+                                                           "split_files/vae/ae.safetensors":  {
+                                                                                                  "destino":  "modelos\\imagem\\vae\\ae.safetensors",
+                                                                                                  "tamanho":  335304388,
+                                                                                                  "sha256":  "afc8e28272cd15db3919bacdb6918ce9c1ed22e96cb12c4d5ed0fba823529e38",
+                                                                                                  "baixado_em":  "2026-10-25T21:55:41"
+                                                                                              }
+                                                       },
+                                          "repo_sha":  "6fc90a3b1b653e935a0d175e260736de25b84df5",
+                                          "repo_modificado":  "2026-09-23T08:02:57.000Z"
+                                      },
+                    "embeddinggemma-2":  {
+                                             "completo":  true,
+                                             "repo":  "ggml-org/embeddinggemma-2-GGUF",
+                                             "arquivos":  {
+                                                              "embeddinggemma-2-Q8_0.gguf":  {
+                                                                                                 "destino":  "modelos\\embeddings\\embeddinggemma-2\\embeddinggemma-2-Q8_0.gguf",
+                                                                                                 "tamanho":  309855456,
+                                                                                                 "sha256":  "2188ac1deca4b77dffefd603c2776a9d76d9d74ec01841392982ebb840b09135",
+                                                                                                 "baixado_em":  "2026-10-25T21:55:48"
+                                                                                             }
+                                                          },
+                                             "repo_sha":  "58faf90940886df2d62be555c8765d00dac362c5",
+                                             "repo_modificado":  "2026-10-19T10:57:29.000Z"
+                                         },
+                    "qwen3.6-35b-a3b":  {
+                                            "completo":  true,
+                                            "repo":  "unsloth/Qwen3.6-35B-A3B-GGUF",
+                                            "arquivos":  {
+                                                             "Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf":  {
+                                                                                                     "destino":  "modelos\\llm\\qwen3.6-35b-a3b\\Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf",
+                                                                                                     "tamanho":  22360456160,
+                                                                                                     "sha256":  "707a55a8a4397ecde44de0c499d3e68c1ad1d240d1da65826b4949d1043f4450",
+                                                                                                     "baixado_em":  "2026-10-25T22:00:21"
+                                                                                                 },
+                                                             "mmproj-F16.gguf":  {
+                                                                                     "destino":  "modelos\\llm\\qwen3.6-35b-a3b\\mmproj-F16.gguf",
+                                                                                     "tamanho":  899283680,
+                                                                                     "sha256":  "8971ee4f331ff0a4c609374f32984b3d4e6dc086c0aa35f1d637fad1829e887f",
+                                                                                     "baixado_em":  "2026-10-25T22:00:34"
+                                                                                 }
+                                                         },
+                                            "repo_sha":  "a483e9e6cbd595906af30beda3187c2663a1118c",
+                                            "repo_modificado":  "2026-04-20T12:42:25.000Z",
+                                            "local":  "cofre"
+                                        },
+                    "gpt-oss-20b":  {
+                                        "completo":  true,
+                                        "repo":  "ggml-org/gpt-oss-20b-GGUF",
+                                        "arquivos":  {
+                                                         "gpt-oss-20b-MXFP4.gguf":  {
+                                                                                        "destino":  "modelos\\llm\\gpt-oss-20b\\gpt-oss-20b-MXFP4.gguf",
+                                                                                        "tamanho":  12109566624,
+                                                                                        "sha256":  "27cd6c432c7672cb812a92f611cf3ba7bbc35928262bb1e1253ff4ee6ae35901",
+                                                                                        "baixado_em":  "2026-10-25T22:03:06"
+                                                                                    }
+                                                     },
+                                        "repo_sha":  "15dcfc7e7c608c6161507211ed43c5b590801b4b",
+                                        "repo_modificado":  "2026-10-19T14:14:26.000Z"
+                                    },
+                    "devstral-small-2":  {
+                                             "completo":  true,
+                                             "repo":  "unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF",
+                                             "arquivos":  {
+                                                              "Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf":  {
+                                                                                                                         "destino":  "modelos\\codigo\\devstral-small-2\\Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf",
+                                                                                                                         "tamanho":  14506151072,
+                                                                                                                         "sha256":  "b44e34b78180fc3ab1abbe1edad9f1f3926fdca10eed3bfae168b065e683f6cd",
+                                                                                                                         "baixado_em":  "2026-10-25T22:06:05"
+                                                                                                                     }
+                                                          },
+                                             "repo_sha":  "6e458b8add42681bfd023de5eab93637694aaf82",
+                                             "repo_modificado":  "2025-12-15T10:16:01.000Z",
+                                             "local":  "cofre"
+                                         },
+                    "qwen3.5-2b":  {
+                                       "completo":  true,
+                                       "repo":  "unsloth/Qwen3.5-2B-GGUF",
+                                       "arquivos":  {
+                                                        "Qwen3.5-2B-UD-Q4_K_XL.gguf":  {
+                                                                                           "destino":  "modelos\\leve\\qwen3.5-2b\\Qwen3.5-2B-UD-Q4_K_XL.gguf",
+                                                                                           "tamanho":  1339752704,
+                                                                                           "sha256":  "0af96165ea615bea39a04118d63f0b6d35908aea850ee4a51aa6151d851b8b35",
+                                                                                           "baixado_em":  "2026-10-25T22:41:25"
+                                                                                       },
+                                                        "mmproj-F16.gguf":  {
+                                                                                "destino":  "modelos\\leve\\qwen3.5-2b\\mmproj-F16.gguf",
+                                                                                "tamanho":  668227264,
+                                                                                "sha256":  "7035e9cb8d7c6a9681d07eef9a364783e86ea4cd73faab2eabb4f43a101830c7",
+                                                                                "baixado_em":  "2026-10-25T22:41:35"
+                                                                            }
+                                                    },
+                                       "local":  "nucleo",
+                                       "repo_sha":  "f6d5376be1edb4d416d56da11e5397a961aca8ae",
+                                       "repo_modificado":  "2026-03-02T14:07:35.000Z"
+                                   },
+                    "gemma-4-e4b":  {
+                                        "completo":  true,
+                                        "repo":  "google/gemma-4-E4B-it-qat-q4_0-gguf",
+                                        "arquivos":  {
+                                                         "gemma-4-E4B_q4_0-it.gguf":  {
+                                                                                          "destino":  "modelos\\leve\\gemma-4-e4b\\gemma-4-E4B_q4_0-it.gguf",
+                                                                                          "tamanho":  5154941280,
+                                                                                          "sha256":  "676c35070db6dbe52f93e9c864ee0fba4eddea94b9c875d9cb10daff453fbaee",
+                                                                                          "baixado_em":  "2026-10-25T22:42:39"
+                                                                                      },
+                                                         "gemma-4-E4B-it-mmproj.gguf":  {
+                                                                                            "destino":  "modelos\\leve\\gemma-4-e4b\\mmproj-gemma-4-E4B-it.gguf",
+                                                                                            "tamanho":  991552256,
+                                                                                            "sha256":  "7498a37cb619e55f2fcf87eb931f56e99389ed6d432e4c5c66110694c0d65578",
+                                                                                            "baixado_em":  "2026-10-25T22:42:54"
+                                                                                        }
+                                                     },
+                                        "local":  "nucleo",
+                                        "repo_sha":  "4b4a2c1d584be7264f87aac328a1bc739ce81b6c",
+                                        "repo_modificado":  "2026-07-17T21:23:49.000Z"
+                                    },
+                    "qwen3-reranker-0.6b":  {
+                                                "completo":  true,
+                                                "repo":  "ggml-org/Qwen3-Reranker-0.6B-Q8_0-GGUF",
+                                                "arquivos":  {
+                                                                 "qwen3-reranker-0.6b-q8_0.gguf":  {
+                                                                                                       "destino":  "modelos\\embeddings\\qwen3-reranker-0.6b\\qwen3-reranker-0.6b-q8_0.gguf",
+                                                                                                       "tamanho":  639153184,
+                                                                                                       "sha256":  "22c9979ce4fbcdc5acdc310c6641c32797eff1aa980b8f7a2db8a8ea23429a48",
+                                                                                                       "baixado_em":  "2026-10-25T22:43:04"
+                                                                                                   }
+                                                             },
+                                                "local":  "nucleo",
+                                                "repo_sha":  "a02f48bb4f057028298c21fa033da2b30d7742d5",
+                                                "repo_modificado":  "2025-10-03T10:19:38.000Z"
+                                            },
+                    "kokoro-82m":  {
+                                       "completo":  true,
+                                       "repo":  "hexgrad/Kokoro-82M",
+                                       "arquivos":  {
+                                                        "kokoro-v1_0.pth":  {
+                                                                                "destino":  "modelos\\audio\\kokoro-82m\\kokoro-v1_0.pth",
+                                                                                "tamanho":  327212226,
+                                                                                "sha256":  "496dba118d1a58f5f3db2efc88dbdc216e0483fc89fe6e47ee1f2c53f18ad1e4",
+                                                                                "baixado_em":  "2026-10-25T22:43:10"
+                                                                            },
+                                                        "config.json":  {
+                                                                            "destino":  "modelos\\audio\\kokoro-82m\\config.json",
+                                                                            "tamanho":  2351,
+                                                                            "sha256":  "5abb01e2403b072bf03d04fde160443e209d7a0dad49a423be15196b9b43c17f",
+                                                                            "baixado_em":  "2026-10-25T22:43:10"
+                                                                        },
+                                                        "voices/pf_dora.pt":  {
+                                                                                  "destino":  "modelos\\audio\\kokoro-82m\\voices\\pf_dora.pt",
+                                                                                  "tamanho":  523425,
+                                                                                  "sha256":  "07e4ff987c5d5a8c3995efd15cc4f0db7c4c15e881b198d8ab7f67ecf51f5eb7",
+                                                                                  "baixado_em":  "2026-10-25T22:43:12"
+                                                                              },
+                                                        "voices/pm_alex.pt":  {
+                                                                                  "destino":  "modelos\\audio\\kokoro-82m\\voices\\pm_alex.pt",
+                                                                                  "tamanho":  523425,
+                                                                                  "sha256":  "cf0ba8c573c2480fc54123683a35cf1e2ae130428e441eb91f9149bdb188a526",
+                                                                                  "baixado_em":  "2026-10-25T22:43:15"
+                                                                              }
+                                                    },
+                                       "local":  "nucleo",
+                                       "repo_sha":  "f3ff3571791e39611d31c381e3a41a3af07b4987",
+                                       "repo_modificado":  "2025-04-10T18:12:48.000Z"
+                                   },
+                    "lfm2.5-1.2b":  {
+                                        "completo":  true,
+                                        "repo":  "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
+                                        "arquivos":  {
+                                                         "LFM2.5-1.2B-Instruct-Q4_K_M.gguf":  {
+                                                                                                  "destino":  "modelos\\leve\\lfm2.5-1.2b\\LFM2.5-1.2B-Instruct-Q4_K_M.gguf",
+                                                                                                  "tamanho":  730895168,
+                                                                                                  "sha256":  "b1b3de114215d9507409a662a501a631095a479a419584e8a2ded6304b19b4f5",
+                                                                                                  "baixado_em":  "2026-10-25T22:43:26"
+                                                                                              }
+                                                     },
+                                        "local":  "nucleo",
+                                        "repo_sha":  "8ed288026e23958ad9dfa92d53ed773a8eee7125",
+                                        "repo_modificado":  "2026-09-22T20:41:54.000Z"
+                                    },
+                    "qwen3.5-0.8b":  {
+                                         "completo":  true,
+                                         "repo":  "unsloth/Qwen3.5-0.8B-GGUF",
+                                         "arquivos":  {
+                                                          "Qwen3.5-0.8B-UD-Q4_K_XL.gguf":  {
+                                                                                               "destino":  "modelos\\leve\\qwen3.5-0.8b\\Qwen3.5-0.8B-UD-Q4_K_XL.gguf",
+                                                                                               "tamanho":  558772480,
+                                                                                               "sha256":  "3177ebd67afe4438374da19e690bc1b98756f7e0fea9240e1be404336156a7b5",
+                                                                                               "baixado_em":  "2026-10-25T22:43:35"
+                                                                                           }
+                                                      },
+                                         "local":  "nucleo",
+                                         "repo_sha":  "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
+                                         "repo_modificado":  "2026-03-02T14:08:04.000Z"
+                                     },
+                    "glm-ocr":  {
+                                    "completo":  true,
+                                    "repo":  "ggml-org/GLM-OCR-GGUF",
+                                    "arquivos":  {
+                                                     "GLM-OCR-Q8_0.gguf":  {
+                                                                               "destino":  "modelos\\ocr\\glm-ocr\\GLM-OCR-Q8_0.gguf",
+                                                                               "tamanho":  950433408,
+                                                                               "sha256":  "45bc244a6446aff850521dc41f18bc8d7105ad5f0c2c8c28af04e7cc4f4d50b1",
+                                                                               "baixado_em":  "2026-10-25T22:43:49"
+                                                                           },
+                                                     "mmproj-GLM-OCR-Q8_0.gguf":  {
+                                                                                      "destino":  "modelos\\ocr\\glm-ocr\\mmproj-GLM-OCR-Q8_0.gguf",
+                                                                                      "tamanho":  484403648,
+                                                                                      "sha256":  "9c4b58e33e316ed142eb5dcb41abec3844d3e6e5dc361ffb782c3fa9d175141f",
+                                                                                      "baixado_em":  "2026-10-25T22:43:57"
+                                                                                  }
+                                                 },
+                                    "local":  "nucleo",
+                                    "repo_sha":  "65a42de1148dbed2297e922b5dbc7d9b70c36578",
+                                    "repo_modificado":  "2026-03-10T06:44:23.000Z"
+                                },
+                    "translategemma-12b":  {
+                                               "completo":  true,
+                                               "repo":  "mradermacher/translategemma-12b-it-GGUF",
+                                               "arquivos":  {
+                                                                "translategemma-12b-it.Q4_K_M.gguf":  {
+                                                                                                          "destino":  "modelos\\traducao\\translategemma-12b\\translategemma-12b-it.Q4_K_M.gguf",
+                                                                                                          "tamanho":  7300794112,
+                                                                                                          "sha256":  "b7aac4b4be7ab0c49b6556c29c4467e74313df7f1e95d9f9676bb2adf0afa528",
+                                                                                                          "baixado_em":  "2026-10-25T22:45:27"
+                                                                                                      },
+                                                                "translategemma-12b-it.mmproj-Q8_0.gguf":  {
+                                                                                                               "destino":  "modelos\\traducao\\translategemma-12b\\mmproj-translategemma-12b-it-Q8_0.gguf",
+                                                                                                               "tamanho":  594326720,
+                                                                                                               "sha256":  "d707192f7edc97e45d7a666dabfc8123f0eb1f8f960ad180e63078b8a015a769",
+                                                                                                               "baixado_em":  "2026-10-25T22:45:37"
+                                                                                                           }
+                                                            },
+                                               "local":  "nucleo",
+                                               "repo_sha":  "41d7c8aa650b26791225ad9d0597e674e680da96",
+                                               "repo_modificado":  "2026-10-06T18:51:27.000Z"
+                                           },
+                    "medgemma-27b":  {
+                                         "completo":  true,
+                                         "repo":  "unsloth/medgemma-27b-text-it-GGUF",
+                                         "arquivos":  {
+                                                          "medgemma-27b-text-it-UD-Q4_K_XL.gguf":  {
+                                                                                                       "destino":  "modelos\\medicina\\medgemma-27b\\medgemma-27b-text-it-UD-Q4_K_XL.gguf",
+                                                                                                       "tamanho":  16826043392,
+                                                                                                       "sha256":  "665719f41bdb9b84e2e730d4e8be121044f80e973056d3127eb8a986ac808f89",
+                                                                                                       "baixado_em":  "2026-10-25T22:49:01"
+                                                                                                   }
+                                                      },
+                                         "local":  "nucleo",
+                                         "repo_sha":  "334fbf6811c963d223f6ac107a459347353f068d",
+                                         "repo_modificado":  "2025-05-20T20:55:02.000Z"
+                                     },
+                    "mimo-v2.6-flash":  {
+                                            "completo":  true,
+                                            "repo":  "ggml-org/MiMo-V2.6-Flash-MOPD-GGUF",
+                                            "arquivos":  {
+                                                             "MiMo-V2.6-Flash-MOPD-MXFP4-00001-of-00002.gguf":  {
+                                                                                                                    "destino":  "modelos\\fronteira\\mimo-v2.6-flash\\MiMo-V2.6-Flash-MOPD-MXFP4-00001-of-00002.gguf",
+                                                                                                                    "tamanho":  5948640,
+                                                                                                                    "sha256":  "a353e75ccd30f347dfd68a8cf1be8be0fb989fcca94b8e72fd7d1e35241b5f51",
+                                                                                                                    "baixado_em":  "2026-10-25T23:05:48"
+                                                                                                                },
+                                                             "MiMo-V2.6-Flash-MOPD-MXFP4-00002-of-00002.gguf":  {
+                                                                                                                    "destino":  "modelos\\fronteira\\mimo-v2.6-flash\\MiMo-V2.6-Flash-MOPD-MXFP4-00002-of-00002.gguf",
+                                                                                                                    "tamanho":  167363516512,
+                                                                                                                    "sha256":  "3adf8ea80157dd066945a954428ba0e507c15c0e5a8b6b276ac92df0948698bc",
+                                                                                                                    "baixado_em":  "2026-10-26T00:32:23"
+                                                                                                                },
+                                                             "mmproj-MiMo-V2.6-Flash-MOPD-Q8_0.gguf":  {
+                                                                                                           "destino":  "modelos\\fronteira\\mimo-v2.6-flash\\mmproj-MiMo-V2.6-Flash-MOPD-Q8_0.gguf",
+                                                                                                           "tamanho":  1564438112,
+                                                                                                           "sha256":  "7fa58c0f20342fad37ef1962e8a9fd37ef834038b377e4f7e93f905e013e55db",
+                                                                                                           "baixado_em":  "2026-10-26T00:32:48"
+                                                                                                       }
+                                                         },
+                                            "local":  "cofre",
+                                            "repo_sha":  "0522c706471508d8b7e36ae7040922563c477358",
+                                            "repo_modificado":  "2026-10-19T14:16:08.000Z"
+                                        },
+                    "deepseek-v4.1-flash":  {
+                                                "completo":  false,
+                                                "repo":  "unsloth/DeepSeek-V4.1-Flash-1017-GGUF",
+                                                "arquivos":  {
+                                                                 "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00001-of-00007.gguf":  {
+                                                                                                                                            "destino":  "modelos\\fronteira\\deepseek-v4.1-flash\\DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00001-of-00007.gguf",
+                                                                                                                                            "tamanho":  5780927,
+                                                                                                                                            "sha256":  "0c2a2031bd93ebd60aa6a4f3912775ba3990b5f39b24c6edf9ea029d2f387a28",
+                                                                                                                                            "baixado_em":  "2026-10-26T00:32:50"
+                                                                                                                                        }
+                                                             },
+                                                "local":  "cofre",
+                                                "repo_sha":  "60ad3651641b5c97679c807e064ab1d7a3ca1455",
+                                                "repo_modificado":  "2026-10-20T10:18:03.000Z"
+                                            },
+                    "wan-animate-2":  {
+                                          "completo":  true,
+                                          "repo":  "Comfy-Org/Wan-Animate-2",
+                                          "arquivos":  {
+                                                           "diffusion_models/wan_animate_2_int8_convrot.safetensors":  {
+                                                                                                                           "destino":  "modelos\\comfyui\\diffusion_models\\wan_animate_2_int8_convrot.safetensors",
+                                                                                                                           "tamanho":  16653175528,
+                                                                                                                           "sha256":  "0580ecdd65e47e97c30df9670d13a6c4a131d26de5a1faf2ccc78392d5167584",
+                                                                                                                           "baixado_em":  "2026-10-26T02:14:07"
+                                                                                                                       },
+                                                           "text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors":  {
+                                                                                                                        "destino":  "modelos\\comfyui\\text_encoders\\umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+                                                                                                                        "tamanho":  6735906897,
+                                                                                                                        "sha256":  "c3355d30191f1f066b26d93fba017ae9809dce6c627dda5f6a66eaa651204f68",
+                                                                                                                        "baixado_em":  "2026-10-26T02:14:46"
+                                                                                                                    },
+                                                           "clip_vision/clip_vision_h.safetensors":  {
+                                                                                                         "destino":  "modelos\\comfyui\\clip_vision\\clip_vision_h.safetensors",
+                                                                                                         "tamanho":  1264219396,
+                                                                                                         "sha256":  "64a7ef761bfccbadbaa3da77366aac4185a6c58fa5de5f589b42a65bcc21f161",
+                                                                                                         "baixado_em":  "2026-10-26T02:14:54"
+                                                                                                     },
+                                                           "vae/Wan2_1_VAE_bf16.safetensors":  {
+                                                                                                   "destino":  "modelos\\comfyui\\vae\\Wan2_1_VAE_bf16.safetensors",
+                                                                                                   "tamanho":  253806278,
+                                                                                                   "sha256":  "1ab9a32cc2c740f6e39d80d367ce5dcc28db8c71b79b28670546b8973e9d75f9",
+                                                                                                   "baixado_em":  "2026-10-26T02:14:56"
+                                                                                               },
+                                                           "loras/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors":  {
+                                                                                                                                        "destino":  "modelos\\comfyui\\loras\\lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+                                                                                                                                        "tamanho":  738005744,
+                                                                                                                                        "sha256":  "85c4a61c30e0497aa44b91d93a893b624708461a56fe5485183b28fa07e2dfb3",
+                                                                                                                                        "baixado_em":  "2026-10-26T02:14:56"
+                                                                                                                                    }
+                                                       },
+                                          "local":  "cofre",
+                                          "repo_sha":  "e7181fe1896b7f2ce34120d1a3663413548240d7",
+                                          "repo_modificado":  "2026-09-23T08:04:43.000Z"
+                                      },
+                    "piper-pt-br":  {
+                                        "completo":  true,
+                                        "repo":  "rhasspy/piper-voices",
+                                        "arquivos":  {
+                                                         "pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx":  {
+                                                                                                               "destino":  "modelos\\audio\\piper\\pt_BR-faber-medium.onnx",
+                                                                                                               "tamanho":  63201294,
+                                                                                                               "sha256":  "858555e3a064209c57088fe6bd70c4c3dc54d03eaa00c45d5ecaf43a33f95aa7",
+                                                                                                               "baixado_em":  "2026-10-26T02:15:48"
+                                                                                                           },
+                                                         "pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json":  {
+                                                                                                                    "destino":  "modelos\\audio\\piper\\pt_BR-faber-medium.onnx.json",
+                                                                                                                    "tamanho":  4855,
+                                                                                                                    "sha256":  "7e694de195ae3fc36dd732c445eb04fb49b649854893cb5506b978f0d50a1d6f",
+                                                                                                                    "baixado_em":  "2026-10-26T02:15:48"
+                                                                                                                },
+                                                         "pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx":  {
+                                                                                                             "destino":  "modelos\\audio\\piper\\pt_BR-cadu-medium.onnx",
+                                                                                                             "tamanho":  62950044,
+                                                                                                             "sha256":  "765f0809a6ea9035d4a6d0d008dbf8876e68b2dd32029312672fa8f405bdb535",
+                                                                                                             "baixado_em":  "2026-10-26T02:15:51"
+                                                                                                         },
+                                                         "pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx.json":  {
+                                                                                                                  "destino":  "modelos\\audio\\piper\\pt_BR-cadu-medium.onnx.json",
+                                                                                                                  "tamanho":  5040,
+                                                                                                                  "sha256":  "5fe03aa3d4901880554905b12075713cd552598c8a350455a1ec73f8b4e6be19",
+                                                                                                                  "baixado_em":  "2026-10-26T02:15:52"
+                                                                                                              }
+                                                     },
+                                        "local":  "nucleo",
+                                        "repo_sha":  "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+                                        "repo_modificado":  "2026-10-20T17:55:26.000Z"
+                                    }
+                },
+    "motores":  {
+                    "llama.cpp":  {
+                                      "versao":  "b11889",
+                                      "publicado":  "2026-10-25T23:44:54Z",
+                                      "instalado_em":  "2026-10-26T02:16:36"
+                                  },
+                    "kiwix-tools":  {
+                                        "versao":  "3.8.1",
+                                        "publicado":  "",
+                                        "instalado_em":  "2026-10-26T02:16:53"
+                                    },
+                    "kiwix-desktop":  {
+                                          "versao":  "2.5.1",
+                                          "publicado":  "",
+                                          "instalado_em":  "2026-10-26T02:17:06"
+                                      },
+                    "kiwix-tools-linux":  {
+                                              "versao":  "3.8.2",
+                                              "publicado":  "",
+                                              "instalado_em":  "2026-10-26T02:17:19"
+                                          },
+                    "llama.cpp-outras-maquinas":  {
+                                                      "versao":  "b11889",
+                                                      "publicado":  "2026-10-25T23:44:54Z",
+                                                      "instalado_em":  "2026-10-26T02:17:06"
+                                                  },
+                    "whisper.cpp":  {
+                                        "versao":  "b5130",
+                                        "publicado":  "2026-09-11T05:29:10Z",
+                                        "instalado_em":  "2026-10-26T02:16:36"
+                                    },
+                    "uv":  {
+                               "versao":  "0.13.5",
+                               "publicado":  "2026-10-22T01:35:54Z",
+                               "instalado_em":  "2026-10-26T02:16:37"
+                           },
+                    "comfyui":  {
+                                    "versao":  "v0.42.1",
+                                    "publicado":  "2026-10-19T01:33:54Z",
+                                    "instalado_em":  "2026-10-26T02:16:38"
+                                },
+                    "ollama":  {
+                                   "versao":  "v0.40.11",
+                                   "publicado":  "2026-10-24T00:30:13Z",
+                                   "instalado_em":  "2026-10-26T02:16:39"
+                               }
+                },
+    "observados":  {
+                       "mimo-v2.6-pro":  "2026-10-09T06:30:24.000Z",
+                       "deepseek-v4.1-flash":  "2026-10-17T05:46:55.000Z",
+                       "glm-5.3":  "2026-10-14T12:22:48.000Z",
+                       "kimi-k3":  "2026-09-02T02:22:41.000Z",
+                       "glm-5.3-flash":  "2026-10-15T06:32:52.000Z",
+                       "minimax-m3.1-flash":  "2026-10-23T03:37:20.000Z",
+                       "qwen3.8-flash-next":  "2026-08-27T05:03:36.000Z",
+                       "flux-3-image-klein":  "2026-10-16T04:58:03.000Z",
+                       "qwen-image-2.1-turbo":  "2026-10-12T09:45:49.000Z"
+                   },
+    "orgs_visto":  {
+                       "Qwen":  "2026-10-09T04:50:01.000Z",
+                       "google":  "2026-09-14T14:53:42.000Z",
+                       "deepseek-ai":  "2026-10-17T02:40:38.000Z",
+                       "mistralai":  "2026-10-14T17:51:04.000Z",
+                       "openai":  "2026-04-17T21:38:35.000Z",
+                       "zai-org":  "2026-08-25T06:45:05.000Z",
+                       "moonshotai":  "2026-06-13T06:42:57.000Z",
+                       "XiaomiMiMo":  "2026-09-27T04:01:00.000Z",
+                       "microsoft":  "2026-10-17T00:51:18.000Z",
+                       "meta-llama":  "2025-04-28T07:16:35.000Z",
+                       "nvidia":  "2026-10-22T18:23:57.000Z",
+                       "ibm-granite":  "2026-10-22T22:00:51.000Z",
+                       "black-forest-labs":  "2026-10-14T20:40:29.000Z",
+                       "Tongyi-MAI":  "2026-10-16T02:58:23.000Z",
+                       "tencent":  "2026-10-24T05:45:20.000Z",
+                       "MiniMaxAI":  "2026-10-17T06:37:50.000Z",
+                       "stepfun-ai":  "2026-10-14T02:59:00.000Z",
+                       "inclusionAI":  "2026-10-21T13:49:29.000Z",
+                       "unsloth":  "2026-10-23T09:47:55.000Z",
+                       "ggml-org":  "2026-10-23T15:35:59.000Z"
+                   },
+    "ultima_verificacao":  "2026-10-25T20:58:58",
+    "conhecimento":  {
+                         "wikivoyage-pt":  {
+                                               "arquivo":  "wikivoyage_pt_all_maxi_2026-09.zim",
+                                               "versao":  "2026-09",
+                                               "local":  "nucleo",
+                                               "destino":  "conhecimento\\wikivoyage_pt_all_maxi_2026-09.zim",
+                                               "tamanho":  56577698,
+                                               "sha256":  "c2ff85fbd6d4286206ac50d5a76670359170c2da57debddaa5c81907960fd117",
+                                               "baixado_em":  "2026-10-25T22:29:52"
+                                           },
+                         "wikipedia-pt":  {
+                                              "arquivo":  "wikipedia_pt_all_maxi_2026-05.zim",
+                                              "versao":  "2026-05",
+                                              "local":  "nucleo",
+                                              "destino":  "conhecimento\\wikipedia_pt_all_maxi_2026-05.zim",
+                                              "tamanho":  20641394954,
+                                              "sha256":  "7958dc5c24a2b188ae0123d602a929030a235835883b5ac05c9fbc0076b2921f",
+                                              "baixado_em":  "2026-10-25T22:53:26"
+                                          },
+                         "wikimed":  {
+                                         "arquivo":  "mdwiki_en_all_maxi_2025-11.zim",
+                                         "versao":  "2025-11",
+                                         "local":  "nucleo",
+                                         "destino":  "conhecimento\\mdwiki_en_all_maxi_2025-11.zim",
+                                         "tamanho":  2302838768,
+                                         "sha256":  "ee51df7860dbcab8c628aad32cf9972726ab708d784cdaf3e217d596920edf80",
+                                         "baixado_em":  "2026-10-25T22:55:13"
+                                     },
+                         "ifixit-pt":  {
+                                           "arquivo":  "ifixit_pt_all_2026-03.zim",
+                                           "versao":  "2026-03",
+                                           "local":  "nucleo",
+                                           "destino":  "conhecimento\\ifixit_pt_all_2026-03.zim",
+                                           "tamanho":  3632911745,
+                                           "sha256":  "c2fdcd02c956268e4844fa05770a2d99414baef80ce5085631750464cfd361c0",
+                                           "baixado_em":  "2026-10-25T22:57:27"
+                                       },
+                         "wikibooks-pt":  {
+                                              "arquivo":  "wikibooks_pt_all_maxi_2026-10.zim",
+                                              "versao":  "2026-10",
+                                              "local":  "nucleo",
+                                              "destino":  "conhecimento\\wikibooks_pt_all_maxi_2026-10.zim",
+                                              "tamanho":  169410254,
+                                              "sha256":  "593c562922149d05ba8b08a42265c66ea647f2b507f6ff3f1366923b8947c731",
+                                              "baixado_em":  "2026-10-25T22:57:56"
+                                          },
+                         "wikibooks-en":  {
+                                              "arquivo":  "wikibooks_en_all_nopic_2026-10.zim",
+                                              "versao":  "2026-10",
+                                              "local":  "nucleo",
+                                              "destino":  "conhecimento\\wikibooks_en_all_nopic_2026-10.zim",
+                                              "tamanho":  3544612812,
+                                              "sha256":  "bda3410005656daeb523c81774e151b750cd5a8828f081ded0848cd7fdccba7c",
+                                              "baixado_em":  "2026-10-25T22:59:14"
+                                          },
+                         "wiktionary-pt":  {
+                                               "arquivo":  "wiktionary_pt_all_nopic_2026-09.zim",
+                                               "versao":  "2026-09",
+                                               "local":  "nucleo",
+                                               "destino":  "conhecimento\\wiktionary_pt_all_nopic_2026-09.zim",
+                                               "tamanho":  370108841,
+                                               "sha256":  "d5e2f31bdb2fa846f25b65b82f15de0109a50972886a2c1d7cd1c1b3bb75982e",
+                                               "baixado_em":  "2026-10-25T22:59:43"
+                                           },
+                         "gutenberg-pt":  {
+                                              "arquivo":  "gutenberg_pt_all_2025-10.zim",
+                                              "versao":  "2025-10",
+                                              "local":  "nucleo",
+                                              "destino":  "conhecimento\\gutenberg_pt_all_2025-10.zim",
+                                              "tamanho":  522836740,
+                                              "sha256":  "894114193a5bed00686dfc60f218f9aa441eb672ba639b0c06c51dff94728db4",
+                                              "baixado_em":  "2026-10-25T23:00:26"
+                                          },
+                         "se-diy":  {
+                                        "arquivo":  "diy.stackexchange.com_en_all_2026-10.zim",
+                                        "versao":  "2026-10",
+                                        "local":  "nucleo",
+                                        "destino":  "conhecimento\\diy.stackexchange.com_en_all_2026-10.zim",
+                                        "tamanho":  2086024326,
+                                        "sha256":  "df795a094698282164ddee422814f88bf84841a2413c89ac23401efd71f22731",
+                                        "baixado_em":  "2026-10-25T23:01:26"
+                                    },
+                         "se-gardening":  {
+                                              "arquivo":  "gardening.stackexchange.com_en_all_2026-10.zim",
+                                              "versao":  "2026-10",
+                                              "local":  "nucleo",
+                                              "destino":  "conhecimento\\gardening.stackexchange.com_en_all_2026-10.zim",
+                                              "tamanho":  933097375,
+                                              "sha256":  "8079b77ba40d830c31cdfa0e3f43a100e9d9488d856b10ffb3aca4e829594e6e",
+                                              "baixado_em":  "2026-10-25T23:02:09"
+                                          },
+                         "se-cooking":  {
+                                            "arquivo":  "cooking.stackexchange.com_en_all_2026-10.zim",
+                                            "versao":  "2026-10",
+                                            "local":  "nucleo",
+                                            "destino":  "conhecimento\\cooking.stackexchange.com_en_all_2026-10.zim",
+                                            "tamanho":  238098128,
+                                            "sha256":  "b5dc3a79b681be1afea32dd65e837c604e7dd7072f51622414a7a1d61fc52541",
+                                            "baixado_em":  "2026-10-25T23:02:38"
+                                        },
+                         "se-outdoors":  {
+                                             "arquivo":  "outdoors.stackexchange.com_en_all_2026-10.zim",
+                                             "versao":  "2026-10",
+                                             "local":  "nucleo",
+                                             "destino":  "conhecimento\\outdoors.stackexchange.com_en_all_2026-10.zim",
+                                             "tamanho":  141820374,
+                                             "sha256":  "73752057bd2253af6cf80c69caf0def158bcf378188f0fbc7ab8ed07bbbe9bc5",
+                                             "baixado_em":  "2026-10-25T23:03:10"
+                                         },
+                         "se-medicalsciences":  {
+                                                    "arquivo":  "medicalsciences.stackexchange.com_en_all_2026-10.zim",
+                                                    "versao":  "2026-10",
+                                                    "local":  "nucleo",
+                                                    "destino":  "conhecimento\\medicalsciences.stackexchange.com_en_all_2026-10.zim",
+                                                    "tamanho":  60659941,
+                                                    "sha256":  "14542ddfa6a9b354fa3e0468b3ff49ee2544defce175270209f4014d34f2feec",
+                                                    "baixado_em":  "2026-10-25T23:03:37"
+                                                },
+                         "se-electronics":  {
+                                                "arquivo":  "electronics.stackexchange.com_en_all_2026-10.zim",
+                                                "versao":  "2026-10",
+                                                "local":  "nucleo",
+                                                "destino":  "conhecimento\\electronics.stackexchange.com_en_all_2026-10.zim",
+                                                "tamanho":  4261397539,
+                                                "sha256":  "b28e58b24ed55c602265729b34b0c6cc4e12228e6fe2f55df5b5e9eae169b266",
+                                                "baixado_em":  "2026-10-25T23:05:30"
+                                            }
+                     }
+}

@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+# Scripts de Linux precisam de fim de linha LF; os do Windows funcionam com qualquer um.
+*.sh text eol=lf
+*.cmd text eol=crlf
+*.png binary

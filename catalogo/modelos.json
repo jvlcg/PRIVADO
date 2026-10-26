@@ -1,0 +1,803 @@
+{
+  "versao": 2,
+  "atualizado": "2026-10-25",
+  "nota": "Base de dados do cofre de IAs. status 'baixar' = faz parte do acervo; 'observar' = só acompanhar. local 'nucleo' = SSD A: (rápido, o que você usa); 'cofre' = HD D:\\COFRE-IA (arquivo profundo: gigantes, vídeo, cópias). O estado real (o que foi baixado, hashes) fica em estado.json, escrito pelos scripts.",
+  "cofre": {
+    "raiz": "D:\\COFRE-IA",
+    "descricao": "Arquivo profundo no HD de 4 TB: modelos grandes demais para o SSD, bases de conhecimento gigantes e a cópia de segurança do SSD."
+  },
+  "observar_orgs": [
+    "Qwen", "google", "deepseek-ai", "mistralai", "openai", "zai-org", "moonshotai", "XiaomiMiMo",
+    "microsoft", "meta-llama", "nvidia", "ibm-granite", "black-forest-labs", "Tongyi-MAI", "tencent",
+    "MiniMaxAI", "stepfun-ai", "inclusionAI", "LiquidAI", "Lightricks", "Wan-AI", "ACE-Step", "unsloth", "ggml-org"
+  ],
+  "motores": [
+    {
+      "id": "llama.cpp",
+      "nome": "llama.cpp (llama-server: chat no navegador + API compatível com OpenAI)",
+      "github": "ggml-org/llama.cpp",
+      "asset": "^llama-b\\d+-bin-win-cuda-{cuda}\\.\\d+-x64\\.zip$",
+      "extras": ["^cudart-llama-bin-win-cuda-{cuda}\\.\\d+-x64\\.zip$"],
+      "asset_sem_cuda": "^llama-b\\d+-bin-win-vulkan-x64\\.zip$",
+      "exe": "llama-server.exe",
+      "prioridade": 1
+    },
+    {
+      "id": "whisper.cpp",
+      "nome": "whisper.cpp (transcrição de áudio)",
+      "github": "ggml-org/whisper.cpp",
+      "asset": "^whisper-cublas-12\\.[\\d\\.]+-bin-x64\\.zip$",
+      "asset_sem_cuda": "^whisper-bin-x64\\.zip$",
+      "exe": "whisper-cli.exe",
+      "prioridade": 2
+    },
+    {
+      "id": "uv",
+      "nome": "uv (Python portátil: RAG, Kokoro, treino de LoRA)",
+      "github": "astral-sh/uv",
+      "asset": "^uv-x86_64-pc-windows-msvc\\.zip$",
+      "exe": "uv.exe",
+      "prioridade": 2
+    },
+    {
+      "id": "comfyui",
+      "nome": "ComfyUI portátil (imagem, vídeo, música e 3D)",
+      "github": "comfyanonymous/ComfyUI",
+      "asset": "^ComfyUI_windows_portable_nvidia\\.7z$",
+      "prioridade": 2
+    },
+    {
+      "id": "ollama",
+      "nome": "Ollama (opcional: para apps que só falam com Ollama)",
+      "github": "ollama/ollama",
+      "asset": "^ollama-windows-amd64\\.zip$",
+      "exe": "ollama.exe",
+      "prioridade": 2
+    },
+    {
+      "id": "kiwix-tools",
+      "nome": "Kiwix Tools (kiwix-serve: Wikipédia e bibliotecas offline no navegador)",
+      "listagem": "https://download.kiwix.org/release/kiwix-tools/",
+      "asset": "^kiwix-tools_win-x86_64-[\\d\\.\\-]+\\.zip$",
+      "exe": "kiwix-serve.exe",
+      "prioridade": 1
+    },
+    {
+      "id": "kiwix-desktop",
+      "nome": "Kiwix Desktop (leitor gráfico das bibliotecas offline)",
+      "listagem": "https://download.kiwix.org/release/kiwix-desktop/",
+      "asset": "^kiwix-desktop_windows_x64_[\\d\\.\\-]+\\.zip$",
+      "exe": "kiwix-desktop.exe",
+      "prioridade": 2
+    },
+    {
+      "id": "llama.cpp-outras-maquinas",
+      "nome": "Instaladores do llama.cpp para outras máquinas (guardados, não instalados)",
+      "github": "ggml-org/llama.cpp",
+      "guardar": true,
+      "codigo_fonte": true,
+      "asset": "^llama-b\\d+-bin-win-cpu-x64\\.zip$",
+      "extras": [
+        "^llama-b\\d+-bin-win-vulkan-x64\\.zip$",
+        "^llama-b\\d+-bin-ubuntu-x64\\.tar\\.gz$",
+        "^llama-b\\d+-bin-ubuntu-vulkan-x64\\.tar\\.gz$",
+        "^llama-b\\d+-bin-ubuntu-cuda-13\\.\\d+-x64\\.tar\\.gz$",
+        "^cudart-llama-b\\d+-bin-ubuntu-cuda-13\\.\\d+-x64\\.tar\\.gz$",
+        "^llama-b\\d+-bin-ubuntu-arm64\\.tar\\.gz$",
+        "^llama-b\\d+-bin-macos-arm64\\.tar\\.gz$",
+        "^llama-b\\d+-bin-android-arm64\\.tar\\.gz$"
+      ],
+      "prioridade": 2
+    },
+    {
+      "id": "kiwix-tools-linux",
+      "nome": "Kiwix Tools para Linux (guardado, não instalado)",
+      "listagem": "https://download.kiwix.org/release/kiwix-tools/",
+      "guardar": true,
+      "asset": "^kiwix-tools_linux-x86_64(-musl)?-[\\d\\.\\-]+\\.tar\\.gz$",
+      "prioridade": 2
+    }
+  ],
+  "conhecimento": [
+    { "id": "wikipedia-pt", "nome": "Wikipédia em português (completa, com imagens)", "pasta_kiwix": "wikipedia", "prefixo": "wikipedia_pt_all_maxi", "tamanho_gb": 19.0, "local": "nucleo", "uso": "Enciclopédia geral; base para o modelo responder com fonte." },
+    { "id": "wikimed", "nome": "WikiMed (enciclopédia médica, inglês)", "pasta_kiwix": "other", "prefixo": "mdwiki_en_all_maxi", "tamanho_gb": 2.1, "local": "nucleo", "uso": "Doenças, remédios, anatomia e primeiros socorros." },
+    { "id": "ifixit-pt", "nome": "iFixit em português (manuais de conserto)", "pasta_kiwix": "ifixit", "prefixo": "ifixit_pt_all", "tamanho_gb": 3.4, "local": "nucleo", "uso": "Como consertar aparelhos, carros, eletrônicos." },
+    { "id": "wikibooks-pt", "nome": "Wikilivros em português", "pasta_kiwix": "wikibooks", "prefixo": "wikibooks_pt_all_maxi", "tamanho_gb": 0.16, "local": "nucleo", "uso": "Livros didáticos livres." },
+    { "id": "wikibooks-en", "nome": "Wikibooks em inglês (sem imagens)", "pasta_kiwix": "wikibooks", "prefixo": "wikibooks_en_all_nopic", "tamanho_gb": 3.3, "local": "nucleo", "uso": "Livros didáticos: ciência, engenharia, culinária, idiomas." },
+    { "id": "wiktionary-pt", "nome": "Wikcionário em português", "pasta_kiwix": "wiktionary", "prefixo": "wiktionary_pt_all_nopic", "tamanho_gb": 0.35, "local": "nucleo", "uso": "Dicionário e etimologia." },
+    { "id": "gutenberg-pt", "nome": "Projeto Gutenberg em português", "pasta_kiwix": "gutenberg", "prefixo": "gutenberg_pt_all", "tamanho_gb": 0.5, "local": "nucleo", "uso": "Livros em domínio público." },
+    { "id": "wikivoyage-pt", "nome": "Wikivoyage em português", "pasta_kiwix": "wikivoyage", "prefixo": "wikivoyage_pt_all_maxi", "tamanho_gb": 0.05, "local": "nucleo", "uso": "Guias de lugares e viagem." },
+    { "id": "se-diy", "nome": "Fórum Faça Você Mesmo (Stack Exchange DIY)", "pasta_kiwix": "stack_exchange", "prefixo": "diy.stackexchange.com_en_all", "tamanho_gb": 1.9, "local": "nucleo", "uso": "Elétrica, hidráulica, construção e reformas." },
+    { "id": "se-gardening", "nome": "Fórum de Jardinagem e Agricultura", "pasta_kiwix": "stack_exchange", "prefixo": "gardening.stackexchange.com_en_all", "tamanho_gb": 0.9, "local": "nucleo", "uso": "Plantio, pragas, solo." },
+    { "id": "se-cooking", "nome": "Fórum de Culinária", "pasta_kiwix": "stack_exchange", "prefixo": "cooking.stackexchange.com_en_all", "tamanho_gb": 0.2, "local": "nucleo", "uso": "Cozinha e conservação de alimentos." },
+    { "id": "se-outdoors", "nome": "Fórum de Atividades ao Ar Livre", "pasta_kiwix": "stack_exchange", "prefixo": "outdoors.stackexchange.com_en_all", "tamanho_gb": 0.1, "local": "nucleo", "uso": "Acampamento, navegação, sobrevivência." },
+    { "id": "se-medicalsciences", "nome": "Fórum de Ciências Médicas", "pasta_kiwix": "stack_exchange", "prefixo": "medicalsciences.stackexchange.com_en_all", "tamanho_gb": 0.06, "local": "nucleo", "uso": "Perguntas de saúde respondidas por especialistas." },
+    { "id": "se-electronics", "nome": "Fórum de Eletrônica", "pasta_kiwix": "stack_exchange", "prefixo": "electronics.stackexchange.com_en_all", "tamanho_gb": 4.0, "local": "nucleo", "uso": "Circuitos, energia solar, baterias, rádio." },
+    { "id": "wikipedia-en", "nome": "Wikipedia em inglês (completa, com imagens)", "pasta_kiwix": "wikipedia", "prefixo": "wikipedia_en_all_maxi", "tamanho_gb": 119.0, "local": "cofre", "uso": "A maior enciclopédia do mundo." },
+    { "id": "gutenberg-en", "nome": "Projeto Gutenberg em inglês", "pasta_kiwix": "gutenberg", "prefixo": "gutenberg_en_all", "tamanho_gb": 206.0, "local": "cofre", "uso": "Cerca de 70 mil livros em domínio público." },
+    { "id": "stackoverflow", "nome": "Stack Overflow (programação)", "pasta_kiwix": "stack_exchange", "prefixo": "stackoverflow.com_en_all", "tamanho_gb": 107.0, "local": "cofre", "uso": "Todas as perguntas e respostas de programação." }
+  ],
+  "modelos": [
+    {
+      "id": "gemma-4-26b-a4b",
+      "nome": "Gemma 4 26B-A4B (instruct)",
+      "tipo": "llm",
+      "uso": "Assistente geral rápido, entende imagens. MoE: 25,8 bi no total, 4 bi ativos.",
+      "origem": "google/gemma-4-26B-A4B-it",
+      "repo": "unsloth/gemma-4-26B-A4B-it-GGUF",
+      "pasta": "llm\\gemma-4-26b-a4b",
+      "arquivos": [
+        { "caminho": "gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf" },
+        { "caminho": "mmproj-F16.gguf" }
+      ],
+      "tamanho_gb": 16.95,
+      "parametros": "25.8B (MoE, 4B ativos)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 32768,
+      "prioridade": 1,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "qwen3.8-27b",
+      "nome": "Qwen3.8 27B",
+      "tipo": "llm",
+      "uso": "Melhor qualidade que roda aqui (texto, código e imagem). Denso: parte fica na RAM, mais lento.",
+      "origem": "Qwen/Qwen3.8-27B",
+      "repo": "unsloth/Qwen3.8-27B-GGUF",
+      "pasta": "llm\\qwen3.8-27b",
+      "arquivos": [
+        { "caminho": "Qwen3.8-27B-UD-Q4_K_XL.gguf" },
+        { "caminho": "mmproj-F16.gguf" }
+      ],
+      "tamanho_gb": 17.21,
+      "parametros": "27.8B (denso)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 16384,
+      "prioridade": 1,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "qwen3-coder-next",
+      "nome": "Qwen3-Coder-Next 80B-A3B",
+      "tipo": "codigo",
+      "uso": "Agente de programação (VS Code, Continue, Cline, Aider). MoE: 80 bi no total, 3 bi ativos; usa ~36 GB de RAM.",
+      "origem": "Qwen/Qwen3-Coder-Next",
+      "repo": "unsloth/Qwen3-Coder-Next-GGUF",
+      "pasta": "codigo\\qwen3-coder-next",
+      "arquivos": [
+        { "caminho": "Qwen3-Coder-Next-UD-IQ4_XS.gguf" }
+      ],
+      "tamanho_gb": 35.79,
+      "parametros": "79.7B (MoE, 3B ativos)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 32768,
+      "prioridade": 1,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "gemma-4-12b",
+      "nome": "Gemma 4 12B QAT (oficial do Google)",
+      "tipo": "llm",
+      "uso": "O mais rápido: cabe inteiro na RTX 4070. Bom para o dia a dia e para testar.",
+      "origem": "google/gemma-4-12B-it",
+      "repo": "google/gemma-4-12B-it-qat-q4_0-gguf",
+      "pasta": "llm\\gemma-4-12b",
+      "arquivos": [
+        { "caminho": "gemma-4-12b-it-qat-q4_0.gguf" },
+        { "caminho": "mmproj-gemma-4-12b-it-qat-q4_0.gguf" }
+      ],
+      "tamanho_gb": 6.66,
+      "parametros": "12B (denso)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 32768,
+      "prioridade": 1,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "qwen3-embedding-0.6b",
+      "nome": "Qwen3-Embedding 0.6B",
+      "tipo": "embeddings",
+      "uso": "Transforma textos em vetores para busca semântica e RAG nos seus documentos.",
+      "origem": "Qwen/Qwen3-Embedding-0.6B",
+      "repo": "Qwen/Qwen3-Embedding-0.6B-GGUF",
+      "pasta": "embeddings\\qwen3-embedding-0.6b",
+      "arquivos": [
+        { "caminho": "Qwen3-Embedding-0.6B-Q8_0.gguf" }
+      ],
+      "tamanho_gb": 0.60,
+      "parametros": "0.6B",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 8192,
+      "args": "--embedding --pooling last",
+      "prioridade": 1,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "whisper-large-v3-turbo",
+      "nome": "Whisper large-v3-turbo (Q8)",
+      "tipo": "audio",
+      "uso": "Transcreve áudio em português e mais 98 idiomas.",
+      "origem": "openai/whisper-large-v3-turbo",
+      "repo": "ggerganov/whisper.cpp",
+      "pasta": "audio\\whisper",
+      "arquivos": [
+        { "caminho": "ggml-large-v3-turbo-q8_0.bin" }
+      ],
+      "tamanho_gb": 0.81,
+      "parametros": "0.8B",
+      "licenca": "mit",
+      "motor": "whisper.cpp",
+      "prioridade": 1,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "gpt-oss-20b",
+      "nome": "gpt-oss 20B (OpenAI)",
+      "tipo": "llm",
+      "uso": "Raciocínio e uso de ferramentas. Formato MXFP4 nativo.",
+      "origem": "openai/gpt-oss-20b",
+      "repo": "ggml-org/gpt-oss-20b-GGUF",
+      "pasta": "llm\\gpt-oss-20b",
+      "arquivos": [
+        { "caminho": "gpt-oss-20b-MXFP4.gguf" }
+      ],
+      "tamanho_gb": 11.28,
+      "parametros": "20.9B (MoE)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 32768,
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "z-image-turbo",
+      "nome": "Z-Image-Turbo (Alibaba Tongyi) para ComfyUI",
+      "tipo": "imagem",
+      "uso": "Gera imagens a partir de texto em poucos passos. Licença livre para uso comercial.",
+      "origem": "Tongyi-MAI/Z-Image-Turbo",
+      "repo": "Comfy-Org/Z-Image-Turbo",
+      "pasta": "imagem",
+      "arquivos": [
+        { "caminho": "split_files/diffusion_models/z_image_turbo_bf16.safetensors", "destino": "diffusion_models\\z_image_turbo_bf16.safetensors" },
+        { "caminho": "split_files/text_encoders/qwen_3_4b_fp8_mixed.safetensors", "destino": "text_encoders\\qwen_3_4b_fp8_mixed.safetensors" },
+        { "caminho": "split_files/vae/ae.safetensors", "destino": "vae\\ae.safetensors" }
+      ],
+      "tamanho_gb": 17.02,
+      "parametros": "6.2B",
+      "licenca": "apache-2.0",
+      "motor": "comfyui",
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "embeddinggemma-2",
+      "nome": "EmbeddingGemma 2",
+      "tipo": "embeddings",
+      "uso": "Embeddings leves e multilíngues (alternativa ao Qwen3-Embedding).",
+      "origem": "google/embeddinggemma-2",
+      "repo": "ggml-org/embeddinggemma-2-GGUF",
+      "pasta": "embeddings\\embeddinggemma-2",
+      "arquivos": [
+        { "caminho": "embeddinggemma-2-Q8_0.gguf" }
+      ],
+      "tamanho_gb": 0.29,
+      "parametros": "0.7B",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 2048,
+      "args": "--embedding",
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "medgemma-27b",
+      "nome": "MedGemma 27B (Google, medicina)",
+      "tipo": "medicina",
+      "uso": "Perguntas médicas: sintomas, diagnóstico diferencial, remédios, primeiros socorros. Não substitui médico.",
+      "origem": "google/medgemma-27b-text-it",
+      "repo": "unsloth/medgemma-27b-text-it-GGUF",
+      "pasta": "medicina\\medgemma-27b",
+      "arquivos": [
+        { "caminho": "medgemma-27b-text-it-UD-Q4_K_XL.gguf" }
+      ],
+      "tamanho_gb": 15.67,
+      "parametros": "27B (denso)",
+      "licenca": "health-ai-developer-foundations",
+      "motor": "llama.cpp",
+      "contexto": 16384,
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "translategemma-12b",
+      "nome": "TranslateGemma 12B (Google, tradução)",
+      "tipo": "traducao",
+      "uso": "Tradução entre 55 idiomas, inclusive de texto em imagens.",
+      "origem": "google/translategemma-12b-it",
+      "repo": "mradermacher/translategemma-12b-it-GGUF",
+      "pasta": "traducao\\translategemma-12b",
+      "arquivos": [
+        { "caminho": "translategemma-12b-it.Q4_K_M.gguf" },
+        { "caminho": "translategemma-12b-it.mmproj-Q8_0.gguf", "destino": "mmproj-translategemma-12b-it-Q8_0.gguf" }
+      ],
+      "tamanho_gb": 7.35,
+      "parametros": "12B (denso)",
+      "licenca": "gemma",
+      "motor": "llama.cpp",
+      "contexto": 8192,
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "glm-ocr",
+      "nome": "GLM-OCR (Z.ai)",
+      "tipo": "ocr",
+      "uso": "Lê documentos, tabelas e fórmulas de fotos e PDFs escaneados.",
+      "origem": "zai-org/GLM-OCR",
+      "repo": "ggml-org/GLM-OCR-GGUF",
+      "pasta": "ocr\\glm-ocr",
+      "arquivos": [
+        { "caminho": "GLM-OCR-Q8_0.gguf" },
+        { "caminho": "mmproj-GLM-OCR-Q8_0.gguf" }
+      ],
+      "tamanho_gb": 1.34,
+      "parametros": "0.9B",
+      "licenca": "mit",
+      "motor": "llama.cpp",
+      "contexto": 8192,
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "qwen3-reranker-0.6b",
+      "nome": "Qwen3-Reranker 0.6B",
+      "tipo": "embeddings",
+      "uso": "Reordena resultados de busca por relevância (melhora muito o RAG).",
+      "origem": "Qwen/Qwen3-Reranker-0.6B",
+      "repo": "ggml-org/Qwen3-Reranker-0.6B-Q8_0-GGUF",
+      "pasta": "embeddings\\qwen3-reranker-0.6b",
+      "arquivos": [
+        { "caminho": "qwen3-reranker-0.6b-q8_0.gguf" }
+      ],
+      "tamanho_gb": 0.60,
+      "parametros": "0.6B",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 8192,
+      "args": "--reranking",
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "gemma-4-e4b",
+      "nome": "Gemma 4 E4B QAT (para notebook e PC fraco)",
+      "tipo": "leve",
+      "uso": "Roda em notebook sem placa de vídeo ou PC antigo. Entende imagem e áudio.",
+      "origem": "google/gemma-4-E4B-it",
+      "repo": "google/gemma-4-E4B-it-qat-q4_0-gguf",
+      "pasta": "leve\\gemma-4-e4b",
+      "arquivos": [
+        { "caminho": "gemma-4-E4B_q4_0-it.gguf" },
+        { "caminho": "gemma-4-E4B-it-mmproj.gguf", "destino": "mmproj-gemma-4-E4B-it.gguf" }
+      ],
+      "tamanho_gb": 5.72,
+      "parametros": "8B (4B efetivos)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 32768,
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "qwen3.5-2b",
+      "nome": "Qwen3.5 2B (para celular e Raspberry Pi)",
+      "tipo": "leve",
+      "uso": "Assistente mínimo que roda em quase qualquer coisa, entende imagens.",
+      "origem": "Qwen/Qwen3.5-2B",
+      "repo": "unsloth/Qwen3.5-2B-GGUF",
+      "pasta": "leve\\qwen3.5-2b",
+      "arquivos": [
+        { "caminho": "Qwen3.5-2B-UD-Q4_K_XL.gguf" },
+        { "caminho": "mmproj-F16.gguf" }
+      ],
+      "tamanho_gb": 1.87,
+      "parametros": "2B",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 16384,
+      "args": "--reasoning off",
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "qwen3.5-0.8b",
+      "nome": "Qwen3.5 0.8B (o menor útil)",
+      "tipo": "leve",
+      "uso": "Para hardware muito fraco: resumo, classificação, respostas curtas.",
+      "origem": "Qwen/Qwen3.5-0.8B",
+      "repo": "unsloth/Qwen3.5-0.8B-GGUF",
+      "pasta": "leve\\qwen3.5-0.8b",
+      "arquivos": [
+        { "caminho": "Qwen3.5-0.8B-UD-Q4_K_XL.gguf" }
+      ],
+      "tamanho_gb": 0.52,
+      "parametros": "0.8B",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 16384,
+      "args": "--reasoning off",
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "lfm2.5-1.2b",
+      "nome": "LFM2.5 1.2B (Liquid AI, CPU)",
+      "tipo": "leve",
+      "uso": "Muito rápido só em CPU; bom para notebook velho.",
+      "origem": "LiquidAI/LFM2.5-1.2B-Instruct",
+      "repo": "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
+      "pasta": "leve\\lfm2.5-1.2b",
+      "arquivos": [
+        { "caminho": "LFM2.5-1.2B-Instruct-Q4_K_M.gguf" }
+      ],
+      "tamanho_gb": 0.68,
+      "parametros": "1.2B",
+      "licenca": "lfm1.0",
+      "motor": "llama.cpp",
+      "contexto": 16384,
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "piper-pt-br",
+      "nome": "Piper, vozes pt-BR faber e cadu (texto para voz)",
+      "tipo": "audio",
+      "uso": "Fala em português do Brasil, leve, roda em CPU (até em Raspberry Pi). Use falar.ps1.",
+      "origem": "rhasspy/piper-voices",
+      "repo": "rhasspy/piper-voices",
+      "pasta": "audio\\piper",
+      "arquivos": [
+        { "caminho": "pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx" },
+        { "caminho": "pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json" },
+        { "caminho": "pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx" },
+        { "caminho": "pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx.json" }
+      ],
+      "tamanho_gb": 0.12,
+      "parametros": "~20M",
+      "licenca": "voz faber: dados CC0; motor piper-tts: GPL-3.0",
+      "motor": "python",
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "kokoro-82m",
+      "nome": "Kokoro 82M (texto para voz)",
+      "tipo": "audio",
+      "uso": "Vozes pt-BR mais naturais (pf_dora, pm_alex), mas precisa do espeak-ng instalado no sistema; guardado no acervo, use o Piper no dia a dia.",
+      "origem": "hexgrad/Kokoro-82M",
+      "repo": "hexgrad/Kokoro-82M",
+      "pasta": "audio\\kokoro-82m",
+      "arquivos": [
+        { "caminho": "kokoro-v1_0.pth" },
+        { "caminho": "config.json" },
+        { "caminho": "voices/pf_dora.pt", "destino": "voices\\pf_dora.pt" },
+        { "caminho": "voices/pm_alex.pt", "destino": "voices\\pm_alex.pt" }
+      ],
+      "tamanho_gb": 0.31,
+      "parametros": "82M",
+      "licenca": "apache-2.0",
+      "motor": "python",
+      "prioridade": 2,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "qwen3-vl-8b",
+      "nome": "Qwen3-VL 8B",
+      "tipo": "visao",
+      "uso": "Leitura de imagens, OCR, documentos e capturas de tela.",
+      "origem": "Qwen/Qwen3-VL-8B-Instruct",
+      "repo": "Qwen/Qwen3-VL-8B-Instruct-GGUF",
+      "pasta": "visao\\qwen3-vl-8b",
+      "arquivos": [
+        { "caminho": "Qwen3VL-8B-Instruct-Q4_K_M.gguf" },
+        { "caminho": "mmproj-Qwen3VL-8B-Instruct-Q8_0.gguf" }
+      ],
+      "tamanho_gb": 5.38,
+      "parametros": "8.8B (denso)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 16384,
+      "prioridade": 3,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "qwen3.6-35b-a3b",
+      "nome": "Qwen3.6 35B-A3B",
+      "tipo": "llm",
+      "uso": "Alternativa MoE rápida ao Gemma 4 26B, entende imagens.",
+      "origem": "Qwen/Qwen3.6-35B-A3B",
+      "repo": "unsloth/Qwen3.6-35B-A3B-GGUF",
+      "pasta": "llm\\qwen3.6-35b-a3b",
+      "arquivos": [
+        { "caminho": "Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf" },
+        { "caminho": "mmproj-F16.gguf" }
+      ],
+      "tamanho_gb": 21.66,
+      "parametros": "36B (MoE, 3B ativos)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 32768,
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    {
+      "id": "devstral-small-2",
+      "nome": "Devstral Small 2 24B (Mistral)",
+      "tipo": "codigo",
+      "uso": "Segundo agente de código, mais leve que o Qwen3-Coder-Next.",
+      "origem": "mistralai/Devstral-Small-2-24B-Instruct-2512",
+      "repo": "unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF",
+      "pasta": "codigo\\devstral-small-2",
+      "arquivos": [
+        { "caminho": "Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf" }
+      ],
+      "tamanho_gb": 13.51,
+      "parametros": "24B (denso)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 32768,
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    {
+      "id": "mimo-v2.6-distill-9b",
+      "nome": "MiMo-V2.6 Distill Qwen 9B (Xiaomi)",
+      "tipo": "llm",
+      "uso": "Raciocínio leve, destilado do MiMo-V2.6 (líder dos rankings abertos).",
+      "origem": "XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B",
+      "repo": "bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF",
+      "pasta": "llm\\mimo-v2.6-distill-9b",
+      "arquivos": [
+        { "caminho": "MiMo-V2.6-Distill-Qwen-9B-Q4_K_M.gguf" }
+      ],
+      "tamanho_gb": 5.44,
+      "parametros": "9.4B (denso)",
+      "licenca": "mit",
+      "motor": "llama.cpp",
+      "contexto": 32768,
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    {
+      "id": "gpt-oss-120b",
+      "nome": "gpt-oss 120B (OpenAI)",
+      "tipo": "llm",
+      "uso": "O maior cérebro que ainda roda neste PC (GPU + 64 GB de RAM, devagar). MoE com 5 bi ativos.",
+      "origem": "openai/gpt-oss-120b",
+      "repo": "ggml-org/gpt-oss-120b-GGUF",
+      "pasta": "llm\\gpt-oss-120b",
+      "arquivos": [
+        { "caminho": "gpt-oss-120b-MXFP4.gguf" }
+      ],
+      "tamanho_gb": 59.03,
+      "parametros": "116.8B (MoE)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 16384,
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    {
+      "id": "nemotron-3.5-bolt-74b",
+      "nome": "NVIDIA Nemotron 3.5 Bolt 74B-A9B",
+      "tipo": "llm",
+      "uso": "Modelo novo (out/2026) de 74 bi com 9 bi ativos; roda com GPU + RAM, entende imagens.",
+      "origem": "nvidia/NVIDIA-Nemotron-3.5-Bolt-74B-A9B",
+      "repo": "unsloth/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-GGUF",
+      "pasta": "llm\\nemotron-3.5-bolt-74b",
+      "arquivos": [
+        { "caminho": "UD-Q4_K_XL/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-UD-Q4_K_XL-00001-of-00003.gguf" },
+        { "caminho": "UD-Q4_K_XL/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-UD-Q4_K_XL-00002-of-00003.gguf" },
+        { "caminho": "UD-Q4_K_XL/NVIDIA-Nemotron-3.5-Bolt-74B-A9B-UD-Q4_K_XL-00003-of-00003.gguf" },
+        { "caminho": "mmproj-BF16.gguf" }
+      ],
+      "tamanho_gb": 48.38,
+      "parametros": "74B (MoE, 9B ativos)",
+      "licenca": "nvidia-open-model-license",
+      "motor": "llama.cpp",
+      "contexto": 16384,
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    {
+      "id": "glm-5.3-flash",
+      "nome": "GLM-5.3 Flash (Z.ai) - fronteira",
+      "tipo": "llm",
+      "uso": "Um dos 6 melhores modelos abertos do mundo (out/2026). Arquivado para hardware futuro; aqui roda muito devagar.",
+      "origem": "zai-org/GLM-5.3-Flash",
+      "repo": "ggml-org/GLM-5.3-Flash-GGUF",
+      "pasta": "fronteira\\glm-5.3-flash",
+      "arquivos": [
+        { "caminho": "GLM-5.3-Flash-Q4_K-00001-of-00002.gguf" },
+        { "caminho": "GLM-5.3-Flash-Q4_K-00002-of-00002.gguf" },
+        { "caminho": "mmproj-GLM-5.3-Flash-Q8_0.gguf" }
+      ],
+      "tamanho_gb": 169.53,
+      "parametros": "321B (MoE)",
+      "licenca": "mit",
+      "motor": "llama.cpp",
+      "contexto": 8192,
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    {
+      "id": "deepseek-v4.1-flash",
+      "nome": "DeepSeek V4.1 Flash 1017 (Q2) - fronteira",
+      "tipo": "llm",
+      "uso": "2º no índice Artificial Analysis entre os abertos (19/10/2026). Arquivado em Q2 para hardware futuro.",
+      "origem": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+      "repo": "unsloth/DeepSeek-V4.1-Flash-1017-GGUF",
+      "pasta": "fronteira\\deepseek-v4.1-flash",
+      "arquivos": [
+        { "caminho": "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00001-of-00007.gguf" },
+        { "caminho": "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00002-of-00007.gguf" },
+        { "caminho": "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00003-of-00007.gguf" },
+        { "caminho": "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00004-of-00007.gguf" },
+        { "caminho": "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00005-of-00007.gguf" },
+        { "caminho": "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00006-of-00007.gguf" },
+        { "caminho": "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00007-of-00007.gguf" },
+        { "caminho": "mmproj-F16.gguf" }
+      ],
+      "tamanho_gb": 312.72,
+      "parametros": "763B (MoE)",
+      "licenca": "mit",
+      "motor": "llama.cpp",
+      "contexto": 8192,
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    {
+      "id": "mimo-v2.6-flash",
+      "nome": "MiMo-V2.6 Flash MOPD (Xiaomi) - fronteira",
+      "tipo": "llm",
+      "uso": "Versão Flash do líder dos rankings abertos. Arquivado para hardware futuro.",
+      "origem": "XiaomiMiMo/MiMo-V2.6-Flash-MOPD",
+      "repo": "ggml-org/MiMo-V2.6-Flash-MOPD-GGUF",
+      "pasta": "fronteira\\mimo-v2.6-flash",
+      "arquivos": [
+        { "caminho": "MiMo-V2.6-Flash-MOPD-MXFP4-00001-of-00002.gguf" },
+        { "caminho": "MiMo-V2.6-Flash-MOPD-MXFP4-00002-of-00002.gguf" },
+        { "caminho": "mmproj-MiMo-V2.6-Flash-MOPD-Q8_0.gguf" }
+      ],
+      "tamanho_gb": 157.34,
+      "parametros": "311B (MoE)",
+      "licenca": "mit",
+      "motor": "llama.cpp",
+      "contexto": 8192,
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    {
+      "id": "wan-2.2-ti2v-5b",
+      "nome": "Wan 2.2 TI2V 5B (vídeo, ComfyUI)",
+      "tipo": "video",
+      "uso": "Gera vídeos curtos de texto ou imagem em 720p; o modelo de vídeo que cabe em 12 GB.",
+      "origem": "Wan-AI/Wan2.2-TI2V-5B",
+      "repo": "Comfy-Org/Wan-2.2",
+      "pasta": "comfyui",
+      "arquivos": [
+        { "caminho": "split_files/diffusion_models/wan2.2_ti2v_5B_fp16.safetensors", "destino": "diffusion_models\\wan2.2_ti2v_5B_fp16.safetensors" },
+        { "caminho": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors", "destino": "text_encoders\\umt5_xxl_fp8_e4m3fn_scaled.safetensors" },
+        { "caminho": "split_files/vae/wan2.2_vae.safetensors", "destino": "vae\\wan2.2_vae.safetensors" }
+      ],
+      "tamanho_gb": 16.89,
+      "parametros": "5B",
+      "licenca": "apache-2.0",
+      "motor": "comfyui",
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    {
+      "id": "ace-step-1.5",
+      "nome": "ACE-Step 1.5 Turbo (música, ComfyUI)",
+      "tipo": "musica",
+      "uso": "Compõe músicas com letra e voz a partir de texto.",
+      "origem": "ACE-Step/Ace-Step1.5",
+      "repo": "Comfy-Org/ACE-Step-1.5",
+      "pasta": "comfyui",
+      "arquivos": [
+        { "caminho": "checkpoints/ace_step_1.5_turbo_aio.safetensors", "destino": "checkpoints\\ace_step_1.5_turbo_aio.safetensors" }
+      ],
+      "tamanho_gb": 9.34,
+      "parametros": "~4B",
+      "licenca": "apache-2.0",
+      "motor": "comfyui",
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    {
+      "id": "hunyuan3d-2.1",
+      "nome": "Hunyuan3D 2.1 (objetos 3D, ComfyUI)",
+      "tipo": "3d",
+      "uso": "Cria um modelo 3D a partir de uma foto (para impressão 3D, peças, jogos).",
+      "origem": "tencent/Hunyuan3D-2.1",
+      "repo": "Comfy-Org/Hunyuan-3D-2.1",
+      "pasta": "comfyui",
+      "arquivos": [
+        { "caminho": "hunyuan_3d_v2.1.safetensors", "destino": "checkpoints\\hunyuan_3d_v2.1.safetensors" }
+      ],
+      "tamanho_gb": 6.86,
+      "parametros": "3.3B",
+      "licenca": "tencent-hunyuan-community",
+      "motor": "comfyui",
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    {
+      "id": "wan-animate-2",
+      "nome": "Wan Animate 2 14B (animação de personagem, ComfyUI)",
+      "tipo": "video",
+      "uso": "Anima a pessoa de uma foto seguindo os movimentos de um vídeo de referência, ou troca a pessoa de um vídeo. Inclui o LoRA lightx2v (menos passos). Trazido pelo usuário em 26/10/2026.",
+      "origem": "Wan-AI/Wan2.2-Animate-14B",
+      "repo": "Comfy-Org/Wan-Animate-2",
+      "pasta": "comfyui",
+      "arquivos": [
+        { "caminho": "diffusion_models/wan_animate_2_int8_convrot.safetensors", "destino": "diffusion_models\\wan_animate_2_int8_convrot.safetensors" },
+        { "caminho": "text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors", "destino": "text_encoders\\umt5_xxl_fp8_e4m3fn_scaled.safetensors" },
+        { "caminho": "clip_vision/clip_vision_h.safetensors", "destino": "clip_vision\\clip_vision_h.safetensors" },
+        { "caminho": "vae/Wan2_1_VAE_bf16.safetensors", "destino": "vae\\Wan2_1_VAE_bf16.safetensors" },
+        { "caminho": "loras/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors", "destino": "loras\\lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors" }
+      ],
+      "tamanho_gb": 23.9,
+      "parametros": "14B",
+      "licenca": "apache-2.0",
+      "motor": "comfyui",
+      "prioridade": 2,
+      "local": "cofre",
+      "status": "baixar"
+    },
+    { "id": "mimo-v2.6-pro", "nome": "MiMo-V2.6-Pro (Xiaomi)", "tipo": "llm", "repo": "XiaomiMiMo/MiMo-V2.6-Pro-RL", "parametros": "1.02T", "licenca": "mit", "status": "observar", "motivo": "1º no índice Artificial Analysis (19/10/2026); 1 trilhão de parâmetros" },
+    { "id": "glm-5.3", "nome": "GLM-5.3 (Z.ai)", "tipo": "llm", "repo": "zai-org/GLM-5.3", "parametros": "753B", "licenca": "glm-5.3", "status": "observar", "motivo": "a versão Flash já está no cofre" },
+    { "id": "kimi-k3", "nome": "Kimi K3 (Moonshot AI)", "tipo": "llm", "repo": "moonshotai/Kimi-K3", "parametros": "2.78T", "licenca": "kimi-k3", "status": "observar", "motivo": "2,8 trilhões; licença própria" },
+    { "id": "minimax-m3.1-flash", "nome": "MiniMax M3.1 Flash", "tipo": "llm", "repo": "MiniMaxAI/MiniMax-M3.1-Flash", "parametros": "220B", "licenca": "minimax-community", "status": "observar", "motivo": "licença própria" },
+    { "id": "qwen3.8-flash-next", "nome": "Qwen3.8 Flash-Next", "tipo": "llm", "repo": "Qwen/Qwen3.8-Flash-Next", "parametros": "180B", "licenca": "qwen-community-1.0", "status": "observar", "motivo": "~100 GB em Q4; licença comunitária" },
+    { "id": "flux-3-image-klein", "nome": "FLUX 3 klein (Black Forest Labs)", "tipo": "imagem", "repo": "black-forest-labs/flux-3-image-klein", "parametros": "5.5B", "licenca": "flux-kommunity-license", "status": "observar", "motivo": "exige aceitar a licença com login no Hugging Face (HF_TOKEN)" },
+    { "id": "qwen-image-2.1-turbo", "nome": "Qwen-Image 2.1 Turbo", "tipo": "imagem", "repo": "Qwen/Qwen-Image-2.1-Turbo", "parametros": "7.1B", "licenca": "qwen-research", "status": "observar", "motivo": "licença só para pesquisa / não comercial" }
+  ]
+}

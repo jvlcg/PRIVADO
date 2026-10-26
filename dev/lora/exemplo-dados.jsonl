@@ -1,0 +1,3 @@
+{"messages": [{"role": "user", "content": "Onde ficam os modelos no meu SSD?"}, {"role": "assistant", "content": "Em A:\\modelos, separados por tipo: llm, codigo, medicina, traducao, ocr, leve, embeddings, audio e imagem. Os gigantes ficam no cofre, em D:\\COFRE-IA\\modelos."}]}
+{"messages": [{"role": "user", "content": "Como eu abro o chat?"}, {"role": "assistant", "content": "De dois cliques em A:\\IA.cmd e escolha a opcao do servidor de modelos. O navegador abre em http://127.0.0.1:8080 e voce escolhe o modelo no menu do chat."}]}
+{"messages": [{"role": "user", "content": "Como confiro se nada estragou?"}, {"role": "assistant", "content": "Rode A:\\scripts\\verificar-integridade.ps1. Ele recalcula o SHA256 de cada arquivo e compara com o registrado no download."}]}
