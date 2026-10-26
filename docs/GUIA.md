@@ -115,7 +115,19 @@ Tudo começa com dois cliques em **`A:\IA.cmd`**, que abre o menu. Nada foi inst
 | 4. Imagem, vídeo, música, 3D | ComfyUI (Workflow > Browse Templates) | http://127.0.0.1:8188 |
 | 5. Transcrever áudio | Whisper; gera `.txt` e legenda `.srt` ao lado do arquivo | no terminal |
 
-Testado neste PC em 25/10/2026: a pergunta "Como purificar água para beber se não houver água tratada?" foi respondida em 95 segundos citando a Wikipédia e a WikiMed; o ComfyUI gerou uma imagem 1024x1024 em 24 segundos (`primeira-imagem-gerada.png`); o Whisper transcreveu um áudio em português em 2 segundos.
+Testado neste PC em 25 e 26/10/2026:
+
+| Teste | Resultado | Tempo |
+| --- | --- | --- |
+| Perguntar com fonte ("Como purificar água para beber?") | resposta citando Wikipédia e WikiMed | 95 s |
+| Imagem 1024x1024 (Z-Image-Turbo) | foto realista (`primeira-imagem-gerada.png`) | 24 s |
+| Vídeo de 2 s em 1280x704 (Wan 2.2 5B) | painel solar ao nascer do sol | 9 min |
+| Animação de 81 quadros (Wan Animate 2 + LoRA lightx2v) | a pessoa da foto repete os passos do vídeo guia | 28 min |
+| Transcrição (Whisper) | áudio em português transcrito certo | 2 s |
+| Voz (Piper) | frase em português; o Whisper entendeu de volta | 3 s |
+| OCR (GLM-OCR) | receita lida de uma imagem sem erros | 5 s |
+
+Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 11). Exemplos em `A:\dev\midia-gerada`.
 
 O servidor também é uma API compatível com a da OpenAI em `http://127.0.0.1:8080/v1`, com `model` igual ao id do catálogo. Configuração pronta para o Continue (VS Code) em `A:\dev\configs\continue-config.yaml`.
 
