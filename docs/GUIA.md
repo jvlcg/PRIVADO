@@ -138,12 +138,12 @@ A sincronização pode ser interrompida e rodada de novo: continua de onde parou
 
 ### GitHub
 
-O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é um repositório git na raiz do SSD, ligado a github.com/jvlcg/PRIVADO. Modelos e bibliotecas ficam de fora. A sincronização registra cada mudança no git local; o envio ao GitHub fica pausado enquanto o repositório for público.
+O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é um repositório git na raiz do SSD, publicado em github.com/jvlcg/PRIVADO (repositório público). Modelos e bibliotecas ficam de fora. Cada sincronização registra as mudanças e envia ao GitHub sozinha.
 
-1. Torne o repositório privado: PRIVADO → Settings → Danger Zone → Change repository visibility → Make private.
-2. Envie pelo GitHub Desktop: File → Add local repository → `A:\` → Push origin.
-3. Envio automático: em `catalogo\modelos.json`, mude `"enviar_automatico"` para `true`.
-4. Plugin do GitHub no Claude: crie um token (github.com/settings/personal-access-tokens) só para o PRIVADO, salve na variável `GITHUB_PERSONAL_ACCESS_TOKEN` do Windows e reinicie o app.
+- Parar de enviar: em `catalogo\modelos.json`, mude `"enviar_automatico"` para `false`.
+- Tornar privado depois: PRIVADO → Settings → Danger Zone → Change repository visibility → Make private.
+- Ver e enviar à mão: GitHub Desktop → File → Add local repository → `A:\`.
+- Plugin do GitHub no Claude: crie um token (github.com/settings/personal-access-tokens) só para o PRIVADO, salve na variável `GITHUB_PERSONAL_ACCESS_TOKEN` do Windows e reinicie o app.
 
 ## Desenvolvimento próprio
 

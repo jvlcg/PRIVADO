@@ -8,8 +8,8 @@
   },
   "git": {
     "remoto": "https://github.com/jvlcg/PRIVADO.git",
-    "enviar_automatico": false,
-    "nota": "A sincronização registra no git local as mudanças do catálogo e do estado. Com enviar_automatico = true, também envia ao GitHub. Deixe false enquanto o repositório for público."
+    "enviar_automatico": true,
+    "nota": "A sincronização registra no git local as mudanças do catálogo e do estado e, com enviar_automatico = true, envia ao GitHub. O repositório é público (decisão do usuário em 26/10/2026); mude para false para parar de enviar."
   },
   "observar_orgs": [
     "Qwen", "google", "deepseek-ai", "mistralai", "openai", "zai-org", "moonshotai", "XiaomiMiMo",
