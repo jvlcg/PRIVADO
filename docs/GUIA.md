@@ -8,7 +8,7 @@ O SSD **A:** (ADATA LEGEND 710, NVMe, 256 GB, rótulo PRIVADO) é uma biblioteca
 
 O projeto tem cinco partes:
 
-- **Modelos**: 29 modelos abertos, do assistente geral aos especialistas em código, medicina, tradução, documentos, voz, imagem, vídeo, música e 3D, mais os gigantes de fronteira para hardware futuro.
+- **Modelos**: 31 modelos abertos, do assistente geral aos especialistas em código, medicina, tradução, documentos, voz, imagem, vídeo, música e 3D, mais os gigantes de fronteira para hardware futuro.
 - **Conhecimento**: 17 bibliotecas offline (Wikipédia em português e inglês, enciclopédia médica, manuais de conserto, livros, fóruns práticos), para o modelo responder citando fonte em vez de inventar.
 - **Motores**: os programas que rodam tudo (llama.cpp, whisper.cpp, ComfyUI, Kiwix, Python), portáteis, mais instaladores para Linux, Mac, Raspberry Pi e Android.
 - **Catálogo**: uma base de dados (`catalogo\modelos.json`) com cada item, tamanho, licença, hash e versão, e scripts que checam novidades toda semana.
@@ -57,9 +57,11 @@ Os modelos abertos mais fortes hoje têm de 321 bilhões a 2,8 trilhões de par�
 | Busca | Qwen3-Reranker 0.6B | ordena resultados por relevância | SSD | 0,6 | Apache 2.0 |
 | Busca | EmbeddingGemma 2 | vetores leves e multilíngues | SSD | 0,3 | Apache 2.0 |
 | Voz | Whisper large-v3-turbo | voz para texto, 99 idiomas | SSD | 0,8 | MIT |
-| Voz | Kokoro 82M | texto para voz, com voz pt-BR | SSD | 0,3 | Apache 2.0 |
+| Voz | Piper pt-BR (faber e cadu) | texto para voz só com CPU (`falar.ps1`) | SSD | 0,1 | dados CC0, motor GPL |
+| Voz | Kokoro 82M | vozes mais naturais; precisa do espeak-ng instalado | SSD | 0,3 | Apache 2.0 |
 | Imagem | Z-Image-Turbo | gerar imagens a partir de texto | SSD | 17,0 | Apache 2.0 |
 | Vídeo | Wan 2.2 TI2V 5B | vídeos curtos em 720p | cofre | 16,9 | Apache 2.0 |
+| Vídeo | Wan Animate 2 14B | anima a pessoa de uma foto com os movimentos de um vídeo | cofre | 23,9 | Apache 2.0 |
 | Música | ACE-Step 1.5 Turbo | músicas com letra e voz | cofre | 9,3 | Apache 2.0 |
 | 3D | Hunyuan3D 2.1 | objeto 3D a partir de uma foto | cofre | 6,9 | Tencent Community |
 | Fronteira | GLM-5.3 Flash | top 6 mundial, para hardware futuro | cofre | 169,5 | MIT |
@@ -133,6 +135,15 @@ Toda segunda às 10h o Windows **verifica** novidades sozinho; a opção **8 do 
 | `SHA256SUMS.txt` (raiz de cada disco) | hashes de tudo, formato padrão | `verificar-integridade.ps1` |
 
 A sincronização pode ser interrompida e rodada de novo: continua de onde parou. Para adicionar um modelo, copie um bloco em `modelos.json`, ajuste e rode `baixar-modelo.ps1 -Id <id>`.
+
+### GitHub
+
+O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é um repositório git na raiz do SSD, ligado a github.com/jvlcg/PRIVADO. Modelos e bibliotecas ficam de fora. A sincronização registra cada mudança no git local; o envio ao GitHub fica pausado enquanto o repositório for público.
+
+1. Torne o repositório privado: PRIVADO → Settings → Danger Zone → Change repository visibility → Make private.
+2. Envie pelo GitHub Desktop: File → Add local repository → `A:\` → Push origin.
+3. Envio automático: em `catalogo\modelos.json`, mude `"enviar_automatico"` para `true`.
+4. Plugin do GitHub no Claude: crie um token (github.com/settings/personal-access-tokens) só para o PRIVADO, salve na variável `GITHUB_PERSONAL_ACCESS_TOKEN` do Windows e reinicie o app.
 
 ## Desenvolvimento próprio
 
