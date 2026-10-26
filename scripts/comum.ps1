@@ -169,17 +169,17 @@ function Hash-Arquivo($caminho) {
 
 # Baixa uma URL com retomada. Se a conexao cair ou ficar abaixo de 1 MB/s por 60 s (servidor "travado"),
 # reconecta e continua do ponto onde parou, ate 30 vezes. Rodar o script de novo tambem continua.
-function Baixar-Url($url, $destino, [switch]$Silencioso, [switch]$ComTokenHF) {
+function Baixar-Url($url, $destino, [switch]$Silencioso, [switch]$ComTokenHF, [int]$Tentativas = 30) {
     $base = @('-L', '--fail', '-C', '-', '-o', $destino, '-A', $UserAgent, '--connect-timeout', '30', '--speed-limit', '1048576', '--speed-time', '60')
     if ($Silencioso) { $base += '-sS' } else { $base += '--progress-bar' }
     if ($ComTokenHF -and $env:HF_TOKEN) { $base += @('-H', "Authorization: Bearer $($env:HF_TOKEN)") }
     # Codigos do curl que valem nova tentativa: rede, tempo esgotado, transferencia parcial, erro HTTP (5xx).
     $transitorios = 6, 7, 18, 22, 28, 35, 52, 55, 56, 92
-    for ($tentativa = 1; $tentativa -le 30; $tentativa++) {
+    for ($tentativa = 1; $tentativa -le $Tentativas; $tentativa++) {
         Executar-Nativo 'curl.exe' ($base + $url)
         if ($LASTEXITCODE -eq 0) { return }
         if ($transitorios -notcontains $LASTEXITCODE) { break }
-        Aviso "Conexao lenta ou interrompida (curl $LASTEXITCODE); retomando ($tentativa de 30)..."
+        Aviso "Conexao lenta ou interrompida (curl $LASTEXITCODE); retomando ($tentativa de $Tentativas)..."
         Start-Sleep -Seconds 5
     }
     throw "Falha no download (curl codigo $LASTEXITCODE): $url"
@@ -208,22 +208,25 @@ $EspelhosKiwix = @(
     'https://ftp.nluug.nl/pub/kiwix/'
 )
 
-# Mede cada espelho baixando 32 MB do proprio arquivo e devolve a URL do mais rapido.
-function Melhor-EspelhoKiwix($caminhoRel) {
-    $melhor = $null
-    $vel = 0
+# Mede cada espelho baixando 32 MB do proprio arquivo. Devolve todos os que funcionaram, do mais rapido
+# ao mais lento, com o site oficial por ultimo: se um espelho derrubar a conexao, tenta-se o proximo.
+function Espelhos-Kiwix($caminhoRel) {
+    $medidos = @()
     $eap = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     try {
         foreach ($e in $EspelhosKiwix) {
             $r = & curl.exe -s -L -r 0-33554431 -o NUL --max-time 6 -A $UserAgent -w '%{speed_download} %{http_code}' "$e$caminhoRel"
             $p = "$r" -split ' '
-            if ($p.Count -ge 2 -and $p[1] -eq '206' -and [double]$p[0] -gt $vel) { $vel = [double]$p[0]; $melhor = "$e$caminhoRel" }
+            if ($p.Count -ge 2 -and $p[1] -eq '206') { $medidos += [pscustomobject]@{ url = "$e$caminhoRel"; mbps = [math]::Round([double]$p[0] / 1MB, 1) } }
         }
     } finally { $ErrorActionPreference = $eap }
-    if (-not $melhor) { $melhor = "https://download.kiwix.org/$caminhoRel" }
-    return [pscustomobject]@{ url = $melhor; mbps = [math]::Round($vel / 1MB, 1) }
+    $lista = @($medidos | Sort-Object mbps -Descending)
+    $lista += [pscustomobject]@{ url = "https://download.kiwix.org/$caminhoRel"; mbps = 0 }
+    return $lista
 }
+
+function Melhor-EspelhoKiwix($caminhoRel) { return (Espelhos-Kiwix $caminhoRel)[0] }
 
 # Versao mais recente de uma biblioteca ZIM no site da Kiwix (os arquivos tem a data no nome: _AAAA-MM.zim).
 $script:CacheListagem = @{}

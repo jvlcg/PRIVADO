@@ -57,9 +57,19 @@ foreach ($item in $sel) {
     if ($item.tamanho_gb * 1.05 + 5 -gt (Espaco-LivreGB $pasta)) { Aviso "Sem espaco em $pasta para $($item.tamanho_gb) GB."; continue }
     $esperado = ((Baixar-Texto "$($ultima.url).sha256").Trim() -split '\s+')[0].ToLower()
     $parte = "$dest.part"
-    $espelho = Melhor-EspelhoKiwix "zim/$($item.pasta_kiwix)/$($ultima.arquivo)"
-    Info ("Versao {0}, cerca de {1} GB, pelo espelho {2} ({3} MB/s)" -f $ultima.versao, $item.tamanho_gb, ([uri]$espelho.url).Host, $espelho.mbps)
-    Baixar-Url $espelho.url $parte -Silencioso:$Silencioso
+    # Tenta os espelhos do mais rapido ao mais lento; o .part e o mesmo, entao cada um continua de onde o outro parou.
+    $baixou = $false
+    foreach ($espelho in (Espelhos-Kiwix "zim/$($item.pasta_kiwix)/$($ultima.arquivo)")) {
+        Info ("Versao {0}, cerca de {1} GB, pelo espelho {2} ({3} MB/s)" -f $ultima.versao, $item.tamanho_gb, ([uri]$espelho.url).Host, $espelho.mbps)
+        try {
+            Baixar-Url $espelho.url $parte -Silencioso:$Silencioso -Tentativas 5
+            $baixou = $true
+            break
+        } catch {
+            Aviso "Espelho $(([uri]$espelho.url).Host) falhou: $($_.Exception.Message). Tentando o proximo."
+        }
+    }
+    if (-not $baixou) { Aviso "Nenhum espelho completou $($ultima.arquivo); o que ja veio fica guardado para a proxima vez."; continue }
     Info 'Conferindo SHA256...'
     $hash = Hash-Arquivo $parte
     if ($hash -ne $esperado) { Remove-Item -LiteralPath $parte -Force; Aviso 'Hash diferente do publicado pela Kiwix; download descartado.'; continue }
