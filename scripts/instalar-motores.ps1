@@ -65,6 +65,17 @@ function Obter-ReleaseListagem($def, $padrao) {
     return [pscustomobject]@{ tag_name = $ver; published_at = ''; assets = @($asset); zipball_url = $null }
 }
 
+# Guarda so as duas versoes mais novas de cada motor (a atual e a anterior, de reserva). O llama.cpp sai
+# quase todo dia; sem isso o SSD ganharia ~1,5 GB a cada sincronizacao.
+function Limpar-VersoesAntigas($pastaBase, $atual, $manter = 2) {
+    $versoes = @(Get-ChildItem -LiteralPath $pastaBase -Directory | Where-Object { $_.Name -notlike '*.tmp' } | Sort-Object CreationTime -Descending)
+    foreach ($v in ($versoes | Select-Object -Skip $manter)) {
+        if ($v.Name -eq $atual) { continue }
+        Remove-Item -LiteralPath $v.FullName -Recurse -Force
+        Info "Versao antiga removida: $($v.Name)"
+    }
+}
+
 foreach ($id in $Motor) {
     $def = $cat.motores | Where-Object { $_.id -eq $id } | Select-Object -First 1
     if (-not $def) { Aviso "Motor desconhecido: $id (opcoes: $($cat.motores.id -join ', '))"; continue }
@@ -124,6 +135,7 @@ foreach ($id in $Motor) {
     }
 
     [IO.File]::WriteAllText((Join-Path $pastaBase 'atual.txt'), $tag)
+    Limpar-VersoesAntigas $pastaBase $tag
     $registro = [ordered]@{ versao = $tag; publicado = [string]$rel.published_at; instalado_em = (Get-Date -Format s) }
     $null = Atualizar-Estado { param($e) $e.motores[$id] = $registro }
     if ($id -eq 'comfyui') { Configurar-ComfyUI $pastaVer }

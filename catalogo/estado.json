@@ -63,10 +63,17 @@
                                                                                      "tamanho":  1193058784,
                                                                                      "sha256":  "418a6d8723067cd712235facbbc5cba6c8fbbd413fc1292d2aace5a027d5a42f",
                                                                                      "baixado_em":  "2026-10-25T21:38:26"
-                                                                                 }
+                                                                                 },
+                                                             "MTP/mtp-gemma-4-26B-A4B-it-Q8_0.gguf":  {
+                                                                                                          "destino":  "modelos\\llm\\gemma-4-26b-a4b\\mtp-gemma-4-26B-A4B-it-Q8_0.gguf",
+                                                                                                          "tamanho":  461766816,
+                                                                                                          "sha256":  "6326fb9f5e487aa8dcdd313a091e3c67724cb2a666ec3b7d2895b5b26d93ed1b",
+                                                                                                          "baixado_em":  "2026-10-26T16:48:09"
+                                                                                                      }
                                                          },
                                             "repo_sha":  "c099eb48e663fd284577b04978a94ffccb261841",
-                                            "repo_modificado":  "2026-07-17T13:00:49.000Z"
+                                            "repo_modificado":  "2026-07-17T13:00:49.000Z",
+                                            "local":  "nucleo"
                                         },
                     "qwen3.8-27b":  {
                                         "completo":  true,
@@ -83,10 +90,17 @@
                                                                                  "tamanho":  927607488,
                                                                                  "sha256":  "cbb841a9ee0636b2ec172f5bb8df2ea8dfeb01e90fe7c6126581d662a0b4e43e",
                                                                                  "baixado_em":  "2026-10-25T21:42:17"
-                                                                             }
+                                                                             },
+                                                         "MTP/mtp-Qwen3.8-27B-Q4_0.gguf":  {
+                                                                                               "destino":  "modelos\\llm\\qwen3.8-27b\\mtp-Qwen3.8-27B-Q4_0.gguf",
+                                                                                               "tamanho":  1369590656,
+                                                                                               "sha256":  "50d9ce5a6da381bbcfb31061cf73df94a90e6faf8efeddee379a9cb8f1501c6e",
+                                                                                               "baixado_em":  "2026-10-26T16:48:10"
+                                                                                           }
                                                      },
                                         "repo_sha":  "4ca720788d1e01f1bff70c033e0d0028fd02e502",
-                                        "repo_modificado":  "2026-08-20T12:04:25.000Z"
+                                        "repo_modificado":  "2026-08-20T12:04:25.000Z",
+                                        "local":  "nucleo"
                                     },
                     "qwen3-coder-next":  {
                                              "completo":  true,
@@ -426,6 +440,30 @@
                                                                                                                                             "tamanho":  49290279808,
                                                                                                                                             "sha256":  "605972fece1b43277b9ff86a2cd79c9002ff424caefc507f20b6ccd47ae4ab39",
                                                                                                                                             "baixado_em":  "2026-10-26T02:55:52"
+                                                                                                                                        },
+                                                                 "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00003-of-00007.gguf":  {
+                                                                                                                                            "destino":  "modelos\\fronteira\\deepseek-v4.1-flash\\DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00003-of-00007.gguf",
+                                                                                                                                            "tamanho":  49745070208,
+                                                                                                                                            "sha256":  "1cb58786245bd8c38478174eecc648b12691bb79c2bb2f446c135ab00263580e",
+                                                                                                                                            "baixado_em":  "2026-10-26T16:07:23"
+                                                                                                                                        },
+                                                                 "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00004-of-00007.gguf":  {
+                                                                                                                                            "destino":  "modelos\\fronteira\\deepseek-v4.1-flash\\DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00004-of-00007.gguf",
+                                                                                                                                            "tamanho":  48680128800,
+                                                                                                                                            "sha256":  "7b753295dd32534dfea52b2e9b5c4741b8007a955e38702ee37034271df7526e",
+                                                                                                                                            "baixado_em":  "2026-10-26T16:18:07"
+                                                                                                                                        },
+                                                                 "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00005-of-00007.gguf":  {
+                                                                                                                                            "destino":  "modelos\\fronteira\\deepseek-v4.1-flash\\DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00005-of-00007.gguf",
+                                                                                                                                            "tamanho":  49970937696,
+                                                                                                                                            "sha256":  "336be674937fe29683e7aeee7c6af32f896b864931a6c916907b78e0f3692de4",
+                                                                                                                                            "baixado_em":  "2026-10-26T16:29:40"
+                                                                                                                                        },
+                                                                 "UD-Q2_K_XL/DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00006-of-00007.gguf":  {
+                                                                                                                                            "destino":  "modelos\\fronteira\\deepseek-v4.1-flash\\DeepSeek-V4.1-Flash-1017-UD-Q2_K_XL-00006-of-00007.gguf",
+                                                                                                                                            "tamanho":  1929325664,
+                                                                                                                                            "sha256":  "192694fb09612e1200cce9ae35f3645ad39cf8aa43e94417070af9c4f4ecb43b",
+                                                                                                                                            "baixado_em":  "2026-10-26T16:30:09"
                                                                                                                                         }
                                                              },
                                                 "local":  "cofre",
@@ -534,49 +572,49 @@
                 },
     "motores":  {
                     "llama.cpp":  {
-                                      "versao":  "b11889",
-                                      "publicado":  "2026-10-25T23:44:54Z",
-                                      "instalado_em":  "2026-10-26T02:16:36"
+                                      "versao":  "b11901",
+                                      "publicado":  "2026-10-26T17:26:52Z",
+                                      "instalado_em":  "2026-10-26T15:47:09"
                                   },
                     "kiwix-tools":  {
                                         "versao":  "3.8.1",
                                         "publicado":  "",
-                                        "instalado_em":  "2026-10-26T02:16:53"
+                                        "instalado_em":  "2026-10-26T15:47:27"
                                     },
                     "kiwix-desktop":  {
                                           "versao":  "2.5.1",
                                           "publicado":  "",
-                                          "instalado_em":  "2026-10-26T02:17:06"
+                                          "instalado_em":  "2026-10-26T15:47:43"
                                       },
                     "kiwix-tools-linux":  {
                                               "versao":  "3.8.2",
                                               "publicado":  "",
-                                              "instalado_em":  "2026-10-26T02:17:19"
+                                              "instalado_em":  "2026-10-26T15:48:44"
                                           },
                     "llama.cpp-outras-maquinas":  {
-                                                      "versao":  "b11889",
-                                                      "publicado":  "2026-10-25T23:44:54Z",
-                                                      "instalado_em":  "2026-10-26T02:17:06"
+                                                      "versao":  "b11901",
+                                                      "publicado":  "2026-10-26T17:26:52Z",
+                                                      "instalado_em":  "2026-10-26T15:48:29"
                                                   },
                     "whisper.cpp":  {
                                         "versao":  "b5130",
                                         "publicado":  "2026-09-11T05:29:10Z",
-                                        "instalado_em":  "2026-10-26T02:16:36"
+                                        "instalado_em":  "2026-10-26T15:47:10"
                                     },
                     "uv":  {
                                "versao":  "0.13.5",
                                "publicado":  "2026-10-22T01:35:54Z",
-                               "instalado_em":  "2026-10-26T02:16:37"
+                               "instalado_em":  "2026-10-26T15:47:11"
                            },
                     "comfyui":  {
                                     "versao":  "v0.42.1",
                                     "publicado":  "2026-10-19T01:33:54Z",
-                                    "instalado_em":  "2026-10-26T02:16:38"
+                                    "instalado_em":  "2026-10-26T15:47:12"
                                 },
                     "ollama":  {
                                    "versao":  "v0.40.11",
                                    "publicado":  "2026-10-24T00:30:13Z",
-                                   "instalado_em":  "2026-10-26T02:16:39"
+                                   "instalado_em":  "2026-10-26T15:47:13"
                                }
                 },
     "observados":  {

@@ -17,7 +17,13 @@ if (-not $main) { throw "Nao achei ComfyUI\main.py em $pasta" }
 $raizPortatil = $main.Directory.Parent.FullName
 $python = Join-Path $raizPortatil 'python_embeded\python.exe'
 
-$a = @('-s', $main.FullName, '--windows-standalone-build', '--port', "$Porta")
+# Entrada, saida e configuracoes ficam fora da pasta da versao (dev\comfyui): atualizar ou limpar
+# versoes antigas do ComfyUI nunca apaga o que voce criou.
+$dados = Join-Path $Raiz 'dev\comfyui'
+foreach ($s in 'input', 'output', 'user', 'temp') { New-Item -ItemType Directory -Force -Path (Join-Path $dados $s) | Out-Null }
+$a = @('-s', $main.FullName, '--windows-standalone-build', '--port', "$Porta",
+       '--input-directory', (Join-Path $dados 'input'), '--output-directory', (Join-Path $dados 'output'),
+       '--user-directory', (Join-Path $dados 'user'), '--temp-directory', (Join-Path $dados 'temp'))
 if ($Rede) { $a += @('--listen', '0.0.0.0') }
 if ($SemNavegador) { $a += '--disable-auto-launch' }
 

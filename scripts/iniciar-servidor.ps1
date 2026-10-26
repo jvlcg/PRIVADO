@@ -40,11 +40,14 @@ foreach ($m in @($cat.modelos | Where-Object { $_.status -eq 'baixar' -and $_.mo
     if (-not ($estado.modelos.Contains($m.id) -and $estado.modelos[$m.id].completo)) { continue }
     if (-not $IncluirGigantes -and [double]$m.tamanho_gb -gt ($memoriaGB - 8)) { $escondidos += $m.id; continue }
     $arqs = @($m.arquivos | ForEach-Object { Caminho-Destino $m $_ })
-    $modelo = $arqs | Where-Object { (Split-Path $_ -Leaf) -notmatch '^mmproj' -and $_ -match '\.gguf$' } | Select-Object -First 1
+    $modelo = $arqs | Where-Object { (Split-Path $_ -Leaf) -notmatch '^(mmproj|mtp-)' -and $_ -match '\.gguf$' } | Select-Object -First 1
     $mmproj = $arqs | Where-Object { (Split-Path $_ -Leaf) -match '^mmproj' } | Select-Object -First 1
+    $mtp = $arqs | Where-Object { (Split-Path $_ -Leaf) -match '^mtp-' -and (Test-Path -LiteralPath $_) } | Select-Object -First 1
     $ini.Add("[$($m.id)]")
     $ini.Add("model = $modelo")
     if ($mmproj) { $ini.Add("mmproj = $mmproj") }
+    # Cabeca MTP: preve varios tokens de uma vez (medido: Qwen3.8 27B +76%, Gemma 4 26B +21%).
+    if ($mtp) { $ini.Add('spec-type = draft-mtp'); $ini.Add("spec-draft-model = $mtp") }
     if ($m.contexto) { $ini.Add("c = $($m.contexto)") }
     # Converte "--embedding --pooling last" em linhas do INI.
     $tokens = @(([string]$m.args) -split '\s+' | Where-Object { $_ })

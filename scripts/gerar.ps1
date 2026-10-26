@@ -32,9 +32,9 @@ catch { throw 'O ComfyUI nao esta aberto. Abra pelo menu (opcao 4) ou rode inici
 $pastaFluxos = Join-Path $Raiz 'dev\configs\comfyui'
 $saida = Join-Path $Raiz 'dev\midia-gerada'
 New-Item -ItemType Directory -Force -Path $saida | Out-Null
-$main = Get-ChildItem -LiteralPath (Pasta-Motor 'comfyui') -Recurse -Depth 2 -Filter 'main.py' -File | Where-Object { $_.Directory.Name -eq 'ComfyUI' } | Select-Object -First 1
-$pastaEntrada = Join-Path $main.DirectoryName 'input'
-$pastaSaidaComfy = Join-Path $main.DirectoryName 'output'
+# Mesmas pastas que o iniciar-comfyui.ps1 passa ao ComfyUI.
+$pastaEntrada = Join-Path $Raiz 'dev\comfyui\input'
+$pastaSaidaComfy = Join-Path $Raiz 'dev\comfyui\output'
 if ($Semente -lt 0) { $Semente = Get-Random -Minimum 1 -Maximum 2147483647 }
 
 function Ler-Fluxo($nome) { return ([IO.File]::ReadAllText((Join-Path $pastaFluxos $nome), [Text.Encoding]::UTF8) | ConvertFrom-Json) }

@@ -29,8 +29,9 @@ if (-not $m) {
 }
 
 $arquivos = @($m.arquivos | ForEach-Object { Caminho-Destino $m $_ })
-$modelo = $arquivos | Where-Object { (Split-Path $_ -Leaf) -notmatch '^mmproj' -and $_ -match '\.gguf$' } | Select-Object -First 1
+$modelo = $arquivos | Where-Object { (Split-Path $_ -Leaf) -notmatch '^(mmproj|mtp-)' -and $_ -match '\.gguf$' } | Select-Object -First 1
 $mmproj = $arquivos | Where-Object { (Split-Path $_ -Leaf) -match '^mmproj' } | Select-Object -First 1
+$mtp = $arquivos | Where-Object { (Split-Path $_ -Leaf) -match '^mtp-' -and (Test-Path -LiteralPath $_) } | Select-Object -First 1
 if (-not (Test-Path -LiteralPath $modelo)) { throw "Modelo ainda nao baixado. Rode: .\baixar-modelo.ps1 -Id $Id" }
 
 $exe = Achar-Exe 'llama.cpp' 'llama-server.exe'
@@ -44,6 +45,8 @@ if ($Rede) { $ip = '0.0.0.0' }
 # deixando na placa o maximo que couber. Por isso nao fixamos -ngl aqui.
 $a = @('-m', $modelo, '-c', "$ctx", '--host', $ip, '--port', "$Porta", '--alias', $m.id)
 if ($mmproj -and (Test-Path -LiteralPath $mmproj)) { $a += @('--mmproj', $mmproj) }
+# Cabeca MTP: preve varios tokens de uma vez (medido: Qwen3.8 27B +76%, Gemma 4 26B +21%).
+if ($mtp) { $a += @('--spec-type', 'draft-mtp', '--spec-draft-model', $mtp) }
 if ($m.args) { $a += ($m.args -split '\s+') }
 if ($Extra) { $a += ($Extra -split '\s+') }
 

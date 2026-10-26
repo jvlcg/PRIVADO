@@ -89,9 +89,12 @@ Velocidade medida neste PC em 25/10/2026, com o llama.cpp b11889 (10 tokens por 
 | --- | --- | --- |
 | gpt-oss-20b | 77 | MoE pequeno, quase todo na placa |
 | Gemma 4 12B QAT | 56 | cabe inteiro na placa |
-| Gemma 4 26B-A4B | 40 | MoE, parte na RAM |
+| Gemma 4 26B-A4B | 54 (45 sem MTP) | MoE, parte na RAM; cabeça MTP ligada |
 | Qwen3-Coder-Next | 29 | MoE de 80 bi, 36 GB na RAM |
-| Qwen3.8 27B | 4,3 | denso, 40% fica na RAM: use para perguntas difíceis |
+| Qwen3.8 27B | 7,9 (4,5 sem MTP) | denso, 40% na RAM; a cabeça MTP prevê vários tokens de uma vez |
+| MedGemma 27B | 4,5 | denso: use para perguntas importantes |
+
+A cabeça MTP (arquivo `mtp-*.gguf` na pasta do modelo) deixa o Qwen3.8 27B 76% mais rápido e o Gemma 4 26B 21%; os servidores a usam sozinhos.
 
 O monitor ligado na RTX 4070 gasta 1,7 GB de VRAM só com a tela. Ligando o monitor na saída de vídeo da placa-mãe, a GPU fica livre para a IA.
 

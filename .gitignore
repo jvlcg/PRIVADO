@@ -24,6 +24,7 @@
 /dev/modelos-proprios/
 /dev/audio-gerado/
 /dev/midia-gerada/
+/dev/comfyui/
 /dev/lora/*/
 /linux/*
 !/linux/configurar-ubuntu.sh

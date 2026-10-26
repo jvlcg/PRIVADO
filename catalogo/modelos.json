@@ -133,9 +133,10 @@
       "pasta": "llm\\gemma-4-26b-a4b",
       "arquivos": [
         { "caminho": "gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf" },
-        { "caminho": "mmproj-F16.gguf" }
+        { "caminho": "mmproj-F16.gguf" },
+        { "caminho": "MTP/mtp-gemma-4-26B-A4B-it-Q8_0.gguf" }
       ],
-      "tamanho_gb": 16.95,
+      "tamanho_gb": 17.38,
       "parametros": "25.8B (MoE, 4B ativos)",
       "licenca": "apache-2.0",
       "motor": "llama.cpp",
@@ -154,9 +155,10 @@
       "pasta": "llm\\qwen3.8-27b",
       "arquivos": [
         { "caminho": "Qwen3.8-27B-UD-Q4_K_XL.gguf" },
-        { "caminho": "mmproj-F16.gguf" }
+        { "caminho": "mmproj-F16.gguf" },
+        { "caminho": "MTP/mtp-Qwen3.8-27B-Q4_0.gguf" }
       ],
-      "tamanho_gb": 17.21,
+      "tamanho_gb": 18.49,
       "parametros": "27.8B (denso)",
       "licenca": "apache-2.0",
       "motor": "llama.cpp",
