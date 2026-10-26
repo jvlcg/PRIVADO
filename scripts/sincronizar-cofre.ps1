@@ -38,15 +38,11 @@ if ($temCofre) { Etapa 'Arrumar modelos entre SSD e cofre' { & "$PSScriptRoot\mo
 Etapa 'Modelos do SSD' { & "$PSScriptRoot\baixar-modelo.ps1" -Prioridade $Prioridade -Local nucleo -Silencioso }
 Etapa 'Bibliotecas do SSD' { & "$PSScriptRoot\baixar-conhecimento.ps1" -Local nucleo -Silencioso }
 if ($temCofre) {
-    # Bibliotecas (Kiwix) e modelos (Hugging Face) vem de servidores diferentes: baixam ao mesmo tempo,
-    # a biblioteca numa janela propria. O estado.json e protegido por trava, entao nao ha conflito.
-    $logBib = Join-Path $PastaLogs ("bibliotecas-cofre-{0}.txt" -f (Get-Date -Format 'yyyy-MM-dd_HHmm'))
-    $cmdBib = "Start-Transcript -Path '$logBib' -Force | Out-Null; & '$PSScriptRoot\baixar-conhecimento.ps1' -Local cofre -Silencioso; Stop-Transcript | Out-Null"
-    $bib = Start-Process powershell -PassThru -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $([Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($cmdBib)))"
-    Info "Bibliotecas do cofre baixando em paralelo (log: $(Caminho-Relativo $logBib))"
+    # O HD do cofre (Seagate ST4000DM004) e SMR: com duas gravacoes grandes ao mesmo tempo ele trava
+    # (fila cheia, ~1 s por gravacao, quase 0 MB/s). Por isso tudo no cofre e gravado uma coisa de cada vez.
     Etapa 'Modelos do cofre' { & "$PSScriptRoot\baixar-modelo.ps1" -Prioridade $Prioridade -Local cofre -Silencioso }
+    Etapa 'Bibliotecas do cofre' { & "$PSScriptRoot\baixar-conhecimento.ps1" -Local cofre -Silencioso }
     if (-not $SemEspelho) { Etapa 'Copia de seguranca do SSD no cofre' { & "$PSScriptRoot\copiar-backup.ps1" -Destino (Join-Path $rc 'espelho-ssd') -Tudo } }
-    Etapa 'Esperando as bibliotecas do cofre' { $bib.WaitForExit() }
 }
 # Cada arquivo ja foi conferido no download; aqui basta checar tamanhos e gravar os SHA256SUMS.txt.
 # A conferencia completa (relendo tudo) e o verificar-integridade.ps1 sem -Rapido, a cada poucos meses.
