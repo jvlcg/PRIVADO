@@ -51,6 +51,22 @@ if ($temCofre) {
 # A conferencia completa (relendo tudo) e o verificar-integridade.ps1 sem -Rapido, a cada poucos meses.
 if (-not $SemIntegridade) { Etapa 'Conferencia de integridade' { & "$PSScriptRoot\verificar-integridade.ps1" -Rapido } }
 
+# Guarda no git local o estado e os relatorios novos; envia ao GitHub so se o catalogo permitir.
+if (Test-Path -LiteralPath (Join-Path $Raiz '.git')) {
+    Etapa 'Registrar no git' {
+        Push-Location $Raiz
+        try {
+            Executar-Nativo 'git' @('add', '-A')
+            Executar-Nativo 'git' @('commit', '-q', '-m', "Sincronizacao do cofre em $(Get-Date -Format 'yyyy-MM-dd HH:mm')")
+            $cfgGit = (Ler-Catalogo).git
+            if ($cfgGit -and $cfgGit.enviar_automatico) {
+                Executar-Nativo 'git' @('push', '-q', 'origin', 'main')
+                if ($LASTEXITCODE -eq 0) { Ok 'Enviado ao GitHub' } else { Aviso 'Nao consegui enviar ao GitHub (veja o login do git)' }
+            }
+        } finally { Pop-Location }
+    }
+}
+
 Titulo 'Sincronizacao terminada'
 Info ("Duracao: {0:hh\:mm\:ss}" -f ((Get-Date) - $inicio))
 Info "Log completo: $(Caminho-Relativo $log)"

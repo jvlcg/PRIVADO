@@ -497,7 +497,22 @@
                                         "local":  "nucleo",
                                         "repo_sha":  "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
                                         "repo_modificado":  "2026-10-20T17:55:26.000Z"
-                                    }
+                                    },
+                    "wan-2.2-ti2v-5b":  {
+                                            "completo":  false,
+                                            "repo":  "Comfy-Org/Wan-2.2",
+                                            "arquivos":  {
+                                                             "split_files/diffusion_models/wan2.2_ti2v_5B_fp16.safetensors":  {
+                                                                                                                                  "destino":  "modelos\\comfyui\\diffusion_models\\wan2.2_ti2v_5B_fp16.safetensors",
+                                                                                                                                  "tamanho":  9999658848,
+                                                                                                                                  "sha256":  "456f901338bd9eadbded3828b819109a9b68e8a525ca5cf8d0049a69fcfeca1e",
+                                                                                                                                  "baixado_em":  "2026-10-26T02:19:56"
+                                                                                                                              }
+                                                         },
+                                            "local":  "cofre",
+                                            "repo_sha":  "ee6f4a40737a995bf5818954cfce6d59443b0f04",
+                                            "repo_modificado":  "2026-09-23T06:01:28.000Z"
+                                        }
                 },
     "motores":  {
                     "llama.cpp":  {

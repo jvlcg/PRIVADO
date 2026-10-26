@@ -6,6 +6,11 @@
     "raiz": "D:\\COFRE-IA",
     "descricao": "Arquivo profundo no HD de 4 TB: modelos grandes demais para o SSD, bases de conhecimento gigantes e a cópia de segurança do SSD."
   },
+  "git": {
+    "remoto": "https://github.com/jvlcg/PRIVADO.git",
+    "enviar_automatico": false,
+    "nota": "A sincronização registra no git local as mudanças do catálogo e do estado. Com enviar_automatico = true, também envia ao GitHub. Deixe false enquanto o repositório for público."
+  },
   "observar_orgs": [
     "Qwen", "google", "deepseek-ai", "mistralai", "openai", "zai-org", "moonshotai", "XiaomiMiMo",
     "microsoft", "meta-llama", "nvidia", "ibm-granite", "black-forest-labs", "Tongyi-MAI", "tencent",
