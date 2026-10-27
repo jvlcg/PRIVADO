@@ -916,6 +916,15 @@
                                               "tamanho":  221251590584,
                                               "sha256":  "01677c8d554a1cab2cbfd020ac99ebca7dd6c74d3ce0d13f266a2ba603dfaf28",
                                               "baixado_em":  "2026-10-26T20:46:34"
-                                          }
+                                          },
+                         "stackoverflow":  {
+                                               "arquivo":  "stackoverflow.com_en_all_2026-07.zim",
+                                               "versao":  "2026-07",
+                                               "local":  "cofre",
+                                               "destino":  "conhecimento\\stackoverflow.com_en_all_2026-07.zim",
+                                               "tamanho":  114855633696,
+                                               "sha256":  "2878fd0bbc4d0d7a05249bc04f45b71f183c09929a843308b923190f1d15436f",
+                                               "baixado_em":  "2026-10-26T21:24:26"
+                                           }
                      }
 }
