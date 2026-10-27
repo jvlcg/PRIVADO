@@ -3,9 +3,11 @@
   Servidor unico com TODOS os modelos de chat e embeddings baixados (modo roteador do llama-server).
   Escolha o modelo no menu do chat (http://127.0.0.1:8080) ou pelo campo "model" da API.
   O servidor carrega o modelo pedido na hora e descarrega o mais antigo quando passa do limite.
+  Depois de 15 minutos sem uso, o modelo sai da memoria sozinho e volta na proxima pergunta.
 .EXAMPLE
   .\iniciar-servidor.ps1                 # ate 2 modelos carregados ao mesmo tempo
   .\iniciar-servidor.ps1 -Carregados 1   # so um por vez (mais VRAM para cada um)
+  .\iniciar-servidor.ps1 -DormirMinutos 0  # nunca tira o modelo da memoria por inatividade
   .\iniciar-servidor.ps1 -Rede           # libera para outros aparelhos da sua rede
 .NOTES
   Clientes (VS Code/Continue, Cline, Open WebUI, Aider): base URL http://127.0.0.1:8080/v1,
@@ -14,6 +16,7 @@
 param(
     [int]$Porta = 8080,
     [int]$Carregados = 2,
+    [int]$DormirMinutos = 15,
     [switch]$Rede,
     [switch]$SemNavegador,
     [switch]$IncluirGigantes
@@ -31,6 +34,8 @@ $ini.Add('version = 1')
 $ini.Add('')
 $ini.Add('[*]')
 $ini.Add('fit = on')
+# Modelo parado libera a placa de video e a memoria; a proxima pergunta o carrega de novo.
+if ($DormirMinutos -gt 0) { $ini.Add("sleep-idle-seconds = $($DormirMinutos * 60)") }
 $ini.Add('')
 $incluidos = @()
 $escondidos = @()
@@ -78,5 +83,6 @@ if ($escondidos.Count -gt 0) { Info "Grandes demais para este PC (use -IncluirGi
 Info "Chat:    $url"
 Info "API:     $url/v1   (campo model = um dos ids acima)"
 Info "Ate $Carregados modelo(s) carregados ao mesmo tempo. Para parar: Ctrl+C."
+if ($DormirMinutos -gt 0) { Info "Modelo sem uso por $DormirMinutos min sai da memoria sozinho." }
 Write-Host ''
 Executar-Nativo $exe @('--models-preset', $arqIni, '--models-max', "$Carregados", '--host', $ip, '--port', "$Porta")

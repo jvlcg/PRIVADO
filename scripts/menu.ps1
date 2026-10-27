@@ -20,6 +20,7 @@ while ($true) {
     Write-Host ' 12) Falar um texto em voz alta (Piper)'
     Write-Host ' 13) Conselho de IAs: varias IAs respondem e decidem juntas (painel no navegador)'
     Write-Host ' 14) Medir o consumo de energia do PC (1 minuto parado)'
+    Write-Host ' 15) Fechar tudo que o cofre abriu (libera a placa de video, economiza energia)'
     Write-Host ' MANTER'
     Write-Host '  6) Status do acervo'
     Write-Host '  7) Verificar novidades e atualizacoes'
@@ -58,6 +59,7 @@ while ($true) {
             }
             '13' { Nova-Janela 'conselho.ps1' '-Servir' }
             '14' { & "$PSScriptRoot\medir-energia.ps1" -Segundos 60 | Out-Null }
+            '15' { & "$PSScriptRoot\parar-tudo.ps1" }
             '0' { return }
         }
     } catch {

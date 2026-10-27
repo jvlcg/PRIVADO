@@ -40,9 +40,9 @@ Os modelos abertos mais fortes hoje têm de 321 bilhões a 2,8 trilhões de par�
 | Geral | Gemma 4 12B QAT | o mais rápido, cabe inteiro na placa | SSD | 6,7 | Apache 2.0 |
 | Geral | Qwen3.8 27B | melhor qualidade densa, lento aqui | SSD | 17,2 | Apache 2.0 |
 | Geral | Qwen3.6 35B-A3B | alternativa MoE rápida | cofre | 21,7 | Apache 2.0 |
-| Geral | Nemotron 3.5 Bolt 74B-A9B | modelo grande de outubro/2026 | cofre | 48,4 | NVIDIA Open |
+| Geral | Nemotron 3.5 Bolt 74B-A9B | o maior que roda com folga aqui (5 a 7 tokens/s) | cofre | 48,4 | NVIDIA Open |
 | Raciocínio | gpt-oss-20b | raciocínio e ferramentas, o mais veloz | SSD | 11,3 | Apache 2.0 |
-| Raciocínio | gpt-oss-120b | o maior cérebro que ainda roda aqui | cofre | 59,0 | Apache 2.0 |
+| Raciocínio | gpt-oss-120b | roda no limite: ocupa toda a RAM, ~3 tokens/s | cofre | 59,0 | Apache 2.0 |
 | Raciocínio | MiMo-V2.6 Distill 9B | raciocínio leve | cofre | 5,4 | MIT |
 | Código | Qwen3-Coder-Next | agente de programação (80 bi, 3 bi ativos) | SSD | 35,8 | Apache 2.0 |
 | Código | Devstral Small 2 | segundo agente de código | cofre | 13,5 | Apache 2.0 |
@@ -72,7 +72,7 @@ São 141 GB no SSD e 821 GB no cofre. Os três gigantes de fronteira não rodam 
 
 ## Seu hardware e o sistema
 
-O PC roda bem modelos de até cerca de 45 GB: a placa de vídeo segura 12 GB e o resto fica nos 64 GB de RAM.
+O PC roda bem modelos de até cerca de 45 GB: a placa de vídeo segura 12 GB e o resto fica nos 64 GB de RAM. O Nemotron 74B (48 GB) ainda funciona bem; o gpt-oss-120b (59 GB) funciona, mas ocupa toda a RAM: feche os outros programas antes de usá-lo.
 
 | Peça | O que você tem | O que isso permite |
 | --- | --- | --- |
@@ -93,6 +93,8 @@ Velocidade medida neste PC em 25/10/2026, com o llama.cpp b11889 (10 tokens por 
 | Qwen3-Coder-Next | 29 | MoE de 80 bi, 36 GB na RAM |
 | Qwen3.8 27B | 7,9 (4,5 sem MTP) | denso, 40% na RAM; a cabeça MTP prevê vários tokens de uma vez |
 | MedGemma 27B | 4,5 | denso: use para perguntas importantes |
+| Nemotron 3.5 Bolt 74B (do HD, 27/10) | 5 a 7 | MoE de 48 GB; carrega em ~5 min e deixa ~9 GB de RAM livres |
+| gpt-oss-120b (do HD, 27/10) | ~3 (1 na primeira resposta) | 59 GB; carrega em ~4 min e sobra menos de 1 GB de RAM |
 
 A cabeça MTP (arquivo `mtp-*.gguf` na pasta do modelo) deixa o Qwen3.8 27B 76% mais rápido e o Gemma 4 26B 21%; os servidores a usam sozinhos.
 
@@ -119,8 +121,9 @@ Tudo começa com dois cliques em **`A:\IA.cmd`**, que abre o menu. Nada foi inst
 | 5. Transcrever áudio | Whisper; gera `.txt` e legenda `.srt` ao lado do arquivo | no terminal |
 | 13. Conselho de IAs | várias IAs respondem e um relator decide a resposta final | http://127.0.0.1:8090 |
 | 14. Medir energia | consumo do PC e custo em reais | no terminal |
+| 15. Fechar tudo | fecha servidor, biblioteca, ComfyUI e conselho; libera a placa de vídeo | no terminal |
 
-Testado neste PC em 25 e 26/10/2026:
+Testado neste PC de 25 a 27/10/2026:
 
 | Teste | Resultado | Tempo |
 | --- | --- | --- |
@@ -136,6 +139,9 @@ Testado neste PC em 25 e 26/10/2026:
 | Conselho de IAs, pergunta de código | 3 IAs + relator; resposta certa sobre `${pasta}:` no PowerShell | 3 min 17 s |
 | Conselho de IAs, pergunta geral (energia solar e bateria para o PC) | sistema híbrido, contas de bateria certas (~95 Ah de lítio em 12 V) | 5 min 47 s |
 | Conselho de IAs com o Qwen3.8 de relator | guia de armazenamento de água; o relator descartou uma dose de iodo 1.000 vezes acima da segura | 13 min 53 s |
+| gpt-oss-120b, do HD (bateria de 12 V para geladeira) | conta certa (10 h), com fórmulas em LaTeX; sobrou menos de 1 GB de RAM | 8 min, sendo 4 carregando |
+| Nemotron 3.5 Bolt 74B, do HD (mesma pergunta) | conta certa (10 h), em texto simples; sobraram 8,6 GB de RAM | 6 min 14 s, quase 5 carregando |
+| Modelo parado sai da memória sozinho | depois de 1 min sem uso (teste) a placa liberou o modelo e acordou em 1 s na pergunta seguinte | 1 s para voltar |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 11). Exemplos em `A:\dev\midia-gerada`.
 
@@ -236,6 +242,7 @@ Para gastar menos:
 3. **Deixe o HD D: dormir** quando parado: Opções de energia → Disco rígido → Desligar após 20 min (economiza uns 5 W).
 4. **Use o chat para perguntas do dia a dia** e o conselho quando quiser uma segunda opinião. O modo profundo gasta umas 4 vezes mais que a rodada única.
 5. **Se tiver tarifa branca**, rode a sincronização fora do horário de ponta. A verificação semanal (segunda, 10h) já está fora da ponta.
+6. **Feche tudo ao terminar**: opção 15 do menu (`parar-tudo.ps1`). Mesmo sem isso, o servidor de modelos tira da memória o modelo parado há 15 minutos e o recarrega na próxima pergunta (`iniciar-servidor.ps1 -DormirMinutos 30` muda o tempo; `0` desliga).
 
 ## Catálogo e atualização constante
 

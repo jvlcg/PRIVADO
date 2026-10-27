@@ -41,7 +41,8 @@ $coletor = Start-Job -ArgumentList $amostras -ScriptBlock {
 
 $inicio = Get-Date
 try {
-    if ($Comando) { & $Comando } else { Start-Sleep -Seconds $Segundos }
+    # A saida da tarefa vai para a tela, para nao se misturar com o resultado da medicao.
+    if ($Comando) { & $Comando | Out-Host } else { Start-Sleep -Seconds $Segundos }
 } finally {
     Start-Sleep -Seconds 1
     Stop-Job $coletor; Remove-Job $coletor -Force
