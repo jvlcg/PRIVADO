@@ -41,6 +41,14 @@ o Projeto Gutenberg, o Stack Overflow e uma copia de seguranca deste SSD.
 | traduzir                     | translategemma-12b |
 | ler documento ou foto        | glm-ocr |
 | computador fraco ou sem GPU  | gemma-4-e4b, qwen3.5-2b, lfm2.5-1.2b, qwen3.5-0.8b |
+| o maior que roda aqui        | nemotron-3.5-bolt-74b (fica no HD: ~5 min para carregar) |
+| varias IAs decidindo juntas  | Conselho de IAs: menu, opcao 13 (http://127.0.0.1:8090) |
+
+## Economizar energia
+
+- Ao terminar, menu opcao 15: fecha tudo que o cofre abriu e libera a placa de video.
+- Mesmo sem isso, o servidor de modelos tira da memoria o modelo parado ha 15 minutos.
+- Suspenda o PC quando nao for usar. Custos e dicas: guia, secao "Custo de energia".
 
 ## Conferir se nada estragou
 

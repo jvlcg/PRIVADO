@@ -1,7 +1,8 @@
 <#
 .SYNOPSIS
   Mostra o estado do acervo: espaco nos dois discos, tamanho de cada pasta, modelos e
-  bibliotecas baixados, motores instalados e a ultima verificacao de novidades.
+  bibliotecas baixados, motores instalados, a ultima verificacao de novidades e o que do
+  cofre esta aberto agora (gastando energia).
 #>
 . "$PSScriptRoot\comum.ps1"
 
@@ -64,3 +65,17 @@ Titulo 'Ultima verificacao de novidades'
 $u = $estado['ultima_verificacao']
 if (-not $u) { $u = 'nunca (rode verificar-atualizacoes.ps1)' }
 Info $u
+
+Titulo 'Aberto agora'
+$abertos = @(Processos-Cofre)
+if ($abertos.Count -eq 0) { Info 'Nada do cofre aberto.' }
+else {
+    foreach ($g in ($abertos | Group-Object ProcessName)) {
+        Info ("{0,-20} {1} processo(s), {2:N1} GB de RAM" -f $g.Name, $g.Count, (($g.Group | Measure-Object WorkingSet64 -Sum).Sum / 1GB))
+    }
+    Info 'Para fechar tudo e liberar a placa de video: menu, opcao 15.'
+}
+try {
+    $gpu = (& nvidia-smi --query-gpu=memory.used,power.draw --format=csv,noheader) | Select-Object -First 1
+    Info "Placa de video: $gpu (memoria usada, consumo)"
+} catch {}

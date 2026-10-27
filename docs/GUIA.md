@@ -1,6 +1,6 @@
 # Guia do SSD de IAs Locais
 
-Cópia offline de 25/10/2026. A versão viva (atualizada) está em https://claude.ai/artifact/XuMQNn1aZENjqeAZKDqruw
+Cópia offline, atualizada em 27/10/2026. A versão viva (atualizada) está em https://claude.ai/artifact/XuMQNn1aZENjqeAZKDqruw
 
 ## Visão geral
 
@@ -242,7 +242,7 @@ Para gastar menos:
 3. **Deixe o HD D: dormir** quando parado: Opções de energia → Disco rígido → Desligar após 20 min (economiza uns 5 W).
 4. **Use o chat para perguntas do dia a dia** e o conselho quando quiser uma segunda opinião. O modo profundo gasta umas 4 vezes mais que a rodada única.
 5. **Se tiver tarifa branca**, rode a sincronização fora do horário de ponta. A verificação semanal (segunda, 10h) já está fora da ponta.
-6. **Feche tudo ao terminar**: opção 15 do menu (`parar-tudo.ps1`). Mesmo sem isso, o servidor de modelos tira da memória o modelo parado há 15 minutos e o recarrega na próxima pergunta (`iniciar-servidor.ps1 -DormirMinutos 30` muda o tempo; `0` desliga).
+6. **Feche tudo ao terminar**: opção 15 do menu (`parar-tudo.ps1`). Mesmo sem isso, o servidor de modelos tira da memória o modelo parado há 15 minutos e o recarrega na próxima pergunta (`iniciar-servidor.ps1 -DormirMinutos 30` muda o tempo; `0` desliga). A opção 6 (status) mostra o que do cofre ainda está aberto.
 
 ## Catálogo e atualização constante
 

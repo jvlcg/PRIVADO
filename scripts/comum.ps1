@@ -313,6 +313,18 @@ function Manter-Acordado {
     } catch {}
 }
 
+# Programas abertos a partir do cofre (pastas motores e cache, no SSD e no HD): servidores, ComfyUI, conselho.
+function Processos-Cofre {
+    $pastas = @((Join-Path $Raiz 'motores'), (Join-Path $Raiz 'cache'))
+    $rc = Raiz-Cofre
+    if ($rc) { $pastas += (Join-Path $rc 'motores') }
+    $pastas = @($pastas | ForEach-Object { $_.TrimEnd('\') + '\' })
+    return @(Get-Process | Where-Object {
+        $exe = $_.Path
+        $exe -and $_.Id -ne $PID -and @($pastas | Where-Object { $exe.StartsWith($_, [StringComparison]::OrdinalIgnoreCase) }).Count -gt 0
+    })
+}
+
 # Notificacao do Windows (canto da tela). Falha em silencio se o sistema nao permitir.
 function Notificar($titulo, $texto) {
     try {

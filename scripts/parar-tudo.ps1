@@ -9,15 +9,7 @@
 #>
 . "$PSScriptRoot\comum.ps1"
 
-$pastas = @((Join-Path $Raiz 'motores'), (Join-Path $Raiz 'cache'))
-$cofre = Raiz-Cofre
-if ($cofre) { $pastas += (Join-Path $cofre 'motores') }
-$pastas = @($pastas | ForEach-Object { $_.TrimEnd('\') + '\' })
-
-$alvos = @(Get-Process | Where-Object {
-    $exe = $_.Path
-    $exe -and $_.Id -ne $PID -and @($pastas | Where-Object { $exe.StartsWith($_, [StringComparison]::OrdinalIgnoreCase) }).Count -gt 0
-})
+$alvos = @(Processos-Cofre)
 
 Titulo 'Fechando o que o cofre abriu'
 if ($alvos.Count -eq 0) { Ok 'Nada do cofre estava aberto.' }
