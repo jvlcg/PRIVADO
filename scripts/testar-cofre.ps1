@@ -3,7 +3,7 @@
   Confere o projeto em poucos segundos, sem rodar nenhum modelo:
     1. segredos (chave de acesso, tokens) nos arquivos que vao para o GitHub
     2. sintaxe dos scripts e acentos (o PowerShell 5.1 le errado acento em script sem BOM)
-    3. ferramentas Python (compilam?)
+    3. ferramentas Python (compilam? passam nos testes de dev\ferramentas\testes.py?)
     4. catalogo e estado (JSON valido, ids repetidos, time do conselho)
     5. arquivos dos modelos e bibliotecas marcados como baixados (existem, com o tamanho certo)
     6. scripts citados no menu e no guia existem
@@ -71,6 +71,13 @@ if ($pys.Count -gt 0) {
         $uv = Preparar-Uv
         $saida = & $uv run --offline --no-project python -m py_compile @pys 2>&1
         if ($LASTEXITCODE -eq 0) { Ok "$($pys.Count) arquivos compilam" } else { Problema "Python com erro: $(($saida | Out-String).Trim())" }
+        $testes = Join-Path $Raiz 'dev\ferramentas\testes.py'
+        if (Test-Path -LiteralPath $testes) {
+            $env:PYTHONIOENCODING = 'utf-8'
+            $saida = & $uv run --offline --no-project python $testes 2>&1 | Out-String
+            $total = [regex]::Match($saida, 'Ran (\d+) test').Groups[1].Value
+            if ($LASTEXITCODE -eq 0) { Ok "$total testes das ferramentas passaram" } else { Problema "testes das ferramentas falharam:`n$($saida.Trim())" }
+        }
     } catch { Aviso "Nao consegui rodar o Python do SSD: $($_.Exception.Message)" }
 }
 

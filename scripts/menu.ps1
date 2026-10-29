@@ -11,6 +11,7 @@ while ($true) {
     Write-Host ''
     Write-Host '================ COFRE DE IAs ================' -ForegroundColor Cyan
     Write-Host ' USAR'
+    Write-Host ' 16) Central do Cofre no navegador: o jeito mais facil (pergunta com fonte, liga e desliga tudo)'
     Write-Host '  1) Chat com todos os modelos (navegador, porta 8080)'
     Write-Host '  2) Biblioteca offline: Wikipedia, WikiMed, iFixit (porta 8081)'
     Write-Host '  3) Perguntar com fonte (modelo + biblioteca)'
@@ -21,7 +22,6 @@ while ($true) {
     Write-Host ' 13) Conselho de IAs: varias IAs respondem e decidem juntas (painel no navegador)'
     Write-Host ' 14) Medir o consumo de energia do PC (1 minuto parado)'
     Write-Host ' 15) Fechar tudo que o cofre abriu (libera a placa de video, economiza energia)'
-    Write-Host ' 16) Central do Cofre no navegador: ve o que esta ligado e liga/desliga com um clique'
     Write-Host ' MANTER'
     Write-Host '  6) Status do acervo'
     Write-Host '  7) Verificar novidades e atualizacoes'
