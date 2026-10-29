@@ -9,6 +9,9 @@
   .\baixar-conhecimento.ps1 -Id wikipedia-pt,wikimed
   .\baixar-conhecimento.ps1 -Local nucleo       # tudo que mora no SSD
   .\baixar-conhecimento.ps1 -Local cofre        # tudo que mora no cofre
+.NOTES
+  Bibliotecas com "status": "observar" no catalogo (as gigantes) ficam fora do -Local e da
+  sincronizacao; baixe pelo -Id quando quiser.
 #>
 param(
     [string[]]$Id,
@@ -28,7 +31,9 @@ if ($Listar -or (-not $Id -and -not $Local)) {
     $itens | Sort-Object { Local-De $_ }, id | ForEach-Object {
         $v = '-'
         if ($estado.conhecimento.Contains($_.id)) { $v = $estado.conhecimento[$_.id].versao }
-        [pscustomobject]@{ Id = $_.id; GB = $_.tamanho_gb; Local = (Local-De $_); Versao = $v; Nome = $_.nome }
+        $s = 'baixar'
+        if ($_.status) { $s = $_.status }
+        [pscustomobject]@{ Id = $_.id; GB = $_.tamanho_gb; Local = (Local-De $_); Status = $s; Versao = $v; Nome = $_.nome }
     } | Format-Table -AutoSize | Out-String -Width 160 | Write-Host
     Write-Host 'Uso: .\baixar-conhecimento.ps1 -Id <id>   ou   -Local nucleo|cofre|todos'
     return
@@ -39,7 +44,9 @@ if ($Id) {
     if ($desconhecidos.Count -gt 0) { throw "Id(s) fora do catalogo: $($desconhecidos -join ', ')" }
     $sel = @($itens | Where-Object { $Id -contains $_.id })
 } else {
-    $sel = @($itens | Where-Object { $Local -eq 'todos' -or (Local-De $_) -eq $Local })
+    $sel = @($itens | Where-Object { ($Local -eq 'todos' -or (Local-De $_) -eq $Local) -and $_.status -ne 'observar' })
+    $obs = @($itens | Where-Object { ($Local -eq 'todos' -or (Local-De $_) -eq $Local) -and $_.status -eq 'observar' })
+    if ($obs.Count -gt 0) { Info "Em observacao (baixe com -Id quando quiser): $(($obs | ForEach-Object { "$($_.id) ($($_.tamanho_gb) GB)" }) -join ', ')" }
 }
 
 Manter-Acordado

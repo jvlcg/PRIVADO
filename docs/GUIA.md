@@ -9,7 +9,7 @@ O SSD **A:** (ADATA LEGEND 710, NVMe, 256 GB, rótulo PRIVADO) é uma biblioteca
 O projeto tem cinco partes:
 
 - **Modelos**: 31 modelos abertos, do assistente geral aos especialistas em código, medicina, tradução, documentos, voz, imagem, vídeo, música e 3D, mais os gigantes de fronteira para hardware futuro.
-- **Conhecimento**: 17 bibliotecas offline (Wikipédia em português e inglês, enciclopédia médica, manuais de conserto, livros, fóruns práticos), para o modelo responder citando fonte em vez de inventar.
+- **Conhecimento**: 46 bibliotecas offline no catálogo (Wikipédia em português e inglês, enciclopédia médica, manuais de conserto, sobrevivência, livros universitários, fóruns práticos e o mapa do Brasil), para o modelo responder citando fonte em vez de inventar.
 - **Motores**: os programas que rodam tudo (llama.cpp, whisper.cpp, ComfyUI, Kiwix, Python), portáteis, mais instaladores para Linux, Mac, Raspberry Pi e Android.
 - **Catálogo**: uma base de dados (`catalogo\modelos.json`) com cada item, tamanho, licença, hash e versão, e scripts que checam novidades toda semana.
 - **Desenvolvimento próprio**: seus códigos, datasets, busca nos seus documentos (RAG) e treino de modelos (LoRA).
@@ -70,6 +70,23 @@ Os modelos abertos mais fortes hoje têm de 321 bilhões a 2,8 trilhões de par�
 
 São 141 GB no SSD e 821 GB no cofre. Os três gigantes de fronteira não rodam bem neste PC (precisam de 200 a 400 GB de memória), mas ficam guardados para um computador melhor no futuro. Ficam só em observação: Kimi K3 (2,8 trilhões, licença própria), FLUX 3 klein (exige login no Hugging Face) e Qwen-Image 2.1 (só uso não comercial).
 
+### Bibliotecas offline
+
+São 46 no catálogo: 17 já baixadas e 29 novas de 29/10/2026 (marcadas com *), que entram na próxima sincronização (menu, opção 8). Tudo abre na biblioteca (menu, opção 2), inclusive o mapa, e a busca da Central procura em todas de uma vez.
+
+| Área | O que tem | GB |
+| --- | --- | --- |
+| Enciclopédias | Wikipédia em português e em inglês, Wikcionário, Wikivoyage | 138 |
+| Mapas | Brasil* (ruas, estradas, hospitais e postos, com busca de cidades); mundo inteiro* (em observação) | 2,9 + 72 |
+| Saúde | WikiMed, fórum de Ciências Médicas, medicina de campo*, medicina militar*, guias de medicina em vídeo*, LibreTexts Medicina*, WikiVet* (animais) | 4 |
+| Sobrevivência | pós-desastre*, tratamento de água*, preparo de alimentos*, nós*, True Prepper*; Survivor Library* (em observação) | 2,2 + 220 |
+| Técnica e reconstrução | iFixit, fóruns Faça Você Mesmo e Eletrônica, Restarters*, WikiCiv*, Appropedia*, Energypedia*, CD3WD*, LibreTexts Engenharia e Ofícios* | 12 |
+| Agricultura e cozinha | fóruns de Jardinagem e Culinária, Gardenology* | 1,2 |
+| Ensino | Wikilivros, Wikiversidade*, simulações PhET em português*, LibreTexts Física, Matemática, Química, Biologia e Escola* | 12 |
+| Livros e programação | Projeto Gutenberg em português e inglês, Stack Overflow | 314 |
+
+As duas marcadas "em observação" são gigantes e não baixam sozinhas: `baixar-conhecimento.ps1 -Id mapa-mundo` ou `-Id survivor-library`. O mapa do Brasil foi testado com um mapa pequeno do mesmo tipo: abre na biblioteca, com zoom até o nível da rua e escala de 100 m.
+
 ## Seu hardware e o sistema
 
 O PC roda bem modelos de até cerca de 45 GB: a placa de vídeo segura 12 GB e o resto fica nos 64 GB de RAM. O Nemotron 74B (48 GB) ainda funciona bem; o gpt-oss-120b (59 GB) funciona, mas ocupa toda a RAM: feche os outros programas antes de usá-lo.
@@ -117,7 +134,7 @@ Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofr
 | Opção do menu | O que faz | Onde abre |
 | --- | --- | --- |
 | 1. Chat com todos os modelos | um servidor só com todos os modelos; escolha o modelo no topo do chat (na primeira vez, cole a chave de acesso) | http://127.0.0.1:8080 |
-| 2. Biblioteca offline | Wikipédia, WikiMed, iFixit e as outras bibliotecas, com busca | http://127.0.0.1:8081 |
+| 2. Biblioteca offline | Wikipédia, WikiMed, iFixit, o mapa e as outras bibliotecas, com busca | http://127.0.0.1:8081 |
 | 3. Perguntar com fonte | busca na biblioteca e o modelo responde citando [1], [2] | no terminal |
 | 4. Imagem, vídeo, música, 3D | ComfyUI (Workflow > Browse Templates) | http://127.0.0.1:8188 |
 | 5. Transcrever áudio | Whisper; gera `.txt` e legenda `.srt` ao lado do arquivo | no terminal |

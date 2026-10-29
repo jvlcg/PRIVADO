@@ -228,14 +228,15 @@ function Espelhos-Kiwix($caminhoRel) {
 
 function Melhor-EspelhoKiwix($caminhoRel) { return (Espelhos-Kiwix $caminhoRel)[0] }
 
-# Versao mais recente de uma biblioteca ZIM no site da Kiwix (os arquivos tem a data no nome: _AAAA-MM.zim).
+# Versao mais recente de uma biblioteca ZIM no site da Kiwix (os arquivos tem a data no nome: _AAAA-MM.zim;
+# uma republicacao no mesmo mes ganha uma letra, como _2026-07a.zim, que vem depois de _2026-07.zim).
 $script:CacheListagem = @{}
 function Versao-Zim($item) {
     $url = "https://download.kiwix.org/zim/$($item.pasta_kiwix)/"
     if (-not $script:CacheListagem.ContainsKey($url)) {
         $script:CacheListagem[$url] = (Invoke-WebRequest -UseBasicParsing -Uri $url -TimeoutSec 60 -UserAgent $UserAgent).Content
     }
-    $padrao = '(?<=href=")' + [regex]::Escape($item.prefixo) + '_(\d{4}-\d{2})\.zim(?=")'
+    $padrao = '(?<=href=")' + [regex]::Escape($item.prefixo) + '_(\d{4}-\d{2}[a-z]?)\.zim(?=")'
     $ms = @([regex]::Matches($script:CacheListagem[$url], $padrao))
     if ($ms.Count -eq 0) { return $null }
     $ultimo = $ms | Sort-Object { $_.Groups[1].Value } | Select-Object -Last 1
