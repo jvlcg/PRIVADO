@@ -327,6 +327,72 @@ function Chave-Api {
     return (Get-Content -LiteralPath $ArquivoChave -TotalCount 1).Trim()
 }
 
+# Energia: tarifa e estimativas da secao "energia" do catalogo. O menu, a Central e os scripts mostram
+# quanto cada tarefa gasta (Wh) e quanto custa na tarifa da conta de luz.
+function Energia-Catalogo {
+    if ($null -eq $script:Energia) {
+        $c = Ler-Json $ArquivoCatalogo
+        if ($c -and $c.energia) { $script:Energia = $c.energia }
+        else { $script:Energia = [pscustomobject]@{ tarifa_kwh = 1.25; distribuidora = 'sua distribuidora'; pc_parado_w = 114; tarefas = [pscustomobject]@{} } }
+    }
+    return $script:Energia
+}
+
+function Tarifa-Kwh { return [double](Energia-Catalogo).tarifa_kwh }
+
+# "~1,4 Wh = R$ 0,002" (com o sinal de aproximadamente no lugar do =).
+$CulturaBR = [Globalization.CultureInfo]::GetCultureInfo('pt-BR')
+function Texto-Custo([double]$wh) {
+    $reais = $wh / 1000 * (Tarifa-Kwh)
+    if ($wh -ge 1000) { $txtWh = [string]::Format($CulturaBR, '{0:N2} kWh', $wh / 1000) }
+    elseif ($wh -ge 10) { $txtWh = [string]::Format($CulturaBR, '{0:N0} Wh', $wh) }
+    else { $txtWh = [string]::Format($CulturaBR, '{0:N1} Wh', $wh) }
+    if ($reais -lt 0.0005) { $txtR = 'menos de R$ 0,001' }
+    elseif ($reais -lt 0.1) { $txtR = [string]::Format($CulturaBR, 'R$ {0:N3}', $reais) }
+    else { $txtR = [string]::Format($CulturaBR, 'R$ {0:N2}', $reais) }
+    return "~$txtWh $([char]0x2248) $txtR"
+}
+
+# Gasto de quem roda $segundos com o PC inteiro puxando $watts.
+function Texto-GastoTempo([double]$segundos, [double]$watts) { return Texto-Custo ($watts * $segundos / 3600) }
+
+function Texto-Estimativa($tarefa) {
+    $t = (Energia-Catalogo).tarefas.$tarefa
+    if (-not $t) { return '' }
+    if ($t.texto) { return [string]$t.texto }
+    if ($t.wh) { return ("$(Texto-Custo $t.wh) $($t.unidade)").Trim() }
+    if ($t.watts) { return ("$(Texto-Custo $t.watts) $($t.unidade)").Trim() }
+    return ''
+}
+
+function Mostrar-Estimativa($tarefa, [string]$texto = '') {
+    if (-not $texto) { $texto = Texto-Estimativa $tarefa }
+    if (-not $texto) { return }
+    $e = Energia-Catalogo
+    Write-Host ([string]::Format($CulturaBR, '  Energia estimada: {0}  (tarifa {1}: R$ {2:N2}/kWh)', $texto, $e.distribuidora, (Tarifa-Kwh))) -ForegroundColor DarkYellow
+}
+
+# No fim de uma tarefa: quanto ela gastou, pelo tempo que levou e a potencia tipica dela (watts no catalogo).
+function Mostrar-GastoFinal($tarefa, [datetime]$inicio) {
+    $e = Energia-Catalogo
+    $w = $e.tarefas.$tarefa.watts
+    if (-not $w) { $w = $e.pc_parado_w }
+    $s = ((Get-Date) - $inicio).TotalSeconds
+    if ($s -ge 120) { $tempo = [string]::Format($CulturaBR, '{0:N0} min', $s / 60) } else { $tempo = [string]::Format($CulturaBR, '{0:N0} s', $s) }
+    Write-Host ("  Gasto estimado: {0} com o PC em ~{1} W -> {2}" -f $tempo, $w, (Texto-GastoTempo $s $w)) -ForegroundColor DarkYellow
+}
+
+# Modo jogo: com este arquivo presente, nada das IAs liga (nem a verificacao semanal); modo-jogo.ps1 liga e desliga.
+$ArquivoModoJogo = Join-Path $PastaCatalogo 'modo-jogo.txt'
+function ModoJogo-Ativo { return (Test-Path -LiteralPath $ArquivoModoJogo) }
+function Bloquear-SeModoJogo([string]$oque) {
+    if (ModoJogo-Ativo) {
+        Aviso "Modo jogo ligado: $oque nao vai abrir agora."
+        Info 'Para voltar a usar as IAs: menu, opcao 12, ou o botao "Sair do modo jogo" na Central.'
+        exit 3
+    }
+}
+
 # Programas abertos a partir do cofre (pastas motores e cache, no SSD e no HD): servidores, ComfyUI, conselho.
 function Processos-Cofre {
     $pastas = @((Join-Path $Raiz 'motores'), (Join-Path $Raiz 'cache'))

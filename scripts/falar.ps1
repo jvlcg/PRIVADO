@@ -14,6 +14,7 @@ param(
     [switch]$Tocar
 )
 . "$PSScriptRoot\comum.ps1"
+Bloquear-SeModoJogo 'a voz'
 
 $modelo = Join-Path $PastaModelos "audio\piper\pt_BR-$Voz-medium.onnx"
 if (-not (Test-Path -LiteralPath $modelo)) { throw 'Vozes do Piper nao baixadas. Rode: .\baixar-modelo.ps1 -Id piper-pt-br' }
@@ -24,6 +25,8 @@ $resto = @('--script', $script, '--modelo', $modelo, '--saida', $Saida)
 if ($Arquivo) { $resto += @('--arquivo', $Arquivo) } elseif ($Texto) { $resto += $Texto } else { throw 'Informe o texto ou -Arquivo.' }
 
 $env:PYTHONIOENCODING = 'utf-8'
+Mostrar-Estimativa 'falar'
+$inicio = Get-Date
 # --offline usa so o cache do SSD; se faltar algum pacote, tenta uma vez com internet.
 Executar-Nativo $uv (@('run', '--offline') + $resto)
 if ($LASTEXITCODE -ne 0) { Info 'Tentando de novo com internet...'; Executar-Nativo $uv (@('run') + $resto) }
@@ -31,3 +34,4 @@ if ($LASTEXITCODE -eq 0) {
     Ok "Audio: $Saida"
     if ($Tocar) { (New-Object System.Media.SoundPlayer $Saida).PlaySync() }
 }
+Mostrar-GastoFinal 'falar' $inicio

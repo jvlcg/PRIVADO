@@ -8,15 +8,18 @@
 .EXAMPLE
   .\medir-energia.ps1 -Segundos 60                                  # PC parado por 1 minuto
   .\medir-energia.ps1 -Comando { .\conselho.ps1 "pergunta" } -Nome conselho
-  .\medir-energia.ps1 -Segundos 60 -Tarifa 0.92                     # tarifa da sua conta (R$/kWh)
+  .\medir-energia.ps1 -Segundos 60 -Tarifa 0.92                     # outra tarifa (R$/kWh)
+.NOTES
+  Sem -Tarifa, usa a da secao "energia" do catalogo (Equatorial Goias, com impostos).
 #>
 param(
     [scriptblock]$Comando,
     [int]$Segundos = 0,
-    [double]$Tarifa = 1.00,
+    [double]$Tarifa = 0,
     [string]$Nome = ''
 )
 . "$PSScriptRoot\comum.ps1"
+if ($Tarifa -le 0) { $Tarifa = Tarifa-Kwh }
 
 # Modelo do resto do PC (Ryzen 9 7900X + X670E): processador ~35 W parado e ~195 W com todos os nucleos;
 # placa-mae, memoria, discos e ventoinhas ~40 W; fonte com ~88% de eficiencia.
@@ -84,5 +87,5 @@ $res | Export-Csv -LiteralPath $log -Append -NoTypeInformation -Delimiter ';' -E
 
 Titulo "Energia: $($res.tarefa)"
 Info ("Duracao: {0} s | placa de video: media {1} W, pico {2} W | processador: {3}% de carga" -f $res.segundos, $res.gpu_media_w, $res.gpu_max_w, $res.cpu_media_pct)
-Info ("PC inteiro (estimado): {0} W em media -> {1} Wh -> R$ {2:N4} (tarifa R$ {3:N2}/kWh)" -f $res.pc_medio_w, $res.energia_wh, $res.custo_reais, $Tarifa)
+Info ([string]::Format($CulturaBR, 'PC inteiro (estimado): {0:N1} W em media -> {1:N2} Wh -> R$ {2:N4} (tarifa {3}: R$ {4:N2}/kWh)', $res.pc_medio_w, $res.energia_wh, $res.custo_reais, (Energia-Catalogo).distribuidora, $Tarifa))
 $res

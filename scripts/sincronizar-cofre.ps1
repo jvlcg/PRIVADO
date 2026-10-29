@@ -15,12 +15,14 @@
 #>
 param([switch]$SoNucleo, [switch]$SemEspelho, [switch]$SemIntegridade, [int]$Prioridade = 2)
 . "$PSScriptRoot\comum.ps1"
+Bloquear-SeModoJogo 'a sincronizacao'
 $ErrorActionPreference = 'Continue'
 
 New-Item -ItemType Directory -Force -Path $PastaLogs | Out-Null
 $log = Join-Path $PastaLogs ("sincronizar-{0}.txt" -f (Get-Date -Format 'yyyy-MM-dd_HHmm'))
 Start-Transcript -Path $log -Force | Out-Null
 $inicio = Get-Date
+Mostrar-Estimativa 'sincronizar' "$(Texto-Estimativa 'sincronizar'); o PC fica ligado (~125 W) enquanto baixa e confere"
 Manter-Acordado
 $rc = Raiz-Cofre
 $temCofre = (-not $SoNucleo) -and $rc -and (Test-Path ([IO.Path]::GetPathRoot($rc)))
@@ -69,6 +71,7 @@ if (Test-Path -LiteralPath (Join-Path $Raiz '.git')) {
 
 Titulo 'Sincronizacao terminada'
 Info ("Duracao: {0:hh\:mm\:ss}" -f ((Get-Date) - $inicio))
+Mostrar-GastoFinal 'sincronizar' $inicio
 Info "Log completo: $(Caminho-Relativo $log)"
 Stop-Transcript | Out-Null
 Notificar 'SSD de IAs' 'Sincronizacao do cofre terminada. Veja o log em A:\logs.'

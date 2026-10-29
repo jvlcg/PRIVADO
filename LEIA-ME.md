@@ -7,10 +7,10 @@ e as ferramentas para usar tudo isso. Montado em 25/10/2026.
 ## Como comecar
 
 1. De dois cliques em `IA.cmd` (nesta pasta). Abre o menu.
-2. Opcao 1: chat com os modelos, no navegador (http://127.0.0.1:8080). Na primeira vez o chat pede a
+2. Opcao 2: chat com os modelos, no navegador (http://127.0.0.1:8080). Na primeira vez o chat pede a
    chave de acesso: ela ja vai copiada, e so colar com Ctrl+V (fica em catalogo\chave-api.txt).
-3. Opcao 2: biblioteca offline - Wikipedia, enciclopedia medica, manuais de conserto (http://127.0.0.1:8081).
-4. Opcao 3: pergunte algo; o modelo responde citando a Wikipedia e as outras bibliotecas.
+3. Opcao 3: biblioteca offline - Wikipedia, enciclopedia medica, manuais de conserto (http://127.0.0.1:8081).
+4. Opcao 4: pergunte algo; o modelo responde citando a Wikipedia e as outras bibliotecas.
 5. Mais facil ainda: dois cliques em `Painel.cmd`. Abre a Central do Cofre no navegador (http://127.0.0.1:8070),
    que mostra o que esta ligado e liga ou desliga cada servico com um clique.
 
@@ -45,7 +45,7 @@ o Projeto Gutenberg, o Stack Overflow e uma copia de seguranca deste SSD.
 | ler documento ou foto        | glm-ocr |
 | computador fraco ou sem GPU  | gemma-4-e4b, qwen3.5-2b, lfm2.5-1.2b, qwen3.5-0.8b |
 | o maior que roda aqui        | nemotron-3.5-bolt-74b (fica no HD: ~5 min para carregar) |
-| varias IAs decidindo juntas  | Conselho de IAs: menu, opcao 13 (http://127.0.0.1:8090) |
+| varias IAs decidindo juntas  | Conselho de IAs: menu, opcao 5 (http://127.0.0.1:8090) |
 
 ## Cartao de emergencia
 
@@ -54,7 +54,7 @@ onde achar cada assunto, quanto o PC aguenta numa bateria e o que fazer se ele q
 
 ## Economizar energia
 
-- Ao terminar, menu opcao 15: fecha tudo que o cofre abriu e libera a placa de video.
+- Ao terminar, menu opcao 11 (para jogar, opcao 12: modo jogo): fecha tudo que o cofre abriu e libera a placa de video.
 - Mesmo sem isso, o servidor de modelos tira da memoria o modelo parado ha 15 minutos.
 - Suspenda o PC quando nao for usar. Custos e dicas: guia, secao "Custo de energia".
 
@@ -65,7 +65,7 @@ Em qualquer Linux, na raiz deste disco: `sha256sum -c SHA256SUMS.txt`
 
 ## Manter atualizado (quando houver internet)
 
-Menu, opcao 8 (sincronizar o cofre). Uma tarefa do Windows tambem verifica novidades toda segunda as 10h.
+Menu, opcao 15 (sincronizar o cofre). Uma tarefa do Windows tambem verifica novidades toda segunda as 10h.
 
 ## Guia completo
 

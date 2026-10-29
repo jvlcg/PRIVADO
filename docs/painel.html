@@ -67,6 +67,9 @@ ul.dicas li { margin: 4px 0; }
 .resposta a { color: var(--destaque); text-decoration: none; font-weight: 600; }
 .fontes { font-size: 14px; margin: 8px 0 0; padding-left: 22px; }
 .falha { color: var(--erro); margin-top: 12px; }
+.gasto { font-size: 13px; color: var(--suave); margin: 0; }
+#avisoJogo { margin-top: 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.acoes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 @media (max-width: 560px) { .tabela th:nth-child(3), .tabela td:nth-child(3) { display: none; } }
 </style>
 </head>
@@ -75,14 +78,19 @@ ul.dicas li { margin: 4px 0; }
   <div class="topo">
     <div>
       <h1>Cofre de IAs</h1>
-      <p class="suave">Tudo roda neste PC, sem internet.</p>
+      <p class="suave">Tudo roda neste PC, sem internet. <span id="tarifa"></span></p>
     </div>
     <button class="botao leve" id="atualizar" type="button" hidden>Verificar de novo</button>
   </div>
 
+  <div class="aviso" id="avisoJogo" hidden>
+    <span><strong>Modo jogo ligado:</strong> as IAs estão desligadas e não abrem até você sair.</span>
+    <button class="botao" id="sairJogo" type="button">Sair do modo jogo</button>
+  </div>
+
   <div class="aviso" id="avisoDisco" hidden>
     Aberto direto do disco, o painel não consegue ver o que está ligado. Para ver e ligar tudo com um clique,
-    abra a <strong>Central do Cofre</strong>: menu, opção 16, ou dois cliques em <code>A:\Painel.cmd</code>.
+    abra a <strong>Central do Cofre</strong>: menu, opção 1, ou dois cliques em <code>A:\Painel.cmd</code>.
   </div>
 
   <section id="perguntar" hidden>
@@ -90,7 +98,8 @@ ul.dicas li { margin: 4px 0; }
     <textarea id="pergunta" placeholder="Ex.: Como purificar água da chuva para beber?" aria-label="Sua pergunta"></textarea>
     <div class="linha">
       <button class="botao" id="perguntarBotao" type="button">Perguntar</button>
-      <span class="suave">Uma IA responde citando a Wikipédia e as outras bibliotecas. Leva 1 a 2 minutos; liga o chat e a biblioteca se precisar.</span>
+      <button class="botao leve" id="agoraBotao" type="button" hidden title="Para o raciocínio e responde com o que já foi encontrado">Responder agora</button>
+      <span class="suave">Uma IA responde citando a Wikipédia e as outras bibliotecas. Leva 1 a 2 minutos; liga o chat e a biblioteca se precisar. <span id="gastoPergunta"></span></span>
     </div>
     <div id="saida"></div>
   </section>
@@ -104,9 +113,13 @@ ul.dicas li { margin: 4px 0; }
     <div class="numeros">
       <div class="numero"><span class="suave">Placa de vídeo</span><b id="watts">-</b><span class="suave" id="vram"></span></div>
       <div class="numero"><span class="suave">Memória RAM livre</span><b id="ram">-</b><span class="suave" id="ramTotal"></span></div>
+      <div class="numero"><span class="suave">PC inteiro (estimado)</span><b id="pcW">-</b><span class="suave" id="pcCusto"></span></div>
     </div>
     <ul class="modelos" id="modelos"></ul>
-    <p style="margin-top:12px"><button class="botao perigo" id="pararTudo" type="button">Fechar tudo e liberar a placa</button></p>
+    <div class="acoes">
+      <button class="botao perigo" id="pararTudo" type="button">Fechar tudo e liberar a placa</button>
+      <button class="botao perigo" id="entrarJogo" type="button">Modo jogo: desligar todas as IAs</button>
+    </div>
   </section>
 
   <h2>Buscar na biblioteca offline</h2>
@@ -119,10 +132,10 @@ ul.dicas li { margin: 4px 0; }
     <button class="botao" type="submit">Buscar</button>
   </form>
   <div class="atalhos" id="atalhos" role="group" aria-label="Atalhos de emergência"></div>
-  <p class="suave" style="margin-top:8px">Precisa da biblioteca ligada. Os atalhos buscam no idioma escolhido; as bibliotecas de sobrevivência e medicina de campo são em inglês. Para uma resposta explicada com fontes, use a opção 3 do menu.</p>
+  <p class="suave" style="margin-top:8px">Precisa da biblioteca ligada. Os atalhos buscam no idioma escolhido; as bibliotecas de sobrevivência e medicina de campo são em inglês. Para uma resposta explicada com fontes, use a opção 4 do menu.</p>
 
   <h2>Mapa offline</h2>
-  <p id="mapaTexto" class="suave">Abra a biblioteca (menu, opção 2) e escolha o mapa na lista.</p>
+  <p id="mapaTexto" class="suave">Abra a biblioteca (menu, opção 3) e escolha o mapa na lista.</p>
   <a class="botao" id="mapaBotao" target="_blank" rel="noopener" hidden>Abrir o mapa</a>
 
   <h2>Qual IA usar</h2>
@@ -144,7 +157,7 @@ ul.dicas li { margin: 4px 0; }
   <h2>Economizar energia</h2>
   <div class="aviso">
     <ul class="dicas">
-      <li>Ao terminar, feche tudo (botão acima ou opção 15 do menu): libera a placa de vídeo.</li>
+      <li>Ao terminar, feche tudo (botão acima ou opção 11 do menu): libera a placa de vídeo.</li>
       <li>Mesmo sem isso, o servidor de modelos tira da memória o modelo parado há 15 minutos.</li>
       <li>Suspenda o PC quando não for usar. As IAs custam centavos; o PC ligado à toa é o que pesa na conta.</li>
     </ul>
@@ -160,10 +173,10 @@ ul.dicas li { margin: 4px 0; }
 </main>
 <script>
 const SERVICOS = [
-  { id: 'chat', nome: 'Chat com os modelos', faz: 'Todas as IAs de texto; escolha o modelo no topo.', abrir: 'http://127.0.0.1:8080', menu: 1 },
-  { id: 'biblioteca', nome: 'Biblioteca offline', faz: 'Wikipédia, WikiMed, iFixit, livros e fóruns práticos.', abrir: 'http://127.0.0.1:8081', menu: 2 },
-  { id: 'conselho', nome: 'Conselho de IAs', faz: 'Várias IAs respondem e um relator decide.', abrir: 'http://127.0.0.1:8090', menu: 13 },
-  { id: 'comfyui', nome: 'Imagem, vídeo, música e 3D', faz: 'ComfyUI, com modelos prontos em Browse Templates.', abrir: 'http://127.0.0.1:8188', menu: 4 },
+  { id: 'chat', nome: 'Chat com os modelos', faz: 'Todas as IAs de texto; escolha o modelo no topo.', abrir: 'http://127.0.0.1:8080', menu: 2 },
+  { id: 'biblioteca', nome: 'Biblioteca offline', faz: 'Wikipédia, WikiMed, iFixit, livros e fóruns práticos.', abrir: 'http://127.0.0.1:8081', menu: 3 },
+  { id: 'conselho', nome: 'Conselho de IAs', faz: 'Várias IAs respondem e um relator decide.', abrir: 'http://127.0.0.1:8090', menu: 5 },
+  { id: 'comfyui', nome: 'Imagem, vídeo, música e 3D', faz: 'ComfyUI, com modelos prontos em Browse Templates.', abrir: 'http://127.0.0.1:8188', menu: 6 },
 ];
 const ESTADOS_MODELO = { loaded: 'na memória', loading: 'carregando', sleeping: 'dormindo (memória livre)' };
 // Buscas prontas para emergencias: o termo em portugues ou em ingles, conforme o idioma escolhido.
@@ -226,8 +239,9 @@ function montar() {
       s.ligarBotao.addEventListener('click', () => ligar(s));
       c.append(s.ligarBotao);
     }
+    s.gasto = el('p', 'gasto', '');
     s.como = el('p', 'como', `Pelo menu: opção ${s.menu}.`);
-    c.append(s.como);
+    c.append(s.gasto, s.como);
     grade.append(c);
   }
   const atalhos = document.getElementById('atalhos');
@@ -252,15 +266,26 @@ function mostrar(e) {
     s.estado.className = 'estado' + (ok ? ' ligado' : falhou ? ' falhou' : '');
     s.abrirLink.hidden = !ok;
     s.ligarBotao.hidden = ok;
-    s.ligarBotao.disabled = ligando;
+    s.ligarBotao.disabled = ligando || e.modo_jogo;
+    const g = e.energia && e.energia.estimativas[s.id];
+    s.gasto.textContent = g ? `Gasto: ${g}` : '';
     s.ligarBotao.textContent = ligando ? 'Ligando...' : 'Ligar';
     s.como.textContent = falhou ? `Não ligou em 5 min. Use o menu (opção ${s.menu}) para ver o erro.` : `Pelo menu: opção ${s.menu}.`;
   }
+  document.getElementById('avisoJogo').hidden = !e.modo_jogo;
+  document.getElementById('entrarJogo').hidden = e.modo_jogo;
+  document.getElementById('perguntarBotao').disabled = e.modo_jogo;
+  if (e.energia) {
+    document.getElementById('tarifa').textContent = `Tarifa: ${e.energia.distribuidora}, ${e.energia.tarifa}.`;
+    document.getElementById('gastoPergunta').textContent = `Gasto: ${e.energia.estimativas.perguntar}.`;
+  }
+  document.getElementById('pcW').textContent = e.pc_w ? `~${e.pc_w} W` : 'medindo...';
+  document.getElementById('pcCusto').textContent = e.pc_custo_hora || '';
   const mapaBotao = document.getElementById('mapaBotao');
   mapaBotao.hidden = !e.mapa;
   if (e.mapa) mapaBotao.href = e.mapa;
   document.getElementById('mapaTexto').textContent = e.mapa ? 'Ruas, estradas, hospitais, postos e escolas, sem internet.'
-    : e.servicos.biblioteca ? 'O mapa do Brasil ainda não foi baixado: menu, opção 8 (sincronizar).'
+    : e.servicos.biblioteca ? 'O mapa do Brasil ainda não foi baixado: menu, opção 15 (sincronizar).'
     : 'Ligue a biblioteca (acima) para abrir o mapa.';
   const p = e.placa;
   document.getElementById('watts').textContent = p ? `${p.watts} W` : 'sem leitura';
@@ -292,7 +317,7 @@ function mostrar(e) {
 async function verificar() {
   if (!CENTRAL) return;
   try { mostrar(await api('/api/estado')); }
-  catch { avisar('A Central não respondeu. Ela ainda está aberta? (menu, opção 16)'); }
+  catch { avisar('A Central não respondeu. Ela ainda está aberta? (menu, opção 1)'); }
 }
 
 async function ligar(s) {
@@ -345,8 +370,10 @@ async function perguntar() {
   const pergunta = caixa.value.trim();
   if (!pergunta) { caixa.focus(); return; }
   const botao = document.getElementById('perguntarBotao');
+  const agora = document.getElementById('agoraBotao');
   const saida = document.getElementById('saida');
   botao.disabled = true;
+  agora.hidden = false; agora.disabled = false; agora.textContent = 'Responder agora';
   const etapas = el('ul', 'etapas');
   saida.replaceChildren(etapas);
   const tratar = e => {
@@ -387,6 +414,32 @@ async function perguntar() {
     saida.append(el('p', 'falha', `A Central não respondeu: ${erro.message}`));
   }
   botao.disabled = false;
+  agora.hidden = true;
+  verificar();
+}
+
+// Para o raciocínio: a IA responde já, com os artigos que tinha lido até aqui.
+async function responderAgora() {
+  const agora = document.getElementById('agoraBotao');
+  agora.disabled = true; agora.textContent = 'Respondendo agora...';
+  try { await api('/api/agora', {}); } catch (erro) { avisar(`Não deu para pedir a resposta agora: ${erro.message}`); }
+}
+
+async function entrarModoJogo() {
+  if (!confirm('Modo jogo: fechar todas as IAs (chat, biblioteca, conselho, ComfyUI e esta Central) para jogar? Nada delas abre até você sair.')) return;
+  avisar('Ligando o modo jogo...');
+  try {
+    const r = await api('/api/modo-jogo', { ligar: true });
+    clearTimeout(relogio);
+    document.querySelector('main').innerHTML = '<h1>Modo jogo ligado</h1><p>Tudo do cofre foi fechado, inclusive a Central: a placa de vídeo, a memória e o disco estão livres. Bom jogo!</p>' +
+      '<p class="suave">Para voltar a usar as IAs: dois cliques em <code>A:\\Painel.cmd</code> e "Sair do modo jogo", ou no menu (<code>A:\\IA.cmd</code>), opção 12.</p>';
+    if (!r.ok) console.warn(r.texto);
+  } catch (erro) { avisar(`Não deu para ligar o modo jogo: ${erro.message}. Use o menu, opção 12.`); }
+}
+
+async function sairModoJogo() {
+  try { await api('/api/modo-jogo', { ligar: false }); avisar('Modo jogo desligado: as IAs voltam a ligar normalmente.'); }
+  catch (erro) { avisar(`Não deu para sair do modo jogo: ${erro.message}. Use o menu, opção 12.`); }
   verificar();
 }
 
@@ -395,7 +448,7 @@ async function pararTudo() {
   const b = document.getElementById('pararTudo');
   b.disabled = true;
   avisar('Fechando...');
-  try { const r = await api('/api/parar-tudo', {}); avisar(r.ok ? 'Tudo fechado; a placa de vídeo está livre.' : 'Algo não fechou. Use a opção 15 do menu para ver.'); }
+  try { const r = await api('/api/parar-tudo', {}); avisar(r.ok ? 'Tudo fechado; a placa de vídeo está livre.' : 'Algo não fechou. Use a opção 11 do menu para ver.'); }
   catch (erro) { avisar(`Não deu para fechar: ${erro.message}`); }
   b.disabled = false;
   verificar();
@@ -417,10 +470,13 @@ if (CENTRAL) {
     setTimeout(() => { copiar.textContent = original; }, 8000);
   });
   document.getElementById('perguntarBotao').addEventListener('click', perguntar);
+  document.getElementById('agoraBotao').addEventListener('click', responderAgora);
   document.getElementById('pergunta').addEventListener('keydown', ev => { if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) perguntar(); });
   document.getElementById('atualizar').hidden = false;
   document.getElementById('atualizar').addEventListener('click', verificar);
   document.getElementById('pararTudo').addEventListener('click', pararTudo);
+  document.getElementById('entrarJogo').addEventListener('click', entrarModoJogo);
+  document.getElementById('sairJogo').addEventListener('click', sairModoJogo);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) verificar(); else clearTimeout(relogio); });
   verificar();
 } else {

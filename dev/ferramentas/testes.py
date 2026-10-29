@@ -4,7 +4,7 @@
 # ///
 """
 Testes das ferramentas do cofre, sem servidores ligados (as chamadas de rede sao trocadas por respostas prontas).
-Roda pelo testar-cofre.ps1 (menu, opcao 17) ou:  uv run --offline --script testes.py
+Roda pelo testar-cofre.ps1 (menu, opcao 18) ou:  uv run --offline --script testes.py
 """
 from __future__ import annotations
 

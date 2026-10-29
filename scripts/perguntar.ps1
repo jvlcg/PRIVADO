@@ -18,9 +18,12 @@ param(
     [string]$Modelo = 'gemma-4-26b-a4b'
 )
 . "$PSScriptRoot\comum.ps1"
+Bloquear-SeModoJogo 'o Perguntar com fonte'
 
 $uv = Preparar-Uv
 $sabio = Join-Path $Raiz 'dev\ferramentas\sabio.py'
+$inicio = Get-Date
+if (-not $Indexar) { Mostrar-Estimativa 'perguntar' }
 if ($Indexar) { $a = @('indexar', $Indexar) }
 elseif ($Buscar) { $a = @('buscar', $Buscar, '--modelo', $Modelo) }
 elseif ($Pergunta) {
@@ -32,3 +35,4 @@ elseif ($Pergunta) {
 $env:PYTHONIOENCODING = 'utf-8'
 Executar-Nativo $uv (@('run', '--offline', '--script', $sabio) + $a)
 if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) { Executar-Nativo $uv (@('run', '--script', $sabio) + $a) }
+Mostrar-GastoFinal 'perguntar' $inicio

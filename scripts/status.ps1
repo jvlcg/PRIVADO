@@ -73,7 +73,7 @@ else {
     foreach ($g in ($abertos | Group-Object ProcessName)) {
         Info ("{0,-20} {1} processo(s), {2:N1} GB de RAM" -f $g.Name, $g.Count, (($g.Group | Measure-Object WorkingSet64 -Sum).Sum / 1GB))
     }
-    Info 'Para fechar tudo e liberar a placa de video: menu, opcao 15.'
+    Info 'Para fechar tudo e liberar a placa de video: menu, opcao 11.'
 }
 try {
     $gpu = (& nvidia-smi --query-gpu=memory.used,power.draw --format=csv,noheader) | Select-Object -First 1

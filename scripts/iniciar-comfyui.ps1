@@ -9,6 +9,7 @@
 #>
 param([int]$Porta = 8188, [switch]$Rede, [switch]$SemNavegador)
 . "$PSScriptRoot\comum.ps1"
+Bloquear-SeModoJogo 'o ComfyUI'
 
 $pasta = Pasta-Motor 'comfyui'
 if (-not $pasta) { throw 'ComfyUI nao instalado. Rode: .\instalar-motores.ps1 -Motor comfyui' }
@@ -30,6 +31,7 @@ if ($SemNavegador) { $a += '--disable-auto-launch' }
 Titulo 'ComfyUI'
 Info "Endereco: http://127.0.0.1:$Porta"
 Info 'Para comecar: Workflow > Browse Templates. Para parar: Ctrl+C.'
+Mostrar-Estimativa 'comfyui' "$(Texto-Custo 2.5) por imagem, $(Texto-Custo 13) por objeto 3D, $(Texto-Custo 50) por video de 2 s, $(Texto-Custo 155) por animacao"
 Push-Location $raizPortatil
 [Environment]::CurrentDirectory = $raizPortatil
 try { Executar-Nativo $python $a } finally { Pop-Location }

@@ -29,6 +29,7 @@ param(
     [switch]$SemNavegador
 )
 . "$PSScriptRoot\comum.ps1"
+Bloquear-SeModoJogo 'o conselho de IAs'
 
 function Esperar-Url($url, $segundos) {
     for ($i = 0; $i -lt $segundos; $i++) {
@@ -54,6 +55,12 @@ if ($Fontes -eq 'sim' -and -not (Esperar-Url 'http://127.0.0.1:8081' 1)) {
 
 $uv = Preparar-Uv
 $conselho = Join-Path $Raiz 'dev\ferramentas\conselho.py'
+$inicio = Get-Date
+# Medido: rodada unica 11,5 Wh, profundo 50 Wh; o debate fica no meio (~25 Wh).
+$whModo = 11.5; $nomeModo = 'rodada unica'
+if ($Profundo) { $whModo = 50; $nomeModo = 'modo profundo' } elseif ($Debate) { $whModo = 25; $nomeModo = 'com debate' }
+if ($Servir) { Mostrar-Estimativa 'conselho' "por pergunta: $(Texto-Custo 11.5) na rodada unica, $(Texto-Custo 25) com debate, $(Texto-Custo 50) no profundo" }
+else { Mostrar-Estimativa 'conselho' "$(Texto-Custo $whModo) ($nomeModo)" }
 if ($Servir) {
     $a = @('servir', '--porta', "$Porta")
     if ($Rede) { $a += '--rede' }
@@ -76,3 +83,4 @@ if ($Servir) {
 
 $env:PYTHONIOENCODING = 'utf-8'
 Executar-Nativo $uv (@('run', '--offline', '--script', $conselho) + $a)
+if (-not $Servir) { Mostrar-GastoFinal 'conselho' $inicio }

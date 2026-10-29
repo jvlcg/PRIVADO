@@ -2,7 +2,7 @@
 .SYNOPSIS
   Gera imagem, video ou animacao pelo ComfyUI do cofre, direto do terminal (sem abrir a interface).
   Usa os fluxos prontos de dev\configs\comfyui e salva o resultado em dev\midia-gerada.
-  O ComfyUI precisa estar aberto (menu, opcao 4, ou iniciar-comfyui.ps1).
+  O ComfyUI precisa estar aberto (menu, opcao 6, ou iniciar-comfyui.ps1).
 .EXAMPLE
   .\gerar.ps1 -Imagem "um farol na praia ao por do sol, foto realista"
   .\gerar.ps1 -Imagem "retrato de um astronauta" -Vertical
@@ -24,10 +24,15 @@ param(
     [long]$Semente = -1
 )
 . "$PSScriptRoot\comum.ps1"
+Bloquear-SeModoJogo 'a geracao de imagem e video'
 
 $url = 'http://127.0.0.1:8188'
 try { Invoke-WebRequest -UseBasicParsing "$url/system_stats" -TimeoutSec 3 | Out-Null }
-catch { throw 'O ComfyUI nao esta aberto. Abra pelo menu (opcao 4) ou rode iniciar-comfyui.ps1.' }
+catch { throw 'O ComfyUI nao esta aberto. Abra pelo menu (opcao 6) ou rode iniciar-comfyui.ps1.' }
+# Placa de video no limite (~340 W o PC inteiro): ~2,5 Wh por imagem e ~25 Wh por segundo de video.
+if ($Animar) { Mostrar-Estimativa 'animacao' }
+elseif ($Video) { Mostrar-Estimativa 'video' "$(Texto-Custo (25 * $Segundos)) por video de $Segundos s" }
+else { Mostrar-Estimativa 'gerar' "$(Texto-Custo 2.5) por imagem" }
 
 $pastaFluxos = Join-Path $Raiz 'dev\configs\comfyui'
 $saida = Join-Path $Raiz 'dev\midia-gerada'
@@ -100,3 +105,4 @@ foreach ($no in $res.outputs.PSObject.Properties) {
         Ok ("{0}  ({1:mm\:ss})" -f (Caminho-Relativo $destino), ((Get-Date) - $inicio))
     }
 }
+Mostrar-GastoFinal 'gerar' $inicio

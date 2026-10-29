@@ -24,6 +24,38 @@
       "traducao": "translategemma-12b"
     }
   },
+  "energia": {
+    "nota": "Usado pelo menu, pela Central e pelos scripts para estimar o gasto de cada tarefa. tarifa_kwh = R$ por kWh já com impostos; troque pelo da sua conta (total a pagar ÷ kWh consumidos). Muda todo 22 de outubro (reajuste da ANEEL) e com a bandeira do mês. wh = energia de uma vez (por pergunta, por imagem...); watts = consumo do PC inteiro enquanto a tarefa roda. 'medido' veio do medir-energia.ps1; o resto é estimado pelo tempo e pela potência.",
+    "distribuidora": "Equatorial Goiás",
+    "tarifa_kwh": 1.25,
+    "tarifa_detalhe": "Residencial B1: R$ 0,954/kWh sem impostos (TUSD 0,617 + TE 0,337) desde 22/10/2026 (reajuste de 7,36%), com ICMS de 19% (17% + 2% do Protege) e PIS/COFINS de ~5% por dentro: 0,954 / (1 - 0,24) = R$ 1,25. Bandeira verde.",
+    "fontes": ["https://www.gov.br/aneel/pt-br/assuntos/noticias/2026/novas-tarifas-da-equatorial-goias-sao-aprovadas-pela-aneel", "https://calculadoraenergia.com.br/tarifa/equatorial-go"],
+    "pc_parado_w": 114,
+    "tarefas": {
+      "pc-ligado":    { "watts": 114, "unidade": "por hora", "origem": "medido" },
+      "central":      { "wh": 0, "unidade": "", "texto": "quase nada além do PC ligado" },
+      "chat":         { "wh": 1.4, "watts": 160, "unidade": "por pergunta", "origem": "medido (Gemma 4 26B)" },
+      "biblioteca":   { "wh": 0, "unidade": "", "texto": "quase nada além do PC ligado" },
+      "perguntar":    { "wh": 5, "watts": 170, "unidade": "por pergunta", "origem": "estimado (~1,5 min)" },
+      "conselho":     { "wh": 11.5, "watts": 183, "unidade": "por pergunta (rodada única)", "origem": "medido; debate ~25 Wh, profundo 50 Wh" },
+      "comfyui":      { "wh": 2.5, "watts": 340, "unidade": "por imagem (vídeo: ~50 Wh)", "origem": "estimado; vídeo de 2 s ~50 Wh, 3D ~13 Wh" },
+      "gerar":        { "wh": 2.5, "watts": 340, "unidade": "por imagem (vídeo: ~50 Wh)", "origem": "estimado" },
+      "video":        { "wh": 50, "watts": 340, "unidade": "por vídeo de 2 s", "origem": "estimado (9 min)" },
+      "animacao":     { "wh": 155, "watts": 340, "unidade": "por animação de 81 quadros", "origem": "estimado (28 min)" },
+      "transcrever":  { "wh": 1, "watts": 250, "unidade": "por 10 min de áudio", "origem": "estimado" },
+      "falar":        { "wh": 0.1, "watts": 150, "unidade": "por texto", "origem": "estimado (só processador)" },
+      "medir":        { "wh": 1.9, "unidade": "por medição de 1 min", "origem": "medido" },
+      "fechar":       { "wh": 0, "unidade": "", "texto": "economiza: libera a placa de vídeo" },
+      "modo-jogo":    { "wh": 0, "unidade": "", "texto": "economiza: fecha tudo e nada das IAs abre" },
+      "status":       { "wh": 0.5, "unidade": "", "origem": "estimado (~15 s lendo os discos)" },
+      "verificar":    { "wh": 0.7, "unidade": "", "origem": "medido (23 s)" },
+      "sincronizar":  { "wh": 250, "watts": 125, "unidade": "por mês (~2 h)", "origem": "estimado (~150 GB de atualizações)" },
+      "integridade":  { "wh": 190, "watts": 125, "unidade": "por conferência (~1,5 h)", "origem": "estimado" },
+      "catalogo":     { "wh": 0, "unidade": "", "texto": "quase nada" },
+      "testar":       { "wh": 0.7, "unidade": "", "origem": "estimado (~20 s)" },
+      "gigante":      { "wh": 23, "watts": 170, "unidade": "por pergunta a um modelo do HD (gpt-oss-120b, Nemotron)", "origem": "estimado (~8 min com o carregamento)" }
+    }
+  },
   "observar_orgs": [
     "Qwen", "google", "deepseek-ai", "mistralai", "openai", "zai-org", "moonshotai", "XiaomiMiMo",
     "microsoft", "meta-llama", "nvidia", "ibm-granite", "black-forest-labs", "Tongyi-MAI", "tencent",

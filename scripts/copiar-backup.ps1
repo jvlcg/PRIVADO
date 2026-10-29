@@ -19,7 +19,7 @@ if ($Destino.TrimEnd('\').StartsWith($Raiz.TrimEnd('\'), [StringComparison]::Ord
 $pastas = @('dev', 'catalogo', 'scripts', 'docs')
 if ($Tudo) { $pastas += @('modelos', 'conhecimento', 'motores') }
 New-Item -ItemType Directory -Force -Path $Destino | Out-Null
-foreach ($f in 'LEIA-ME.md', 'IA.cmd') { if (Test-Path (Join-Path $Raiz $f)) { Copy-Item (Join-Path $Raiz $f) $Destino -Force } }
+foreach ($f in 'LEIA-ME.md', 'README.md', 'IA.cmd', 'Painel.cmd', 'SHA256SUMS.txt') { if (Test-Path (Join-Path $Raiz $f)) { Copy-Item (Join-Path $Raiz $f) $Destino -Force } }
 
 foreach ($p in $pastas) {
     $origem = Join-Path $Raiz $p

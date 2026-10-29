@@ -27,6 +27,7 @@ param(
     [switch]$SemChave
 )
 . "$PSScriptRoot\comum.ps1"
+Bloquear-SeModoJogo 'o servidor de modelos'
 
 $cat = Ler-Catalogo
 $estado = Ler-Estado
@@ -89,6 +90,7 @@ Info "Chat:    $url"
 Info "API:     $url/v1   (campo model = um dos ids acima)"
 Info "Ate $Carregados modelo(s) carregados ao mesmo tempo. Para parar: Ctrl+C."
 if ($DormirMinutos -gt 0) { Info "Modelo sem uso por $DormirMinutos min sai da memoria sozinho." }
+Mostrar-Estimativa 'chat' "$(Texto-Estimativa 'chat'); parado, so o PC ligado ($(Texto-Estimativa 'pc-ligado'))"
 # --cors-origins localhost e a chave: um site aberto no navegador nao consegue usar os modelos escondido.
 $argumentos = @('--models-preset', $arqIni, '--models-max', "$Carregados", '--host', $ip, '--port', "$Porta", '--cors-origins', 'localhost')
 if (-not $SemChave) {

@@ -15,6 +15,7 @@ param(
     [string]$Modelo = 'whisper-large-v3-turbo'
 )
 . "$PSScriptRoot\comum.ps1"
+Bloquear-SeModoJogo 'a transcricao'
 
 $cat = Ler-Catalogo
 $m = $cat.modelos | Where-Object { $_.id -eq $Modelo } | Select-Object -First 1
@@ -26,5 +27,10 @@ $arqAudio = (Resolve-Path -LiteralPath $Audio).Path
 $saida = [IO.Path]::ChangeExtension($arqAudio, $null).TrimEnd('.')
 
 Titulo "Transcrevendo $(Split-Path $arqAudio -Leaf)"
+# WAV de 16 kHz mono (o formato indicado) tem 32 mil bytes por segundo; ~1 Wh a cada 10 min de audio.
+$minutos = (Get-Item -LiteralPath $arqAudio).Length / 32000 / 60
+Mostrar-Estimativa 'transcrever' ([string]::Format($CulturaBR, '{0} para ~{1:N0} min de audio', (Texto-Custo ([math]::Max(0.05, $minutos / 10))), [math]::Max(1, $minutos)))
+$inicio = Get-Date
 Executar-Nativo $exe @('-m', $bin, '-l', $Idioma, '-f', $arqAudio, '-otxt', '-osrt', '-of', $saida)
 if ($LASTEXITCODE -eq 0) { Ok "Pronto: $saida.txt e $saida.srt" }
+Mostrar-GastoFinal 'transcrever' $inicio

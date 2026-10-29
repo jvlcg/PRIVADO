@@ -12,6 +12,7 @@
 #>
 param([switch]$Rapido, [ValidateSet('nucleo', 'cofre', 'todos')][string]$Local = 'todos')
 . "$PSScriptRoot\comum.ps1"
+if (-not $Rapido) { Bloquear-SeModoJogo 'a conferencia completa (le os dois discos inteiros)' }
 
 $estado = Ler-Estado
 $ok = 0; $ruim = 0; $falta = 0
@@ -34,6 +35,9 @@ foreach ($id in @($estado.conhecimento.Keys)) {
 if ($Local -ne 'todos') { $entradas = @($entradas | Where-Object { $_.local -eq $Local }) }
 
 Titulo 'Conferindo o acervo'
+$inicio = Get-Date
+if ($Rapido) { Mostrar-Estimativa 'verificar' "$(Texto-Custo 0.5) (so confere tamanhos)" }
+else { Mostrar-Estimativa 'integridade' "$(Texto-Estimativa 'integridade'): rele todos os arquivos dos dois discos" }
 foreach ($x in $entradas) {
     try { $cam = Caminho-Absoluto $x.rel $x.local } catch { Aviso "Cofre indisponivel para $($x.rel)"; $falta++; continue }
     $conhecidos[$cam.ToLower()] = $true
@@ -74,6 +78,7 @@ if ($ruim -eq 0 -and $falta -eq 0) {
 
 Titulo 'Resultado'
 Info "$ok ok, $ruim com problema, $falta faltando, $($extras.Count) fora do catalogo."
+Mostrar-GastoFinal 'integridade' $inicio
 if ($ruim -gt 0 -or $falta -gt 0) { Aviso 'Para reparar: rode baixar-modelo.ps1 -Id <id> ou baixar-conhecimento.ps1 -Id <id> do item afetado.' }
 New-Item -ItemType Directory -Force -Path $PastaLogs | Out-Null
 $arqLog = Join-Path $PastaLogs ("integridade-{0}.txt" -f (Get-Date -Format 'yyyy-MM-dd'))

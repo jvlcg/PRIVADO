@@ -30,6 +30,8 @@ import json
 import mimetypes
 import os
 import re
+import signal
+import subprocess
 import sys
 import threading
 import time
@@ -150,7 +152,13 @@ def liberar_placa(manter: str) -> None:
             print(f"(nao consegui descarregar {i}: {erro})", file=sys.stderr)
 
 
-def conversar(modelo: str, mensagens: list[dict], pensar: str, resposta_max: int = 3000) -> dict:
+# "Responder agora": o painel (botao) ou o terminal (Ctrl+C) acendem este sinal; quem estiver falando
+# para na hora e o relator escreve com o que ja foi dito.
+AGORA = threading.Event()
+NUNCA = threading.Event()  # para chamadas que nao devem ser interrompidas (triagem, descricao de imagem)
+
+
+def conversar(modelo: str, mensagens: list[dict], pensar: str, resposta_max: int = 3000, parar: threading.Event = NUNCA) -> dict:
     """Uma chamada ao llama-server. O pensamento tem orcamento proprio e nao entra no texto."""
     orcamento = PENSAR[pensar]
     corpo = {
@@ -162,18 +170,18 @@ def conversar(modelo: str, mensagens: list[dict], pensar: str, resposta_max: int
     if orcamento:
         corpo["thinking_budget_tokens"] = orcamento
     inicio = time.time()
-    r = sabio.http_json(f"{LLM}/v1/chat/completions", corpo, timeout=3600)
-    texto = (r["choices"][0]["message"].get("content") or "").strip()
-    if not texto and orcamento:
+    r = sabio.chat_em_fluxo(corpo, parar)
+    if not r["texto"] and orcamento and not r["interrompido"]:
         # Pensou ate o limite sem responder: pede de novo, direto.
-        r2 = conversar(modelo, mensagens, "nao", resposta_max)
+        r2 = conversar(modelo, mensagens, "nao", resposta_max, parar)
         r2["segundos"] = round(time.time() - inicio, 1)
         return r2
     return {
-        "texto": texto,
+        "texto": r["texto"],
         "segundos": round(time.time() - inicio, 1),
-        "tokens": (r.get("usage") or {}).get("completion_tokens", 0),
-        "tok_s": round((r.get("timings") or {}).get("predicted_per_second", 0), 1),
+        "tokens": r["timings"].get("predicted_n", 0),
+        "tok_s": round(r["timings"].get("predicted_per_second", 0), 1),
+        "interrompido": r["interrompido"],
     }
 
 
@@ -292,6 +300,8 @@ def deliberar(pergunta: str, opcoes: Opcoes, avisar=None, imagem: str | None = N
     """Roda o conselho inteiro. avisar(evento) recebe o andamento (usado pelo terminal e pelo painel)."""
     avisar = avisar or (lambda e: None)
     inicio = time.time()
+    AGORA.clear()
+    interrompido = False
     cfg = ler_config()
     info = modelos_servidor()
     disponiveis = {i for i, m in info.items() if eh_de_conversa(m)}
@@ -299,7 +309,7 @@ def deliberar(pergunta: str, opcoes: Opcoes, avisar=None, imagem: str | None = N
 
     quem_tria = cfg.get("triagem") if cfg.get("triagem") in disponiveis else next((m for m in cfg["membros"] if m in disponiveis), None)
     tri = {"area": "geral", "objetiva": False, "fontes": False, "termos": {"pt": pergunta, "en": pergunta}}
-    if quem_tria:
+    if quem_tria and not AGORA.is_set():
         avisar({"tipo": "etapa", "texto": f"Triagem com {quem_tria}"})
         if opcoes.liberar:
             liberar_placa(quem_tria)
@@ -308,7 +318,7 @@ def deliberar(pergunta: str, opcoes: Opcoes, avisar=None, imagem: str | None = N
     avisar({"tipo": "time", "area": tri["area"], "objetiva": tri["objetiva"], "membros": membros, "relator": relator})
 
     fontes: list[tuple[str, str, str]] = []
-    if opcoes.fontes == "sim" or (opcoes.fontes == "auto" and tri["fontes"]):
+    if not AGORA.is_set() and (opcoes.fontes == "sim" or (opcoes.fontes == "auto" and tri["fontes"])):
         if sabio.servidor_ok(KIWIX):
             avisar({"tipo": "etapa", "texto": "Buscando trechos nas bibliotecas offline"})
             try:
@@ -320,7 +330,7 @@ def deliberar(pergunta: str, opcoes: Opcoes, avisar=None, imagem: str | None = N
             avisar({"tipo": "aviso", "texto": "Biblioteca offline desligada (iniciar-biblioteca.ps1); seguindo sem fontes."})
 
     descricao = ""
-    if imagem and any(not aceita_imagem(info, m) for m in membros + [relator]):
+    if imagem and not AGORA.is_set() and any(not aceita_imagem(info, m) for m in membros + [relator]):
         quem_ve = next((m for m in membros if aceita_imagem(info, m)), None) or next((m for m in sorted(disponiveis) if aceita_imagem(info, m)), None)
         if quem_ve:
             avisar({"tipo": "etapa", "texto": f"{quem_ve} descreve a imagem para quem so le texto"})
@@ -334,29 +344,60 @@ def deliberar(pergunta: str, opcoes: Opcoes, avisar=None, imagem: str | None = N
         if opcoes.liberar:
             liberar_placa(modelo)
         try:
-            r = conversar(modelo, msgs, pensar, resposta_max)
+            r = conversar(modelo, msgs, pensar, resposta_max, AGORA)
         except Exception as erro:
             avisar({"tipo": "erro", "rodada": rodada, "modelo": modelo, "texto": str(erro)})
             return None
+        if r["interrompido"]:
+            # Cortada no meio: aproveita se ja disse algo util, senao fica de fora.
+            if len(r["texto"]) < 80:
+                avisar({"tipo": "erro", "rodada": rodada, "modelo": modelo, "texto": "interrompida antes de responder"})
+                return None
+            r["texto"] += "\n\n(resposta interrompida a pedido)"
         avisar({"tipo": "resposta", "rodada": rodada, "modelo": modelo, **r})
         return {"msgs": msgs, **r}
 
+    def agora_pedido() -> bool:
+        nonlocal interrompido
+        if AGORA.is_set() and not interrompido:
+            interrompido = True
+            avisar({"tipo": "etapa", "texto": "Respondendo agora com o que já foi dito"})
+        return AGORA.is_set()
+
     respostas: dict[str, dict] = {}
     for n, m in enumerate(membros, 1):
+        if agora_pedido():
+            break
         msgs = [{"role": "system", "content": SISTEMA_MEMBRO}] + historico + [
             {"role": "user", "content": conteudo(pergunta, fontes, imagem, descricao, aceita_imagem(info, m))}]
         r = falar(1, n, len(membros), m, msgs, opcoes.pensar, 1500)
         if r:
             respostas[m] = r
-    if not respostas:
-        raise RuntimeError("Nenhum membro conseguiu responder (veja a janela do servidor de modelos).")
+    agora_pedido()
     rodadas = [{m: r for m, r in respostas.items()}]
 
-    if opcoes.debate and len(respostas) > 1:
+    if not respostas and not interrompido:
+        raise RuntimeError("Nenhum membro conseguiu responder (veja a janela do servidor de modelos).")
+    if not respostas:
+        # Pediram a resposta antes de qualquer IA falar: uma responde direto, sem raciocinar.
+        rapido = relator if relator in disponiveis else membros[0]
+        AGORA.clear()
+        msgs = [{"role": "system", "content": SISTEMA_MEMBRO}] + historico + [
+            {"role": "user", "content": conteudo(pergunta, fontes, imagem, descricao, aceita_imagem(info, rapido))}]
+        r = falar("relator", 1, 1, rapido, msgs, "nao", 1500)
+        if not r:
+            raise RuntimeError("Interrompido antes de qualquer IA responder.")
+        respostas = {rapido: r}
+        rodadas = [respostas]
+
+    if opcoes.debate and len(respostas) > 1 and not agora_pedido():
         # Ordem invertida: quem falou por ultimo ainda esta na placa e comeca a revisao.
         ordem = [m for m in reversed(membros) if m in respostas]
         revisadas = {}
         for n, m in enumerate(ordem, 1):
+            if agora_pedido():
+                revisadas.update({o: respostas[o] for o in ordem if o not in revisadas})
+                break
             outras = "\n\n".join(f"--- Outro membro ---\n{respostas[o]['texto']}" for o in ordem if o != m)
             msgs = respostas[m]["msgs"] + [{"role": "assistant", "content": respostas[m]["texto"]},
                                            {"role": "user", "content": PEDIDO_REVISAO.format(outras=outras)}]
@@ -380,15 +421,31 @@ def deliberar(pergunta: str, opcoes: Opcoes, avisar=None, imagem: str | None = N
         texto = "\n\n".join(partes)
         pedido = [{"type": "text", "text": texto}, {"type": "image_url", "image_url": {"url": imagem}}] if imagem and aceita_imagem(info, relator) else texto
         msgs = [{"role": "system", "content": SISTEMA_RELATOR}] + historico + [{"role": "user", "content": pedido}]
-        r = falar("relator", 1, 1, relator, msgs, opcoes.pensar, 4000)
+        # Com "responder agora", o relator escreve direto, sem raciocinar.
+        apressado = AGORA.is_set()
+        AGORA.clear()
+        r = falar("relator", 1, 1, relator, msgs, "nao" if apressado else opcoes.pensar, 4000)
+        if r is None and AGORA.is_set():
+            # Pediram de novo enquanto o relator ainda raciocinava: escreve ja, sem raciocinio.
+            interrompido = True
+            AGORA.clear()
+            r = falar("relator", 1, 1, relator, msgs, "nao", 2500)
+        if r and r.get("interrompido"):
+            interrompido = True
         if not r:
-            raise RuntimeError(f"O relator {relator} falhou.")
+            if not interrompido:
+                raise RuntimeError(f"O relator {relator} falhou.")
+            r = next(iter(respostas.values()))  # sem sintese: fica a primeira resposta
         final = r["texto"]
+
+    if interrompido:
+        respondeu = len([x for x in respostas.values() if x])
+        final = (f"_(Resposta dada antes do fim, a pedido: {respondeu} de {len(membros)} IA(s) tinham respondido.)_\n\n" + final)
 
     resultado = {
         "pergunta": pergunta, "area": tri["area"], "objetiva": tri["objetiva"], "membros": membros,
         "relator": relator, "opcoes": opcoes, "fontes": fontes, "descricao": descricao,
-        "rodadas": rodadas, "final": final, "segundos": round(time.time() - inicio),
+        "rodadas": rodadas, "final": final, "segundos": round(time.time() - inicio), "interrompido": interrompido,
     }
     try:
         resultado["ata"] = str(salvar_ata(resultado))
@@ -467,7 +524,22 @@ def cmd_perguntar(args) -> None:
         if args.detalhes and e["tipo"] == "resposta" and e["rodada"] != "relator":
             print(f"\n----- {e['modelo']} (rodada {e['rodada']}) -----\n{e['texto']}\n", file=sys.stderr, flush=True)
 
-    r = deliberar(args.pergunta, opcoes, avisar, ler_imagem(args.imagem) if args.imagem else None)
+    # Primeiro Ctrl+C: responde agora com o que ja foi dito. Segundo: sai.
+    apertos = [0]
+
+    def ao_ctrl_c(sinal, quadro):
+        apertos[0] += 1
+        if apertos[0] > 1:
+            raise KeyboardInterrupt
+        AGORA.set()
+        print("\n> Respondendo agora com o que ja foi encontrado (Ctrl+C de novo para sair).", file=sys.stderr, flush=True)
+
+    signal.signal(signal.SIGINT, ao_ctrl_c)
+    print("> Dica: Ctrl+C responde agora com o que ja foi encontrado.", file=sys.stderr, flush=True)
+    try:
+        r = deliberar(args.pergunta, opcoes, avisar, ler_imagem(args.imagem) if args.imagem else None)
+    except KeyboardInterrupt:
+        sys.exit("Conselho cancelado.")
     print("\n" + r["final"] + "\n")
     if r["fontes"]:
         print("Fontes:")
@@ -579,6 +651,14 @@ class Painel(BaseHTTPRequestHandler):
             return self._json(400, {"erro": "JSON invalido"})
         if self.path == "/api/deliberar":
             self._painel(corpo)
+        elif self.path == "/api/agora":
+            AGORA.set()
+            self._json(200, {"ok": True})
+        elif self.path == "/api/modo-jogo":
+            # Fecha tudo, inclusive este servidor: responde primeiro e deixa o modo-jogo.ps1 terminar sozinho.
+            self._json(200, {"ok": True})
+            subprocess.Popen(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(RAIZ / "scripts" / "modo-jogo.ps1"), "-Ligar"],
+                             creationflags=subprocess.CREATE_NO_WINDOW)
         elif self.path in ("/v1/chat/completions", "/chat/completions"):
             self._openai(corpo)
         else:
@@ -693,6 +773,8 @@ label{font-size:.85rem;color:var(--suave);display:flex;flex-direction:column;gap
 select,input[type=file]{font:inherit;color:inherit;background:var(--cartao);border:1px solid var(--borda);border-radius:8px;padding:6px 8px;max-width:100%}
 button{font:inherit;font-weight:600;background:var(--destaque);color:var(--cartao);border:0;border-radius:8px;padding:10px 18px;cursor:pointer;margin-left:auto}
 button:disabled{opacity:.5;cursor:wait}
+button.secundario{background:transparent;color:var(--destaque);border:1px solid var(--destaque);margin-left:0}
+#jogo{color:var(--erro);border-color:var(--erro);margin-top:12px}
 details.escolha{margin-top:12px}
 details.escolha summary{cursor:pointer;color:var(--suave);font-size:.9rem}
 #membros{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0}
@@ -732,6 +814,7 @@ footer code{background:var(--codigo);padding:1px 4px;border-radius:4px}
     <label>Fontes<select id="fontes"><option value="auto">Automático</option><option value="sim">Sempre consultar a biblioteca</option><option value="nao">Não consultar</option></select></label>
     <label>Imagem (opcional)<input type="file" id="foto" accept="image/*"></label>
     <button id="enviar">Perguntar ao conselho</button>
+    <button type="button" id="agora" class="secundario" hidden title="Para o raciocínio e o relator escreve com o que as IAs já disseram">Responder agora</button>
   </div>
   <img id="previa" hidden alt="">
   <details class="escolha" id="manual">
@@ -744,7 +827,7 @@ footer code{background:var(--codigo);padding:1px 4px;border-radius:4px}
 <div id="relogio"></div>
 <div id="final"></div>
 <div id="cartoes"></div>
-<footer>Em outros programas (Open WebUI, Continue, scripts): base URL <code>http://127.0.0.1:PORTA/v1</code>, modelo <code>conselho</code>, <code>conselho-debate</code> ou <code>conselho-profundo</code>. As atas ficam em <code>A:\dev\conselho</code>.</footer>
+<footer>Em outros programas (Open WebUI, Continue, scripts): base URL <code>http://127.0.0.1:PORTA/v1</code>, modelo <code>conselho</code>, <code>conselho-debate</code> ou <code>conselho-profundo</code>. As atas ficam em <code>A:\dev\conselho</code>.<br><button type="button" id="jogo" class="secundario">Modo jogo: desligar todas as IAs</button></footer>
 </main>
 <script>
 const $ = s => document.querySelector(s);
@@ -851,7 +934,7 @@ $('#foto').onchange = ev => {
 async function carregarConfig(){
   try {
     const c = await (await fetch('/api/config')).json();
-    if (!c.servidor) passo('O servidor de modelos (porta 8080) não respondeu. Abra-o pelo menu (opção 1) e recarregue a página.', 'erro');
+    if (!c.servidor) passo('O servidor de modelos (porta 8080) não respondeu. Abra-o pelo menu (opção 2) e recarregue a página.', 'erro');
     $('#membros').innerHTML = '';
     c.disponiveis.forEach(m => {
       const l = document.createElement('label'); const x = document.createElement('input');
@@ -868,6 +951,7 @@ $('#form').onsubmit = async ev => {
   if ($('#manual').open) { corpo.membros = [...document.querySelectorAll('#membros input:checked')].map(x => x.value); corpo.relator = $('#relator').value; }
   $('#andamento').innerHTML = ''; $('#cartoes').innerHTML = ''; $('#final').innerHTML = ''; $('#final').className = '';
   $('#enviar').disabled = true; inicio = Date.now();
+  $('#agora').hidden = false; $('#agora').disabled = false; $('#agora').textContent = 'Responder agora';
   tique = setInterval(() => { $('#relogio').textContent = 'Deliberando há ' + duracao((Date.now() - inicio) / 1000); }, 1000);
   try {
     const resp = await fetch('/api/deliberar', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(corpo)});
@@ -878,7 +962,19 @@ $('#form').onsubmit = async ev => {
       while ((k = buf.indexOf('\n\n')) >= 0) { const bloco = buf.slice(0, k); buf = buf.slice(k + 2); if (bloco.startsWith('data: ')) tratar(JSON.parse(bloco.slice(6))); }
     }
   } catch (err) { passo('Conexão perdida: ' + err, 'erro'); }
-  clearInterval(tique); $('#relogio').textContent = ''; $('#enviar').disabled = false;
+  clearInterval(tique); $('#relogio').textContent = ''; $('#enviar').disabled = false; $('#agora').hidden = true;
+};
+// Para o raciocínio de quem estiver falando; o relator escreve na hora com o que já foi dito.
+$('#agora').onclick = async () => {
+  $('#agora').disabled = true; $('#agora').textContent = 'Respondendo agora...';
+  try { await fetch('/api/agora', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: '{}'}); }
+  catch (err) { passo('Não deu para pedir a resposta agora: ' + err, 'erro'); }
+};
+$('#jogo').onclick = async () => {
+  if (!confirm('Modo jogo: fechar todas as IAs (inclusive este conselho) para jogar? Nada delas abre até você sair do modo jogo.')) return;
+  try { await fetch('/api/modo-jogo', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: '{}'}); } catch (err) {}
+  $('main').innerHTML = '<h1>Modo jogo ligado</h1><p>Todas as IAs estão sendo fechadas, inclusive este conselho. Bom jogo!</p>' +
+    '<p class="sub">Para voltar: dois cliques em <code>A:\\Painel.cmd</code> e "Sair do modo jogo", ou no menu (<code>A:\\IA.cmd</code>), opção 12.</p>';
 };
 carregarConfig();
 </script>

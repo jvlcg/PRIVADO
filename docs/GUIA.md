@@ -72,7 +72,7 @@ São 141 GB no SSD e 821 GB no cofre. Os três gigantes de fronteira não rodam 
 
 ### Bibliotecas offline
 
-São 46 no catálogo: 17 já baixadas e 29 novas de 29/10/2026 (marcadas com *). Dessas, 27 (cerca de 18 GB: 4 no SSD e 14 no cofre) entram na próxima sincronização (menu, opção 8); a verificação semanal avisa enquanto faltarem. Tudo abre na biblioteca (menu, opção 2), inclusive o mapa, e a busca da Central procura em todas de uma vez.
+São 46 no catálogo e 44 já baixadas e conferidas pelo SHA256: as 17 de antes e 27 novas de 29/10/2026 (marcadas com *; 4 GB no SSD e 14 GB no cofre, em 21 minutos, ~44 Wh ≈ R$ 0,06). As 2 gigantes ficam em observação. Tudo abre na biblioteca (menu, opção 3), inclusive o mapa, e a busca da Central procura em todas de uma vez.
 
 | Área | O que tem | GB |
 | --- | --- | --- |
@@ -133,18 +133,32 @@ Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofr
 
 Para imprimir e guardar junto do PC: **`A:\docs\cartao-emergencia.html`** (abra e use Ctrl+P). Numa folha A4: como ligar tudo, os endereços, onde achar cada assunto de emergência, quanto tempo o PC aguenta numa bateria e o que fazer se este PC quebrar.
 
-| Opção do menu | O que faz | Onde abre |
-| --- | --- | --- |
-| 1. Chat com todos os modelos | um servidor só com todos os modelos; escolha o modelo no topo do chat (na primeira vez, cole a chave de acesso) | http://127.0.0.1:8080 |
-| 2. Biblioteca offline | Wikipédia, WikiMed, iFixit, o mapa e as outras bibliotecas, com busca | http://127.0.0.1:8081 |
-| 3. Perguntar com fonte | busca na biblioteca e o modelo responde citando [1], [2] | no terminal |
-| 4. Imagem, vídeo, música, 3D | ComfyUI (Workflow > Browse Templates) | http://127.0.0.1:8188 |
-| 5. Transcrever áudio | Whisper; gera `.txt` e legenda `.srt` ao lado do arquivo | no terminal |
-| 13. Conselho de IAs | várias IAs respondem e um relator decide a resposta final | http://127.0.0.1:8090 |
-| 14. Medir energia | consumo do PC e custo em reais | no terminal |
-| 15. Fechar tudo | fecha servidor, biblioteca, ComfyUI e conselho; libera a placa de vídeo | no terminal |
-| 16. Central do Cofre | vê o que está ligado e liga ou desliga com um clique (o mesmo que `Painel.cmd`) | http://127.0.0.1:8070 |
-| 17. Testar o projeto | confere scripts, catálogo, arquivos baixados e se há segredos no que vai para o GitHub, em segundos | no terminal |
+O menu agrupa as opções em Usar, Criar, Energia e Manter e mostra ao lado de cada uma o gasto estimado na tarifa da Equatorial Goiás (R$ 1,25/kWh, seção "Custo de energia"). Antes de rodar, ele repete a estimativa; os scripts mais longos mostram no fim quanto gastaram de fato.
+
+| Opção | O que faz | Onde abre | Gasto estimado |
+| --- | --- | --- | --- |
+| 1. Central do Cofre | pergunta com fonte, liga e desliga tudo, consumo ao vivo (o mesmo que `Painel.cmd`) | http://127.0.0.1:8070 | quase nada além do PC ligado |
+| 2. Chat com todos os modelos | um servidor só; escolha o modelo no topo do chat (na primeira vez, cole a chave de acesso) | http://127.0.0.1:8080 | ~1,4 Wh ≈ R$ 0,002 por pergunta |
+| 3. Biblioteca offline | Wikipédia, WikiMed, iFixit, o mapa e as outras bibliotecas, com busca | http://127.0.0.1:8081 | quase nada |
+| 4. Perguntar com fonte | busca na biblioteca e o modelo responde citando [1], [2] | no terminal | ~5 Wh ≈ R$ 0,006 por pergunta |
+| 5. Conselho de IAs | várias IAs respondem e um relator decide a resposta final | http://127.0.0.1:8090 | ~12 Wh ≈ R$ 0,014 (rodada única) |
+| 6. Imagem, vídeo, música e 3D | ComfyUI (Workflow > Browse Templates) | http://127.0.0.1:8188 | ~2,5 Wh por imagem; ~50 Wh ≈ R$ 0,06 por vídeo de 2 s |
+| 7. Gerar pelo terminal | `gerar.ps1`, com o ComfyUI aberto | no terminal | igual à opção 6 |
+| 8. Transcrever áudio | Whisper; gera `.txt` e legenda `.srt` ao lado do arquivo | no terminal | ~1 Wh por 10 min de áudio |
+| 9. Falar um texto | Piper, voz em português | no terminal | quase nada |
+| 10. Medir energia | consumo do PC e custo em reais | no terminal | ~1,9 Wh |
+| 11. Fechar tudo | fecha servidor, biblioteca, ComfyUI e conselho; libera a placa de vídeo | no terminal | economiza |
+| 12. Modo jogo | fecha todas as IAs e impede que abram até você sair (a mesma opção liga e desliga) | no terminal | economiza |
+| 13. Status | o que tem no acervo e o que está aberto | no terminal | ~0,5 Wh |
+| 14. Verificar novidades | o que saiu de novo (roda sozinha toda segunda) | no terminal | ~0,7 Wh |
+| 15. Sincronizar | baixa o que falta e confere | janela própria | ~250 Wh ≈ R$ 0,31 por mês |
+| 16. Integridade completa | relê tudo e confere o SHA256 | no terminal | ~190 Wh ≈ R$ 0,24 |
+| 17. Catálogo | lista os modelos e as bibliotecas | no terminal | quase nada |
+| 18. Testar o projeto | scripts, catálogo, arquivos baixados e segredos no que vai para o GitHub | no terminal | ~0,7 Wh |
+
+**Responder agora.** Toda ferramenta que pensa por muito tempo tem como parar e receber a resposta com o que já foi encontrado. No conselho e na Central é o botão **Responder agora**, que aparece enquanto a IA trabalha; no terminal (opções 4 e 5), o primeiro Ctrl+C faz o mesmo e o segundo cancela. A IA que estiver falando para na hora (a placa deixa de gastar), o relator escreve sem raciocinar com o que as outras já disseram e a resposta avisa quantas IAs tinham respondido. Se nada tiver sido achado ainda, vem uma resposta rápida, sem fontes, marcada como tal.
+
+**Modo jogo.** Antes de jogar, use a opção 12 do menu ou o botão **Modo jogo** na Central ou no painel do conselho: fecha o chat, a biblioteca, o conselho, o ComfyUI, o Ollama e a própria Central, e libera a placa de vídeo, a memória e o disco. Enquanto ele estiver ligado, nada das IAs abre (nem a verificação semanal nem a sincronização) e o menu só deixa usar as opções leves. Para sair: a opção 12 de novo, ou `Painel.cmd` e "Sair do modo jogo".
 
 Testado neste PC de 25 a 29/10/2026:
 
@@ -171,7 +185,7 @@ Testado neste PC de 25 a 29/10/2026:
 | Teste do projeto (29/10) | achou um acento que o PowerShell 5.1 lia errado no `instalar-wsl.ps1` (corrigido) e um token falso plantado de propósito | ~20 s |
 | Busca na biblioteca por idioma (29/10) | "purificar água" achou Wikipédia e Wikcionário; "water purification", Wikipédia, WikiMed e Stack Exchange | na hora |
 
-Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 11). Exemplos em `A:\dev\midia-gerada`.
+Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 7). Exemplos em `A:\dev\midia-gerada`.
 
 O servidor também é uma API compatível com a da OpenAI em `http://127.0.0.1:8080/v1`, com `model` igual ao id do catálogo e a chave de acesso no campo "API key". Configuração pronta para o Continue (VS Code) em `A:\dev\configs\continue-config.yaml`.
 
@@ -204,7 +218,7 @@ A placa de vídeo comporta um modelo grande por vez, então os membros falam em 
 
 Como usar:
 
-- **Painel:** menu, opção 13, abre http://127.0.0.1:8090. Escreva a pergunta, escolha o modo e, se quiser, anexe uma foto. Os cartões mostram o que cada IA disse.
+- **Painel:** menu, opção 5, abre http://127.0.0.1:8090. Escreva a pergunta, escolha o modo e, se quiser, anexe uma foto. Os cartões mostram o que cada IA disse.
 - **Terminal:** `conselho.ps1 "pergunta"`, `conselho.ps1 "pergunta" -Debate`, `conselho.ps1 "pergunta" -Profundo` e `conselho.ps1 "o que diz esta placa?" -Imagem C:\foto.jpg`.
 - **Outros programas** (Open WebUI, Continue, scripts): API compatível com a da OpenAI em `http://127.0.0.1:8090/v1`, modelos `conselho`, `conselho-debate` e `conselho-profundo`.
 - **Atas:** cada deliberação fica em `A:\dev\conselho` (Markdown), com a resposta de cada IA. Essa pasta não vai para o GitHub.
@@ -212,18 +226,19 @@ Como usar:
 
 ## Custo de energia
 
-Este PC não tem sensor de consumo total. O script `medir-energia.ps1` (menu, opção 14) mede a placa de vídeo pelo sensor da NVIDIA e estima o resto (processador, placa-mãe, memória, discos e perdas da fonte) pela carga do processador; a margem de erro é de uns 20%. Para medir na tomada de verdade, use um medidor de tomada (wattímetro). Cada medição fica anotada em `A:\logs\energia.csv`.
+Este PC não tem sensor de consumo total. O script `medir-energia.ps1` (menu, opção 10) mede a placa de vídeo pelo sensor da NVIDIA e estima o resto (processador, placa-mãe, memória, discos e perdas da fonte) pela carga do processador; a margem de erro é de uns 20%. Para medir na tomada de verdade, use um medidor de tomada (wattímetro). Cada medição fica anotada em `A:\logs\energia.csv`.
 
-Os valores usam R$ 1,00 por kWh, um número redondo com impostos. Troque pela sua tarifa: total da conta ÷ kWh consumidos. Exemplo: `medir-energia.ps1 -Segundos 60 -Tarifa 0.92`.
+Os valores usam a tarifa da **Equatorial Goiás**: **R$ 1,25 por kWh** com impostos. A conta: a residencial B1 custa R$ 0,954/kWh sem impostos desde 22/10/2026 (TUSD R$ 0,617 + TE R$ 0,337, depois do reajuste de 7,36% aprovado pela [ANEEL](https://www.gov.br/aneel/pt-br/assuntos/noticias/2026/novas-tarifas-da-equatorial-goias-sao-aprovadas-pela-aneel)); somando ICMS de 19% (17% + 2% do Protege) e PIS/COFINS de uns 5%, cobrados "por dentro", fica 0,954 ÷ (1 − 0,24) ≈ R$ 1,25, na bandeira verde. A tarifa muda todo 22 de outubro, e as bandeiras amarela e vermelha somam uns centavos por kWh. Para usar o valor exato da sua conta (total a pagar ÷ kWh consumidos), mude `tarifa_kwh` na seção `energia` de `A:\catalogo\modelos.json`: o menu, a Central e os scripts passam a usá-lo. Lá também ficam as estimativas de cada tarefa.
 
-**Medido em 26/10/2026:**
+**Medido** (26 a 29/10/2026):
 
 | Situação | Potência média do PC | Energia | Custo |
 | --- | --- | --- | --- |
-| PC ligado sem uso (com o download do cofre rodando) | 114 W | 114 Wh por hora | R$ 0,11 por hora |
-| Pergunta no chat (Gemma 4 26B, incluindo carregar o modelo) | 160 W por 33 s | 1,4 Wh | R$ 0,0014 |
-| Conselho de IAs, rodada única | 183 W por 3 min 48 s | 11,5 Wh | R$ 0,012 |
-| Conselho com o Qwen3.8 27B de relator | 217 W por 13 min 54 s | 50 Wh | R$ 0,05 |
+| PC ligado sem uso (com o download do cofre rodando) | 114 W | 114 Wh por hora | R$ 0,14 por hora |
+| Pergunta no chat (Gemma 4 26B, incluindo carregar o modelo) | 160 W por 33 s | 1,4 Wh | R$ 0,002 |
+| Conselho de IAs, rodada única | 183 W por 3 min 48 s | 11,5 Wh | R$ 0,014 |
+| Conselho com o Qwen3.8 27B de relator | 217 W por 13 min 54 s | 50 Wh | R$ 0,06 |
+| Baixar as 27 bibliotecas novas (18 GB, 29/10) | ~125 W por 21 min | ~44 Wh | R$ 0,06 |
 
 Com os modelos de texto, a placa de vídeo nunca passou de 118 W: o gargalo é a memória, e o processador faz parte do trabalho.
 
@@ -232,51 +247,53 @@ Com os modelos de texto, a placa de vídeo nunca passou de 118 W: o gargalo é a
 | Tarefa | Energia | Custo |
 | --- | --- | --- |
 | Imagem (Z-Image, 24 s) | ~2,5 Wh | R$ 0,003 |
-| Objeto 3D (Hunyuan3D, 2 min 19 s) | ~13 Wh | R$ 0,013 |
-| Vídeo de 2 s (Wan 2.2, 9 min) | ~50 Wh | R$ 0,05 |
-| Animação de 81 quadros (Wan Animate 2, 28 min) | ~155 Wh | R$ 0,16 |
+| Objeto 3D (Hunyuan3D, 2 min 19 s) | ~13 Wh | R$ 0,016 |
+| Vídeo de 2 s (Wan 2.2, 9 min) | ~50 Wh | R$ 0,06 |
+| Animação de 81 quadros (Wan Animate 2, 28 min) | ~155 Wh | R$ 0,19 |
+| Perguntar com fonte (~1,5 min, ~170 W) | ~5 Wh | R$ 0,006 |
+| Pergunta a um gigante do HD (gpt-oss-120b ou Nemotron, ~8 min com o carregamento) | ~23 Wh | R$ 0,03 |
 
 **Manutenção do cofre:**
 
 | Tarefa | Energia | Custo |
 | --- | --- | --- |
 | Verificação semanal de novidades (23 s) | 0,7 Wh | menos de R$ 0,01 por mês |
-| Sincronização das atualizações (~150 GB por mês, ~2 h) | ~0,25 kWh | ~R$ 0,25 por mês |
-| Conferência completa do SHA256 (a cada 3 meses, ~1,5 h lendo o HD) | ~0,19 kWh | ~R$ 0,06 por mês |
-| Montagem inicial do cofre (~1,5 TB, ~20 h baixando) | ~2,3 kWh | ~R$ 2,30, uma vez |
+| Sincronização das atualizações (~150 GB por mês, ~2 h) | ~0,25 kWh | ~R$ 0,31 por mês |
+| Conferência completa do SHA256 (a cada 3 meses, ~1,5 h lendo o HD) | ~0,19 kWh | ~R$ 0,08 por mês |
+| Montagem inicial do cofre (~1,5 TB, ~20 h baixando) | ~2,3 kWh | ~R$ 2,90, uma vez |
 
 **Aprimoramento** (treinar e avaliar os seus modelos):
 
 | Tarefa | Energia | Custo |
 | --- | --- | --- |
-| Treinar uma LoRA de texto (modelo de 4 a 8 bi, 1 a 3 h, ~350 W) | 0,35 a 1,05 kWh | R$ 0,35 a 1,05 |
-| Treinar uma LoRA de imagem (1 a 2 h) | 0,35 a 0,7 kWh | R$ 0,35 a 0,70 |
-| Gerar 1.000 exemplos de treino com um modelo só (Gemma 4 26B) | ~1,4 kWh | ~R$ 1,40 |
-| Gerar 1.000 exemplos revisados pelo conselho | ~11,5 kWh | ~R$ 11,50 |
-| Avaliar um modelo novo com 200 perguntas | ~0,3 kWh | ~R$ 0,30 |
+| Treinar uma LoRA de texto (modelo de 4 a 8 bi, 1 a 3 h, ~350 W) | 0,35 a 1,05 kWh | R$ 0,44 a 1,31 |
+| Treinar uma LoRA de imagem (1 a 2 h) | 0,35 a 0,7 kWh | R$ 0,44 a 0,88 |
+| Gerar 1.000 exemplos de treino com um modelo só (Gemma 4 26B) | ~1,4 kWh | ~R$ 1,75 |
+| Gerar 1.000 exemplos revisados pelo conselho | ~11,5 kWh | ~R$ 14 |
+| Avaliar um modelo novo com 200 perguntas | ~0,3 kWh | ~R$ 0,38 |
 
 **Por mês**, somando o PC ligado, o uso e a manutenção:
 
 | Perfil | Como usa | Energia | Custo |
 | --- | --- | --- | --- |
-| Leve | 1 h por dia: 20 perguntas, 2 conselhos e 5 imagens | ~4,4 kWh | ~R$ 4,40 |
-| Intenso | 6 h por dia: 100 perguntas, 10 conselhos, 20 imagens e 1 vídeo; 1 LoRA por semana | ~27 kWh | ~R$ 27 |
-| Servidor sempre ligado | 24 h por dia, com o uso intenso | ~89 kWh | ~R$ 89 |
+| Leve | 1 h por dia: 20 perguntas, 2 conselhos e 5 imagens | ~4,4 kWh | ~R$ 5,50 |
+| Intenso | 6 h por dia: 100 perguntas, 10 conselhos, 20 imagens e 1 vídeo; 1 LoRA por semana | ~27 kWh | ~R$ 34 |
+| Servidor sempre ligado | 24 h por dia, com o uso intenso | ~89 kWh | ~R$ 111 |
 
-As IAs em si custam centavos: uma resposta do conselho sai por cerca de R$ 0,01. De 75% a 90% da conta é o PC ligado esperando. Para comparar, um chuveiro elétrico de 5.500 W usado 10 minutos por dia gasta uns 27 kWh por mês, o mesmo que o perfil intenso.
+As IAs em si custam centavos: uma resposta do conselho sai por pouco mais de 1 centavo (R$ 0,014). De 75% a 90% da conta é o PC ligado esperando. Para comparar, um chuveiro elétrico de 5.500 W usado 10 minutos por dia gasta uns 27 kWh por mês, o mesmo que o perfil intenso.
 
 Para gastar menos:
 
-1. **Suspenda o PC quando não estiver usando.** Deixá-lo ligado 24 h custa uns R$ 82 por mês só esperando. No Windows: Configurações → Sistema → Energia → Suspender após 30 min. Os scripts de download já impedem a suspensão enquanto baixam.
+1. **Suspenda o PC quando não estiver usando.** Deixá-lo ligado 24 h custa uns R$ 100 por mês só esperando (82 kWh). No Windows: Configurações → Sistema → Energia → Suspender após 30 min. Os scripts de download já impedem a suspensão enquanto baixam.
 2. **Limite a placa de vídeo a 160 W** para vídeo e treino: menos 15% a 20% de energia, alguns por cento mais lento; os modelos de texto não mudam, pois nunca passam de 118 W. No Prompt de Comando como administrador: `nvidia-smi -pl 160` (volta a 200 W ao reiniciar).
 3. **Deixe o HD D: dormir** quando parado: Opções de energia → Disco rígido → Desligar após 20 min (economiza uns 5 W).
 4. **Use o chat para perguntas do dia a dia** e o conselho quando quiser uma segunda opinião. O modo profundo gasta umas 4 vezes mais que a rodada única.
 5. **Se tiver tarifa branca**, rode a sincronização fora do horário de ponta. A verificação semanal (segunda, 10h) já está fora da ponta.
-6. **Feche tudo ao terminar**: opção 15 do menu (`parar-tudo.ps1`). Mesmo sem isso, o servidor de modelos tira da memória o modelo parado há 15 minutos e o recarrega na próxima pergunta (`iniciar-servidor.ps1 -DormirMinutos 30` muda o tempo; `0` desliga). A opção 6 (status) mostra o que do cofre ainda está aberto.
+6. **Feche tudo ao terminar**: opção 11 do menu (`parar-tudo.ps1`); para jogar, a opção 12 (modo jogo). Mesmo sem isso, o servidor de modelos tira da memória o modelo parado há 15 minutos e o recarrega na próxima pergunta (`iniciar-servidor.ps1 -DormirMinutos 30` muda o tempo; `0` desliga). A opção 13 (status) mostra o que do cofre ainda está aberto.
 
 ## Catálogo e atualização constante
 
-Toda segunda às 10h o Windows **verifica** novidades sozinho; a opção **8 do menu** (`sincronizar-cofre.ps1`) **baixa** o que mudou.
+Toda segunda às 10h o Windows **verifica** novidades sozinho; a opção **15 do menu** (`sincronizar-cofre.ps1`) **baixa** o que mudou.
 
 | Arquivo | O que guarda | Quem escreve |
 | --- | --- | --- |
@@ -289,7 +306,7 @@ A sincronização pode ser interrompida e rodada de novo: continua de onde parou
 
 ### GitHub
 
-O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é um repositório git na raiz do SSD, publicado em github.com/jvlcg/PRIVADO (repositório público). Modelos e bibliotecas ficam de fora. Cada sincronização registra as mudanças e envia ao GitHub sozinha, mas antes procura segredos (a chave de acesso, tokens do Hugging Face e do GitHub, chaves privadas) nos arquivos: se achar algum, não registra nem envia nada. A mesma busca, mais a conferência dos scripts, do catálogo e dos arquivos baixados, está na opção 17 do menu (`testar-cofre.ps1`).
+O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é um repositório git na raiz do SSD, publicado em github.com/jvlcg/PRIVADO (repositório público). Modelos e bibliotecas ficam de fora. Cada sincronização registra as mudanças e envia ao GitHub sozinha, mas antes procura segredos (a chave de acesso, tokens do Hugging Face e do GitHub, chaves privadas) nos arquivos: se achar algum, não registra nem envia nada. A mesma busca, mais a conferência dos scripts, do catálogo e dos arquivos baixados, está na opção 18 do menu (`testar-cofre.ps1`).
 
 - Parar de enviar: em `catalogo\modelos.json`, mude `"enviar_automatico"` para `false`.
 - Tornar privado depois: PRIVADO → Settings → Danger Zone → Change repository visibility → Make private.

@@ -12,6 +12,7 @@
 #>
 param([int]$Dias = 30, [switch]$SemDescoberta, [switch]$Agendado)
 . "$PSScriptRoot\comum.ps1"
+Bloquear-SeModoJogo 'a verificacao de novidades'
 if ($Agendado) {
     # Rodando pela tarefa semanal: guarda a saida em logs\ para consulta.
     New-Item -ItemType Directory -Force -Path $PastaLogs | Out-Null
@@ -87,7 +88,7 @@ $faltam = @($cat.conhecimento | Where-Object { $_.status -ne 'observar' -and -no
 if ($faltam.Count -gt 0) {
     $gb = [math]::Round(($faltam | Measure-Object tamanho_gb -Sum).Sum, 1)
     Aviso "$($faltam.Count) biblioteca(s) do catalogo ainda nao baixada(s), cerca de $gb GB"
-    $md.Add("- **$($faltam.Count) biblioteca(s) do catalogo ainda nao baixada(s)** (cerca de $gb GB): $(($faltam | ForEach-Object id) -join ', '). Rode a sincronizacao (menu, opcao 8).")
+    $md.Add("- **$($faltam.Count) biblioteca(s) do catalogo ainda nao baixada(s)** (cerca de $gb GB): $(($faltam | ForEach-Object id) -join ', '). Rode a sincronizacao (menu, opcao 15).")
     $pendencias++
 }
 

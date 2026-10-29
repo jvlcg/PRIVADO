@@ -2,7 +2,7 @@
 .SYNOPSIS
   Confere o projeto em poucos segundos, sem rodar nenhum modelo:
     1. segredos (chave de acesso, tokens) nos arquivos que vao para o GitHub
-    2. sintaxe dos scripts e acentos (o PowerShell 5.1 le errado acento em script sem BOM)
+    2. sintaxe dos scripts e acentos (o PowerShell 5.1 le errado acento em script sem BOM; com BOM pode)
     3. ferramentas Python (compilam? passam nos testes de dev\ferramentas\testes.py?)
     4. catalogo e estado (JSON valido, ids repetidos, time do conselho)
     5. arquivos dos modelos e bibliotecas marcados como baixados (existem, com o tamanho certo)
@@ -57,9 +57,12 @@ foreach ($s in $scripts) {
     $erros = $null
     [void][Management.Automation.Language.Parser]::ParseFile($s.FullName, [ref]$null, [ref]$erros)
     foreach ($e in @($erros)) { Problema "$($s.Name), linha $($e.Extent.StartLineNumber): $($e.Message)" }
+    # Acento so funciona no PowerShell 5.1 com o arquivo em UTF-8 com BOM (como o menu.ps1).
+    $inicio = [IO.File]::ReadAllBytes($s.FullName) | Select-Object -First 3
+    $temBom = $inicio.Count -eq 3 -and $inicio[0] -eq 0xEF -and $inicio[1] -eq 0xBB -and $inicio[2] -eq 0xBF
     $linhas = [IO.File]::ReadAllLines($s.FullName)
-    for ($i = 0; $i -lt $linhas.Count; $i++) {
-        if ($linhas[$i] -match '[^\x00-\x7F]') { Problema "$($s.Name), linha $($i + 1): acento ou simbolo fora do ASCII (o PowerShell 5.1 le errado)"; break }
+    for ($i = 0; $i -lt $linhas.Count -and -not $temBom; $i++) {
+        if ($linhas[$i] -match '[^\x00-\x7F]') { Problema "$($s.Name), linha $($i + 1): acento ou simbolo fora do ASCII sem BOM (o PowerShell 5.1 le errado; grave em UTF-8 com BOM)"; break }
     }
 }
 Ok "$($scripts.Count) scripts lidos"

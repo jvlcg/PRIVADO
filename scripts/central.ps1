@@ -29,5 +29,6 @@ $uv = Preparar-Uv
 Titulo 'Central do Cofre'
 Info "Painel: $url"
 Info 'Para parar a Central: Ctrl+C ou feche esta janela (os servicos ligados continuam).'
+Mostrar-Estimativa 'central'
 $env:PYTHONIOENCODING = 'utf-8'
 Executar-Nativo $uv @('run', '--offline', '--script', (Join-Path $Raiz 'dev\ferramentas\central.py'), '--porta', "$Porta")

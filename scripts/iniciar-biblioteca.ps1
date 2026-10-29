@@ -9,6 +9,7 @@
 #>
 param([int]$Porta = 8081, [switch]$Rede, [switch]$SemNavegador)
 . "$PSScriptRoot\comum.ps1"
+Bloquear-SeModoJogo 'a biblioteca'
 
 $exe = Achar-Exe 'kiwix-tools' 'kiwix-serve.exe'
 $pastas = @(Join-Path $Raiz 'conhecimento')
@@ -28,4 +29,5 @@ if (-not $SemNavegador) {
 Titulo 'Biblioteca offline'
 foreach ($z in $zims) { Info (Split-Path $z -Leaf) }
 Info "Endereco: $url    Para parar: Ctrl+C."
+Mostrar-Estimativa 'biblioteca'
 Executar-Nativo $exe (@('--address', $ip, '--port', "$Porta") + $zims)

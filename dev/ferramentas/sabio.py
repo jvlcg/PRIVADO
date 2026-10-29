@@ -22,15 +22,19 @@ from __future__ import annotations
 
 import argparse
 import html
+import http.client
 import ipaddress
 import itertools
 import json
 import math
 import os
 import re
+import signal
+import socket
 import sqlite3
 import struct
 import sys
+import threading
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -67,6 +71,59 @@ def http_json(url: str, corpo: dict | None = None, timeout: int = 600) -> dict:
     req = urllib.request.Request(url, data=dados, headers=cabecalhos)
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode("utf-8"))
+
+
+def chat_em_fluxo(corpo: dict, parar: threading.Event | None = None) -> dict:
+    """Pede ao llama-server em streaming, numa thread. Se `parar` acender ("Responder agora"), derruba a
+    conexao (o servidor para de gerar e de gastar a placa) e devolve o texto que ja veio."""
+    parar = parar or threading.Event()
+    estado = {"texto": [], "timings": {}, "erro": None, "sock": None}
+    destino = urllib.parse.urlsplit(LLM)
+
+    def trabalhar() -> None:
+        try:
+            conexao = http.client.HTTPConnection(destino.hostname, destino.port or 80, timeout=3600)
+            cabecalhos = {"Content-Type": "application/json"}
+            if chave_api():
+                cabecalhos["Authorization"] = f"Bearer {chave_api()}"
+            conexao.request("POST", "/v1/chat/completions", body=json.dumps({**corpo, "stream": True}).encode("utf-8"), headers=cabecalhos)
+            estado["sock"] = conexao.sock
+            resp = conexao.getresponse()
+            if resp.status != 200:
+                raise RuntimeError(f"HTTP {resp.status}: {resp.read()[:300].decode('utf-8', 'replace')}")
+            for linha in resp:
+                if not linha.startswith(b"data: "):
+                    continue
+                carga = linha[6:].strip()
+                if carga == b"[DONE]":
+                    break
+                j = json.loads(carga)
+                estado["timings"] = j.get("timings") or estado["timings"]
+                for escolha in j.get("choices") or []:
+                    pedaco = (escolha.get("delta") or {}).get("content")
+                    if pedaco:
+                        estado["texto"].append(pedaco)
+        except Exception as erro:
+            if not parar.is_set():
+                estado["erro"] = erro
+
+    t = threading.Thread(target=trabalhar, daemon=True)
+    t.start()
+    interrompido = False
+    while t.is_alive():
+        t.join(0.5)
+        if parar.is_set() and t.is_alive():
+            interrompido = True
+            if estado["sock"]:
+                try:
+                    estado["sock"].shutdown(socket.SHUT_RDWR)  # fecha mesmo com a leitura em andamento
+                except OSError:
+                    pass
+            t.join(5)
+            break
+    if estado["erro"]:
+        raise estado["erro"]
+    return {"texto": "".join(estado["texto"]).strip(), "timings": estado["timings"], "interrompido": interrompido}
 
 
 def http_texto(url: str, timeout: int = 60) -> str:
@@ -167,7 +224,7 @@ def reordenar(pergunta: str, trechos: list[str], quantos: int) -> list[int]:
         return list(range(min(quantos, len(trechos))))
 
 
-def responder(pergunta: str, fontes: list[tuple[str, str, str]], modelo: str) -> str:
+def responder(pergunta: str, fontes: list[tuple[str, str, str]], modelo: str, parar: threading.Event | None = None) -> str:
     contexto = "\n\n".join(f"[{i}] {titulo}\n{trecho}" for i, (titulo, _, trecho) in enumerate(fontes, 1))
     sistema = (
         "Voce responde em portugues do Brasil usando SOMENTE as fontes fornecidas. "
@@ -186,12 +243,24 @@ def responder(pergunta: str, fontes: list[tuple[str, str, str]], modelo: str) ->
         "thinking_budget_tokens": 1024,
         "chat_template_kwargs": {"reasoning_effort": "medium"},
     }
-    resposta = http_json(f"{LLM}/v1/chat/completions", corpo)["choices"][0]["message"]["content"].strip()
-    if not resposta:  # o raciocinio gastou tudo: de novo, sem raciocinar
-        corpo["chat_template_kwargs"] = {"enable_thinking": False, "reasoning_effort": "low"}
+    parar = parar or threading.Event()
+    direto = {"enable_thinking": False, "reasoning_effort": "low"}
+    if parar.is_set():  # "Responder agora" antes de comecar: nem raciocina
+        corpo["chat_template_kwargs"] = direto
         corpo.pop("thinking_budget_tokens")
-        resposta = http_json(f"{LLM}/v1/chat/completions", corpo)["choices"][0]["message"]["content"].strip()
-    return resposta
+        parar.clear()
+    r = chat_em_fluxo(corpo, parar)
+    if r["interrompido"] and len(r["texto"]) >= 80:
+        return r["texto"] + "\n\n(resposta interrompida a pedido)"
+    if not r["texto"] or r["interrompido"]:
+        # O raciocinio gastou tudo, ou pediram "Responder agora" enquanto ainda raciocinava: de novo, direto.
+        corpo["chat_template_kwargs"] = direto
+        corpo.pop("thinking_budget_tokens", None)
+        parar.clear()
+        r = chat_em_fluxo(corpo, parar)
+        if r["interrompido"]:
+            r["texto"] += "\n\n(resposta interrompida a pedido)"
+    return r["texto"]
 
 
 # ---------- Kiwix ----------
@@ -281,11 +350,23 @@ def buscar_kiwix(termos: dict[str, str], livros: list[tuple[str, str]], por_livr
     return escolhidos[:maximo]
 
 
+def responder_direto(pergunta: str, modelo: str) -> str:
+    """Sem fontes e sem raciocinio: para quando pedem "Responder agora" antes de a busca terminar."""
+    r = chat_em_fluxo({"model": modelo, "max_tokens": 1500,
+                       "chat_template_kwargs": {"enable_thinking": False, "reasoning_effort": "low"},
+                       "messages": [{"role": "system", "content": "Responda em portugues do Brasil, de forma curta e pratica. "
+                                     "Em temas de saude ou seguranca, inclua sinais de alerta e quando procurar ajuda."},
+                                    {"role": "user", "content": pergunta}]})
+    return "_(Resposta rapida, sem consultar a biblioteca: confira antes de seguir.)_\n\n" + r["texto"]
+
+
 def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int = 3, maximo: int = 12, n_trechos: int = 6,
-                        livros_escolhidos: str | None = None, avisar=None) -> dict:
+                        livros_escolhidos: str | None = None, avisar=None, parar: threading.Event | None = None) -> dict:
     """Busca nas bibliotecas, escolhe os melhores trechos e o modelo responde citando [1], [2]...
-    `avisar(texto)` recebe o andamento. Problemas que a pessoa pode resolver viram RuntimeError com a explicacao."""
+    `avisar(texto)` recebe o andamento. `parar` acende com "Responder agora": cada etapa para e o modelo
+    responde com o que ja foi achado. Problemas que a pessoa pode resolver viram RuntimeError com a explicacao."""
     avisar = avisar or (lambda texto: print(texto, file=sys.stderr))
+    parar = parar or threading.Event()
     for nome, url in (("modelos (iniciar-servidor.ps1)", f"{LLM}/health"), ("biblioteca (iniciar-biblioteca.ps1)", KIWIX)):
         if not servidor_ok(url):
             raise RuntimeError(f"O servidor de {nome} nao esta respondendo em {url}.")
@@ -297,16 +378,26 @@ def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int =
         excluir = ("maps_",)  # quem escolheu os livros a mao quer exatamente esses
     if not livros:
         raise RuntimeError("Nenhuma biblioteca disponivel no kiwix-serve.")
+    def direto(motivo: str) -> dict:
+        avisar(f"Respondendo agora, {motivo}")
+        return {"resposta": responder_direto(pergunta, modelo), "termos": {}, "fontes": []}
+
     avisar("Escolhendo as palavras de busca")
     termos = palavras_chave(pergunta, modelo)
+    if parar.is_set():
+        return direto("sem esperar a busca")
     avisar(f"Buscando em {len(livros)} biblioteca(s): \"{termos['pt']}\" / \"{termos['en']}\"")
     achados = buscar_kiwix(termos, livros, artigos, maximo, excluir)
     if not achados:
+        if parar.is_set():
+            return direto("sem fontes")
         raise RuntimeError("Nada encontrado nas bibliotecas. Tente outras palavras (a busca e por termos, como num indice).")
     avisar(f"Lendo {len(achados)} artigos")
     trechos, origem = [], []
     vistos = set()
     for titulo, link in achados:
+        if parar.is_set() and trechos:
+            break  # "Responder agora": segue com os artigos ja lidos
         if link in vistos:
             continue
         vistos.add(link)
@@ -318,20 +409,39 @@ def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int =
             trechos.append(t)
             origem.append((titulo, KIWIX + link))
     if not trechos:
+        if parar.is_set():
+            return direto("sem fontes")
         raise RuntimeError("Os artigos encontrados nao tinham texto aproveitavel.")
-    avisar("Escolhendo os melhores trechos")
-    melhores = reordenar(pergunta, trechos, n_trechos)
+    if parar.is_set():
+        melhores = list(range(min(n_trechos, len(trechos))))  # sem esperar o reordenador
+    else:
+        avisar("Escolhendo os melhores trechos")
+        melhores = reordenar(pergunta, trechos, n_trechos)
     fontes = [(origem[i][0], origem[i][1], trechos[i]) for i in melhores]
-    avisar(f"Escrevendo a resposta com {modelo}")
-    return {"resposta": responder(pergunta, fontes, modelo), "termos": termos,
+    avisar(f"Escrevendo a resposta com {modelo}" + (" (direto, sem raciocinar)" if parar.is_set() else ""))
+    return {"resposta": responder(pergunta, fontes, modelo, parar), "termos": termos,
             "fontes": [{"titulo": t, "link": l} for t, l, _ in fontes]}
 
 
 def cmd_perguntar(args) -> None:
+    # Primeiro Ctrl+C: responde agora com o que ja foi achado. Segundo: sai.
+    parar, apertos = threading.Event(), [0]
+
+    def ao_ctrl_c(sinal, quadro):
+        apertos[0] += 1
+        if apertos[0] > 1:
+            raise KeyboardInterrupt
+        parar.set()
+        print("\n(Respondendo agora com o que ja foi encontrado. Ctrl+C de novo para sair.)", file=sys.stderr, flush=True)
+
+    signal.signal(signal.SIGINT, ao_ctrl_c)
+    print("(Dica: Ctrl+C responde agora com o que ja foi encontrado.)", file=sys.stderr, flush=True)
     try:
-        r = perguntar_com_fonte(args.pergunta, args.modelo, args.artigos, args.maximo, args.trechos, args.livros)
+        r = perguntar_com_fonte(args.pergunta, args.modelo, args.artigos, args.maximo, args.trechos, args.livros, parar=parar)
     except RuntimeError as erro:
         sys.exit(str(erro))
+    except KeyboardInterrupt:
+        sys.exit("Pergunta cancelada.")
     print("\n" + r["resposta"] + "\n")
     print("Fontes:")
     for i, f in enumerate(r["fontes"], 1):

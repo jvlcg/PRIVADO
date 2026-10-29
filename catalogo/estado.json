@@ -925,6 +925,249 @@
                                                "tamanho":  114855633696,
                                                "sha256":  "2878fd0bbc4d0d7a05249bc04f45b71f183c09929a843308b923190f1d15436f",
                                                "baixado_em":  "2026-10-26T21:24:26"
-                                           }
+                                           },
+                         "mapa-brasil":  {
+                                             "arquivo":  "maps_en_brazil_2026-06.zim",
+                                             "versao":  "2026-06",
+                                             "local":  "nucleo",
+                                             "destino":  "conhecimento\\maps_en_brazil_2026-06.zim",
+                                             "tamanho":  3097612187,
+                                             "sha256":  "cfc65305c6cba1cd87f07cab4bf24a2b3141264165e631c0eda52c6918c7eeb6",
+                                             "baixado_em":  "2026-10-29T17:06:20"
+                                         },
+                         "pos-desastre":  {
+                                              "arquivo":  "zimgit-post-disaster_en_2024-05.zim",
+                                              "versao":  "2024-05",
+                                              "local":  "nucleo",
+                                              "destino":  "conhecimento\\zimgit-post-disaster_en_2024-05.zim",
+                                              "tamanho":  644665513,
+                                              "sha256":  "0ba9bb358b768b94eb0d7920752fe356bf097de514ee61843f3a4da6cce174f8",
+                                              "baixado_em":  "2026-10-29T17:06:50"
+                                          },
+                         "agua":  {
+                                      "arquivo":  "zimgit-water_en_2024-08.zim",
+                                      "versao":  "2024-08",
+                                      "local":  "nucleo",
+                                      "destino":  "conhecimento\\zimgit-water_en_2024-08.zim",
+                                      "tamanho":  20924451,
+                                      "sha256":  "392c7bc970a44fddd61dd17f6eabf1f4e21936f2d5c27c83093e1dc475cb56b6",
+                                      "baixado_em":  "2026-10-29T17:07:07"
+                                  },
+                         "medicina-campo":  {
+                                                "arquivo":  "zimgit-medicine_en_2024-08.zim",
+                                                "versao":  "2024-08",
+                                                "local":  "nucleo",
+                                                "destino":  "conhecimento\\zimgit-medicine_en_2024-08.zim",
+                                                "tamanho":  70179585,
+                                                "sha256":  "a86c31b93e9800aae2cd812ef18cbf9c087a7537784c62fbc259db7f9f9d18c0",
+                                                "baixado_em":  "2026-10-29T17:07:24"
+                                            },
+                         "medicina-militar":  {
+                                                  "arquivo":  "irp.fas.org_en_military-medicine_2026-05.zim",
+                                                  "versao":  "2026-05",
+                                                  "local":  "nucleo",
+                                                  "destino":  "conhecimento\\irp.fas.org_en_military-medicine_2026-05.zim",
+                                                  "tamanho":  75874415,
+                                                  "sha256":  "51861e46ed9de76ae6a014bbe81ada999bc9a1bbe968e9217a8d53261561396e",
+                                                  "baixado_em":  "2026-10-29T17:07:45"
+                                              },
+                         "alimentos":  {
+                                           "arquivo":  "zimgit-food-preparation_en_2025-04.zim",
+                                           "versao":  "2025-04",
+                                           "local":  "nucleo",
+                                           "destino":  "conhecimento\\zimgit-food-preparation_en_2025-04.zim",
+                                           "tamanho":  97822565,
+                                           "sha256":  "db92c6c9dac14ff30f1cbc15aa834a7c012c6e87d4ff0519f33a0902ab6e732b",
+                                           "baixado_em":  "2026-10-29T17:08:04"
+                                       },
+                         "nos":  {
+                                     "arquivo":  "zimgit-knots_en_2024-08.zim",
+                                     "versao":  "2024-08",
+                                     "local":  "nucleo",
+                                     "destino":  "conhecimento\\zimgit-knots_en_2024-08.zim",
+                                     "tamanho":  27945133,
+                                     "sha256":  "7c3120b19fc2dc190b5ebfee01af54150136643d7b9d29d7fa9a6ba29787a57b",
+                                     "baixado_em":  "2026-10-29T17:08:21"
+                                 },
+                         "wikiciv":  {
+                                         "arquivo":  "wikiciv_en_all_maxi_2025-11.zim",
+                                         "versao":  "2025-11",
+                                         "local":  "nucleo",
+                                         "destino":  "conhecimento\\wikiciv_en_all_maxi_2025-11.zim",
+                                         "tamanho":  4632130,
+                                         "sha256":  "738b57c7d12f8d4924051e6af417cfd13f0b1a8a31da7095e2ddb6b784e7ad20",
+                                         "baixado_em":  "2026-10-29T17:08:37"
+                                     },
+                         "restarters":  {
+                                            "arquivo":  "restarters_en_all_maxi_2026-10.zim",
+                                            "versao":  "2026-10",
+                                            "local":  "nucleo",
+                                            "destino":  "conhecimento\\restarters_en_all_maxi_2026-10.zim",
+                                            "tamanho":  17044635,
+                                            "sha256":  "c57dddaee3d82f735292ee62b4e29e9dd90ba898d5ae691863d2c56eb99999bd",
+                                            "baixado_em":  "2026-10-29T17:09:00"
+                                        },
+                         "wikiversity-pt":  {
+                                                "arquivo":  "wikiversity_pt_all_maxi_2026-10.zim",
+                                                "versao":  "2026-10",
+                                                "local":  "nucleo",
+                                                "destino":  "conhecimento\\wikiversity_pt_all_maxi_2026-10.zim",
+                                                "tamanho":  101471815,
+                                                "sha256":  "1b97938c55222c56d05b0c1c002b91b237279bba545f00a9a2025c18acfc51e1",
+                                                "baixado_em":  "2026-10-29T17:09:27"
+                                            },
+                         "phet-pt":  {
+                                         "arquivo":  "phet_pt_all_2026-08.zim",
+                                         "versao":  "2026-08",
+                                         "local":  "nucleo",
+                                         "destino":  "conhecimento\\phet_pt_all_2026-08.zim",
+                                         "tamanho":  81295972,
+                                         "sha256":  "1d8df99469c530faede1e10a9fa91424ab8106aa5d10b85ea3b2bb262ee299af",
+                                         "baixado_em":  "2026-10-29T17:09:48"
+                                     },
+                         "appropedia":  {
+                                            "arquivo":  "appropedia_en_all_maxi_2026-02.zim",
+                                            "versao":  "2026-02",
+                                            "local":  "cofre",
+                                            "destino":  "conhecimento\\appropedia_en_all_maxi_2026-02.zim",
+                                            "tamanho":  581641351,
+                                            "sha256":  "dcf200ba723c27397e1c9a2e4891ff91fa13993df1fa285315190d8525a53469",
+                                            "baixado_em":  "2026-10-29T17:10:17"
+                                        },
+                         "energypedia":  {
+                                             "arquivo":  "energypedia_en_all_maxi_2026-06.zim",
+                                             "versao":  "2026-06",
+                                             "local":  "cofre",
+                                             "destino":  "conhecimento\\energypedia_en_all_maxi_2026-06.zim",
+                                             "tamanho":  799712780,
+                                             "sha256":  "c328df321497003e30f96af67340c04bff52e2831e09cf2b0c0fde52bba23bd0",
+                                             "baixado_em":  "2026-10-29T17:10:52"
+                                         },
+                         "cd3wd":  {
+                                       "arquivo":  "cd3wdproject.org_en_all_2025-11.zim",
+                                       "versao":  "2025-11",
+                                       "local":  "cofre",
+                                       "destino":  "conhecimento\\cd3wdproject.org_en_all_2025-11.zim",
+                                       "tamanho":  581165229,
+                                       "sha256":  "f79a27413af0bd17d14adb3a556d282515a8bc1e127d791a5961c93ea9167b92",
+                                       "baixado_em":  "2026-10-29T17:12:41"
+                                   },
+                         "trueprepper":  {
+                                             "arquivo":  "trueprepper.com_en_all_2026-05.zim",
+                                             "versao":  "2026-05",
+                                             "local":  "cofre",
+                                             "destino":  "conhecimento\\trueprepper.com_en_all_2026-05.zim",
+                                             "tamanho":  1423584895,
+                                             "sha256":  "64ddae8ca29ca24db23fae403f12af510f3f3119e09933974e91c899b41be940",
+                                             "baixado_em":  "2026-10-29T17:13:36"
+                                         },
+                         "gardenology":  {
+                                             "arquivo":  "gardenology.org_en_all_2026-09.zim",
+                                             "versao":  "2026-09",
+                                             "local":  "cofre",
+                                             "destino":  "conhecimento\\gardenology.org_en_all_2026-09.zim",
+                                             "tamanho":  112499438,
+                                             "sha256":  "796c4930a18174ef39c2f7aa676d9773d4d9c0f7c9f0eeae9a9338889edfd6c9",
+                                             "baixado_em":  "2026-10-29T17:13:55"
+                                         },
+                         "wikivet":  {
+                                         "arquivo":  "wikivet.net_en_all_maxi_2026-07a.zim",
+                                         "versao":  "2026-07a",
+                                         "local":  "cofre",
+                                         "destino":  "conhecimento\\wikivet.net_en_all_maxi_2026-07a.zim",
+                                         "tamanho":  56980345,
+                                         "sha256":  "e61ac3cd607bfb85ea2256d0c75b5d741149421d8b1bf486a569c347adcab66a",
+                                         "baixado_em":  "2026-10-29T17:14:18"
+                                     },
+                         "guias-medicina":  {
+                                                "arquivo":  "quickguidesformedicine_en_all_2026-06.zim",
+                                                "versao":  "2026-06",
+                                                "local":  "cofre",
+                                                "destino":  "conhecimento\\quickguidesformedicine_en_all_2026-06.zim",
+                                                "tamanho":  527712036,
+                                                "sha256":  "28fcfa5d06fd776e690d88a68bf6392664acf8c766977b0cb7c0caf0dfb71211",
+                                                "baixado_em":  "2026-10-29T17:14:46"
+                                            },
+                         "libretexts-med":  {
+                                                "arquivo":  "libretexts.org_en_med_2025-01.zim",
+                                                "versao":  "2025-01",
+                                                "local":  "cofre",
+                                                "destino":  "conhecimento\\libretexts.org_en_med_2025-01.zim",
+                                                "tamanho":  1192567339,
+                                                "sha256":  "1def4fb3c76d347cfd2af9eabd8f8edefd24086cc17b476130f710214a5bbc1e",
+                                                "baixado_em":  "2026-10-29T17:15:23"
+                                            },
+                         "libretexts-eng":  {
+                                                "arquivo":  "libretexts.org_en_eng_2025-01.zim",
+                                                "versao":  "2025-01",
+                                                "local":  "cofre",
+                                                "destino":  "conhecimento\\libretexts.org_en_eng_2025-01.zim",
+                                                "tamanho":  678394631,
+                                                "sha256":  "3d4b25d03082172f4793625163b366a7d21655a5f8868d0758a9c3649ce9d5c2",
+                                                "baixado_em":  "2026-10-29T17:15:55"
+                                            },
+                         "libretexts-phys":  {
+                                                 "arquivo":  "libretexts.org_en_phys_2026-01.zim",
+                                                 "versao":  "2026-01",
+                                                 "local":  "cofre",
+                                                 "destino":  "conhecimento\\libretexts.org_en_phys_2026-01.zim",
+                                                 "tamanho":  559554453,
+                                                 "sha256":  "ace498581e085093cc86383439342d9ff5a4604bd87f6b82448c019e1264830f",
+                                                 "baixado_em":  "2026-10-29T17:16:26"
+                                             },
+                         "libretexts-math":  {
+                                                 "arquivo":  "libretexts.org_en_math_2026-01.zim",
+                                                 "versao":  "2026-01",
+                                                 "local":  "cofre",
+                                                 "destino":  "conhecimento\\libretexts.org_en_math_2026-01.zim",
+                                                 "tamanho":  830646230,
+                                                 "sha256":  "7a07f9a4c7ad1ca51c300d573bc74df27a5556f7c4c6fe9407bc337ad9b7b4c8",
+                                                 "baixado_em":  "2026-10-29T17:16:56"
+                                             },
+                         "libretexts-chem":  {
+                                                 "arquivo":  "libretexts.org_en_chem_2025-01.zim",
+                                                 "versao":  "2025-01",
+                                                 "local":  "cofre",
+                                                 "destino":  "conhecimento\\libretexts.org_en_chem_2025-01.zim",
+                                                 "tamanho":  2182916266,
+                                                 "sha256":  "83ba2fbfe36d72abe919661de5548103bb6674749bc26531cd61f83d8a825764",
+                                                 "baixado_em":  "2026-10-29T17:18:19"
+                                             },
+                         "libretexts-bio":  {
+                                                "arquivo":  "libretexts.org_en_bio_2025-01.zim",
+                                                "versao":  "2025-01",
+                                                "local":  "cofre",
+                                                "destino":  "conhecimento\\libretexts.org_en_bio_2025-01.zim",
+                                                "tamanho":  2240946728,
+                                                "sha256":  "aa914c19a690429b5d41ccbc91ba8cf7bc2980211b998c8a4a82ef3a21375321",
+                                                "baixado_em":  "2026-10-29T17:24:02"
+                                            },
+                         "libretexts-oficios":  {
+                                                    "arquivo":  "libretexts.org_en_workforce_2026-01.zim",
+                                                    "versao":  "2026-01",
+                                                    "local":  "cofre",
+                                                    "destino":  "conhecimento\\libretexts.org_en_workforce_2026-01.zim",
+                                                    "tamanho":  513663835,
+                                                    "sha256":  "95a383e7ea4733c7bd37c19ff53a42614943e3eec9b832e78908264b3b7e7c67",
+                                                    "baixado_em":  "2026-10-29T17:24:39"
+                                                },
+                         "libretexts-escola":  {
+                                                   "arquivo":  "libretexts.org_en_k12_2026-01.zim",
+                                                   "versao":  "2026-01",
+                                                   "local":  "cofre",
+                                                   "destino":  "conhecimento\\libretexts.org_en_k12_2026-01.zim",
+                                                   "tamanho":  369809249,
+                                                   "sha256":  "101d5b54aba8ff5c6c63c263b2da6ef1a60eda3d5a600a4182bf55c6bc853895",
+                                                   "baixado_em":  "2026-10-29T17:25:05"
+                                               },
+                         "wikiversity-en":  {
+                                                "arquivo":  "wikiversity_en_all_maxi_2026-05.zim",
+                                                "versao":  "2026-05",
+                                                "local":  "cofre",
+                                                "destino":  "conhecimento\\wikiversity_en_all_maxi_2026-05.zim",
+                                                "tamanho":  2459209431,
+                                                "sha256":  "f2667509251c1784270c8c8dd0cd8a79d438a5c4940a6cc70653a6f77318a421",
+                                                "baixado_em":  "2026-10-29T17:26:06"
+                                            }
                      }
 }

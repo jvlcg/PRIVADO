@@ -21,6 +21,7 @@ param(
     [switch]$SemChave
 )
 . "$PSScriptRoot\comum.ps1"
+Bloquear-SeModoJogo 'o chat'
 
 $cat = Ler-Catalogo
 $m = $cat.modelos | Where-Object { $_.id -eq $Id -and $_.motor -eq 'llama.cpp' } | Select-Object -First 1
@@ -73,5 +74,6 @@ if (-not $SemChave) {
     if (-not $SemNavegador -and -not $ehEmbedding) { try { Set-Clipboard -Value $chaveApi; Info '          ja copiada: cole com Ctrl+V quando o chat pedir.' } catch {} }
 }
 Info 'Para parar: Ctrl+C nesta janela.'
+Mostrar-Estimativa 'chat' "$(Texto-Estimativa 'chat'); parado, so o PC ligado ($(Texto-Estimativa 'pc-ligado'))"
 Write-Host ''
 Executar-Nativo $exe $a
