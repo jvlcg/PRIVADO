@@ -6,10 +6,25 @@
   Se uma sincronizacao estiver baixando algo, o download para e continua na proxima vez.
 .EXAMPLE
   .\parar-tudo.ps1
+  .\parar-tudo.ps1 -Manter 1234,5678   # deixa estes processos abertos (a Central do Cofre usa isso)
 #>
+param([string]$Manter = '')
 . "$PSScriptRoot\comum.ps1"
 
-$alvos = @(Processos-Cofre)
+$manterIds = @($Manter -split ',' | Where-Object { $_.Trim() -match '^\d+$' } | ForEach-Object { [int]$_.Trim() })
+if ($manterIds.Count -gt 0) {
+    # Poupa tambem quem abriu esses processos (uv e o lancador do Python), senao a janela deles fecharia.
+    $pais = @{}
+    Get-CimInstance Win32_Process | ForEach-Object { $pais[[int]$_.ProcessId] = [int]$_.ParentProcessId }
+    foreach ($id in @($manterIds)) {
+        $atual = $id
+        for ($n = 0; $n -lt 6 -and $pais.ContainsKey($atual) -and $pais[$atual] -gt 4; $n++) {
+            $atual = $pais[$atual]
+            $manterIds += $atual
+        }
+    }
+}
+$alvos = @(Processos-Cofre | Where-Object { $manterIds -notcontains $_.Id })
 
 Titulo 'Fechando o que o cofre abriu'
 if ($alvos.Count -eq 0) { Ok 'Nada do cofre estava aberto.' }

@@ -26,7 +26,6 @@ from __future__ import annotations
 
 import argparse
 import base64
-import ipaddress
 import json
 import mimetypes
 import os
@@ -537,18 +536,7 @@ class Painel(BaseHTTPRequestHandler):
         return json.loads(self.rfile.read(n) or b"{}")
 
     def _origem_ok(self) -> bool:
-        """Barra pedidos que um site aberto no navegador faca a este servidor (o navegador manda Origin)
-        e nomes de dominio que apontam para este PC (DNS rebinding). Programas locais, como o Open WebUI,
-        nao mandam Origin e passam."""
-        host = (self.headers.get("Host") or "").strip()
-        nome = host[1:host.find("]")] if host.startswith("[") else host.split(":")[0]
-        if nome != "localhost":
-            try:
-                ipaddress.ip_address(nome)
-            except ValueError:
-                return False
-        origem = self.headers.get("Origin")
-        return origem is None or origem == f"http://{host}"
+        return sabio.pedido_local_ok(self.headers.get("Host"), self.headers.get("Origin"))
 
     def _abrir_fluxo(self) -> None:
         self.send_response(200)

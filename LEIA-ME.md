@@ -11,6 +11,8 @@ e as ferramentas para usar tudo isso. Montado em 25/10/2026.
    chave de acesso: ela ja vai copiada, e so colar com Ctrl+V (fica em catalogo\chave-api.txt).
 3. Opcao 2: biblioteca offline - Wikipedia, enciclopedia medica, manuais de conserto (http://127.0.0.1:8081).
 4. Opcao 3: pergunte algo; o modelo responde citando a Wikipedia e as outras bibliotecas.
+5. Mais facil ainda: dois cliques em `Painel.cmd`. Abre a Central do Cofre no navegador (http://127.0.0.1:8070),
+   que mostra o que esta ligado e liga ou desliga cada servico com um clique.
 
 Precisa de Windows 10/11. Com placa NVIDIA fica rapido; sem ela, funciona mais devagar.
 Os scripts estao em `scripts\` e todos tem ajuda: `Get-Help .\scripts\<nome>.ps1 -Examples`

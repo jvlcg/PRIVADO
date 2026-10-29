@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Central do Cofre</title>
+<style>
+:root {
+  --fundo: #f6f5f2; --cartao: #ffffff; --texto: #1d1d1b; --suave: #6b6a66; --borda: #e2e0da;
+  --destaque: #2f5d50; --destaque-fundo: #e6efe9; --ligado: #2f7d4f; --desligado: #9a9893;
+  --aviso-fundo: #f9eeda; --erro: #a3352b;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #161716; --cartao: #1f211f; --texto: #ecebe7; --suave: #a19f99; --borda: #333632;
+    --destaque: #8cc5ad; --destaque-fundo: #223029; --ligado: #6fcf97; --desligado: #77756f;
+    --aviso-fundo: #3a3222; --erro: #f08a7e;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fundo); color: var(--texto); font: 16px/1.5 system-ui, "Segoe UI", sans-serif; }
+main { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 28px; margin: 0 0 4px; }
+h2 { font-size: 19px; margin: 32px 0 12px; }
+p { margin: 0 0 8px; }
+.suave { color: var(--suave); }
+.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.cartao { background: var(--cartao); border: 1px solid var(--borda); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.cartao h3 { font-size: 17px; margin: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.estado { font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; color: var(--desligado); white-space: nowrap; padding-top: 2px; }
+.estado::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.estado.ligado { color: var(--ligado); }
+.estado.falhou { color: var(--erro); }
+.cartao .como { font-size: 14px; color: var(--suave); margin-top: auto; }
+.botao { font: inherit; font-size: 15px; border-radius: 8px; padding: 8px 14px; border: 1px solid var(--destaque); background: var(--destaque); color: var(--cartao); text-decoration: none; text-align: center; cursor: pointer; }
+.botao.leve { background: transparent; color: var(--destaque); }
+.botao:disabled { opacity: .55; cursor: default; }
+.botao.perigo { background: transparent; color: var(--erro); border-color: var(--erro); }
+form.busca { display: flex; flex-wrap: wrap; gap: 8px; }
+form.busca input[type=search] { flex: 1 1 260px; font: inherit; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto); }
+form.busca select { font: inherit; padding: 8px; border-radius: 8px; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto); }
+.tabela { width: 100%; border-collapse: collapse; background: var(--cartao); border: 1px solid var(--borda); border-radius: 12px; overflow: hidden; }
+.tabela th, .tabela td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--borda); vertical-align: top; }
+.tabela th { font-size: 14px; color: var(--suave); font-weight: 600; }
+.tabela tr:last-child td { border-bottom: 0; }
+code { font-family: Consolas, ui-monospace, monospace; font-size: 14px; background: var(--destaque-fundo); padding: 1px 5px; border-radius: 4px; }
+.aviso { background: var(--aviso-fundo); border-radius: 12px; padding: 12px 16px; }
+.numeros { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.numero { background: var(--cartao); border: 1px solid var(--borda); border-radius: 12px; padding: 12px 16px; }
+.numero b { display: block; font-size: 24px; font-variant-numeric: tabular-nums; }
+.modelos { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-direction: column; gap: 8px; }
+.modelos li { background: var(--cartao); border: 1px solid var(--borda); border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+ul.dicas { margin: 0; padding-left: 20px; }
+ul.dicas li { margin: 4px 0; }
+.topo { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+#mensagem { min-height: 24px; margin-top: 8px; }
+@media (max-width: 560px) { .tabela th:nth-child(3), .tabela td:nth-child(3) { display: none; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="topo">
+    <div>
+      <h1>Cofre de IAs</h1>
+      <p class="suave">Tudo roda neste PC, sem internet.</p>
+    </div>
+    <button class="botao leve" id="atualizar" type="button" hidden>Verificar de novo</button>
+  </div>
+
+  <div class="aviso" id="avisoDisco" hidden>
+    Aberto direto do disco, o painel não consegue ver o que está ligado. Para ver e ligar tudo com um clique,
+    abra a <strong>Central do Cofre</strong>: menu, opção 16, ou dois cliques em <code>A:\Painel.cmd</code>.
+  </div>
+
+  <h2>Serviços</h2>
+  <div class="grade" id="servicos"></div>
+  <p id="mensagem" class="suave" role="status" aria-live="polite"></p>
+
+  <section id="maquina" hidden>
+    <h2>Agora na máquina</h2>
+    <div class="numeros">
+      <div class="numero"><span class="suave">Placa de vídeo</span><b id="watts">-</b><span class="suave" id="vram"></span></div>
+      <div class="numero"><span class="suave">Memória RAM livre</span><b id="ram">-</b><span class="suave" id="ramTotal"></span></div>
+    </div>
+    <ul class="modelos" id="modelos"></ul>
+    <p style="margin-top:12px"><button class="botao perigo" id="pararTudo" type="button">Fechar tudo e liberar a placa</button></p>
+  </section>
+
+  <h2>Buscar na biblioteca offline</h2>
+  <form class="busca" action="http://127.0.0.1:8081/search" method="get" target="_blank">
+    <input type="search" name="pattern" placeholder="Ex.: purificar água, torniquete, painel solar" required aria-label="O que procurar">
+    <select name="books.filter.lang" aria-label="Idioma das bibliotecas">
+      <option value="por">Em português</option>
+      <option value="eng">Em inglês (mais conteúdo)</option>
+    </select>
+    <button class="botao" type="submit">Buscar</button>
+  </form>
+  <p class="suave" style="margin-top:8px">Precisa da biblioteca ligada. Para uma resposta explicada com fontes, use a opção 3 do menu.</p>
+
+  <h2>Qual IA usar</h2>
+  <table class="tabela">
+    <thead><tr><th>Para</th><th>Use</th><th>Observação</th></tr></thead>
+    <tbody>
+      <tr><td>Conversar rápido</td><td><code>gemma-4-12b</code></td><td>cabe inteiro na placa de vídeo</td></tr>
+      <tr><td>Melhor resposta geral</td><td><code>gemma-4-26b-a4b</code></td><td><code>qwen3.8-27b</code> é melhor, porém lento</td></tr>
+      <tr><td>Raciocínio e contas</td><td><code>gpt-oss-20b</code></td><td>o mais veloz</td></tr>
+      <tr><td>Programar</td><td><code>qwen3-coder-next</code></td><td>agente de código</td></tr>
+      <tr><td>Saúde</td><td><code>medgemma-27b</code></td><td>junto com a WikiMed; não substitui um médico</td></tr>
+      <tr><td>Traduzir</td><td><code>translategemma-12b</code></td><td>55 idiomas, inclusive texto em fotos</td></tr>
+      <tr><td>Ler foto ou documento</td><td><code>glm-ocr</code></td><td>tabelas e PDFs escaneados</td></tr>
+      <tr><td>Segunda opinião</td><td>Conselho de IAs</td><td>várias IAs respondem e um relator decide (3 a 6 min)</td></tr>
+      <tr><td>O maior que roda aqui</td><td><code>nemotron-3.5-bolt-74b</code></td><td>fica no HD: ~5 min para carregar</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Economizar energia</h2>
+  <div class="aviso">
+    <ul class="dicas">
+      <li>Ao terminar, feche tudo (botão acima ou opção 15 do menu): libera a placa de vídeo.</li>
+      <li>Mesmo sem isso, o servidor de modelos tira da memória o modelo parado há 15 minutos.</li>
+      <li>Suspenda o PC quando não for usar. As IAs custam centavos; o PC ligado à toa é o que pesa na conta.</li>
+    </ul>
+  </div>
+
+  <h2>Bom saber</h2>
+  <ul class="dicas">
+    <li>Na primeira vez, o chat pede a <strong>chave de acesso</strong>. Ela fica em <code>A:\catalogo\chave-api.txt</code> e o servidor a copia sozinho: é só colar com Ctrl+V.</li>
+    <li>Guia completo: <code>A:\docs\GUIA.md</code> (offline) e <a href="https://claude.ai/artifact/XuMQNn1aZENjqeAZKDqruw">versão online</a>.</li>
+    <li>Para usar no celular, abra o servidor com <code>iniciar-servidor.ps1 -Rede</code> e acesse o IP deste PC na porta 8080.</li>
+  </ul>
+</main>
+<script>
+const SERVICOS = [
+  { id: 'chat', nome: 'Chat com os modelos', faz: 'Todas as IAs de texto; escolha o modelo no topo.', abrir: 'http://127.0.0.1:8080', menu: 1 },
+  { id: 'biblioteca', nome: 'Biblioteca offline', faz: 'Wikipédia, WikiMed, iFixit, livros e fóruns práticos.', abrir: 'http://127.0.0.1:8081', menu: 2 },
+  { id: 'conselho', nome: 'Conselho de IAs', faz: 'Várias IAs respondem e um relator decide.', abrir: 'http://127.0.0.1:8090', menu: 13 },
+  { id: 'comfyui', nome: 'Imagem, vídeo, música e 3D', faz: 'ComfyUI, com modelos prontos em Browse Templates.', abrir: 'http://127.0.0.1:8188', menu: 4 },
+];
+const ESTADOS_MODELO = { loaded: 'na memória', loading: 'carregando', sleeping: 'dormindo (memória livre)' };
+// Aberta pela Central (http) a pagina conversa com ela; aberta do disco (file) so mostra atalhos.
+const CENTRAL = location.protocol.startsWith('http');
+let relogio = null;
+
+function el(tag, classe, texto) {
+  const e = document.createElement(tag);
+  if (classe) e.className = classe;
+  if (texto !== undefined) e.textContent = texto;
+  return e;
+}
+
+let limparAviso = null;
+function avisar(texto) {
+  document.getElementById('mensagem').textContent = texto;
+  clearTimeout(limparAviso);
+  limparAviso = setTimeout(() => { document.getElementById('mensagem').textContent = ''; }, 20000);
+}
+
+async function api(rota, corpo) {
+  const opcoes = corpo === undefined ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) };
+  const r = await fetch(rota, opcoes);
+  const dados = await r.json();
+  if (!r.ok) throw new Error(dados.erro || `erro ${r.status}`);
+  return dados;
+}
+
+function montar() {
+  const grade = document.getElementById('servicos');
+  for (const s of SERVICOS) {
+    const c = el('div', 'cartao');
+    const h = el('h3');
+    h.append(el('span', '', s.nome));
+    s.estado = el('span', 'estado', CENTRAL ? 'verificando' : '');
+    if (!CENTRAL) s.estado.hidden = true;
+    h.append(s.estado);
+    c.append(h, el('p', 'suave', s.faz));
+    s.abrirLink = el('a', 'botao', 'Abrir');
+    s.abrirLink.href = s.abrir;
+    s.abrirLink.target = '_blank';
+    s.abrirLink.rel = 'noopener';
+    c.append(s.abrirLink);
+    if (CENTRAL) {
+      s.ligarBotao = el('button', 'botao leve', 'Ligar');
+      s.ligarBotao.type = 'button';
+      s.ligarBotao.addEventListener('click', () => ligar(s));
+      c.append(s.ligarBotao);
+    }
+    s.como = el('p', 'como', `Pelo menu: opção ${s.menu}.`);
+    c.append(s.como);
+    grade.append(c);
+  }
+}
+
+function mostrar(e) {
+  for (const s of SERVICOS) {
+    const ok = e.servicos[s.id];
+    const ligando = e.ligando.includes(s.id);
+    const falhou = e.falhou.includes(s.id);
+    s.estado.textContent = ok ? 'ligado' : ligando ? 'ligando...' : falhou ? 'não ligou' : 'desligado';
+    s.estado.className = 'estado' + (ok ? ' ligado' : falhou ? ' falhou' : '');
+    s.abrirLink.hidden = !ok;
+    s.ligarBotao.hidden = ok;
+    s.ligarBotao.disabled = ligando;
+    s.ligarBotao.textContent = ligando ? 'Ligando...' : 'Ligar';
+    s.como.textContent = falhou ? `Não ligou em 5 min. Use o menu (opção ${s.menu}) para ver o erro.` : `Pelo menu: opção ${s.menu}.`;
+  }
+  const p = e.placa;
+  document.getElementById('watts').textContent = p ? `${p.watts} W` : 'sem leitura';
+  document.getElementById('vram').textContent = p ? `${p.vram_usada_gb} de ${p.vram_total_gb} GB em uso` : '';
+  const m = e.memoria;
+  document.getElementById('ram').textContent = m ? `${m.ram_livre_gb} GB` : '-';
+  document.getElementById('ramTotal').textContent = m ? `de ${m.ram_total_gb} GB` : '';
+  const lista = document.getElementById('modelos');
+  lista.replaceChildren();
+  if (e.servicos.chat && e.modelos.length === 0) lista.append(el('li', 'suave', 'Nenhum modelo na memória: o próximo pedido carrega o escolhido.'));
+  for (const mod of e.modelos) {
+    const li = el('li');
+    const nome = el('span');
+    nome.append(el('code', '', mod.id), document.createTextNode(' ' + (ESTADOS_MODELO[mod.estado] || mod.estado)));
+    li.append(nome);
+    if (mod.estado !== 'sleeping') {
+      const b = el('button', 'botao leve', 'Descarregar');
+      b.type = 'button';
+      b.addEventListener('click', () => descarregar(mod.id, b));
+      li.append(b);
+    }
+    lista.append(li);
+  }
+  // Mais vezes so enquanto algo esta ligando; parado, a cada 20 s e so com a aba visivel.
+  clearTimeout(relogio);
+  if (!document.hidden) relogio = setTimeout(verificar, e.ligando.length ? 3000 : 20000);
+}
+
+async function verificar() {
+  if (!CENTRAL) return;
+  try { mostrar(await api('/api/estado')); }
+  catch { avisar('A Central não respondeu. Ela ainda está aberta? (menu, opção 16)'); }
+}
+
+async function ligar(s) {
+  s.ligarBotao.disabled = true;
+  try {
+    const r = await api('/api/ligar', { servico: s.id });
+    avisar(r.texto === 'ligando' ? `${s.nome}: ligando em uma janela minimizada. Os modelos do HD demoram mais.` : `${s.nome}: ${r.texto}.`);
+  } catch (erro) { avisar(`${s.nome}: ${erro.message}`); }
+  verificar();
+}
+
+async function descarregar(modelo, botao) {
+  botao.disabled = true;
+  try { avisar((await api('/api/descarregar', { modelo })).texto + '.'); }
+  catch (erro) { avisar(`Não deu para descarregar ${modelo}: ${erro.message}`); }
+  verificar();
+}
+
+async function pararTudo() {
+  if (!confirm('Fechar o chat, a biblioteca, o conselho e o ComfyUI? Algo em andamento será interrompido.')) return;
+  const b = document.getElementById('pararTudo');
+  b.disabled = true;
+  avisar('Fechando...');
+  try { const r = await api('/api/parar-tudo', {}); avisar(r.ok ? 'Tudo fechado; a placa de vídeo está livre.' : 'Algo não fechou. Use a opção 15 do menu para ver.'); }
+  catch (erro) { avisar(`Não deu para fechar: ${erro.message}`); }
+  b.disabled = false;
+  verificar();
+}
+
+montar();
+if (CENTRAL) {
+  document.getElementById('maquina').hidden = false;
+  document.getElementById('atualizar').hidden = false;
+  document.getElementById('atualizar').addEventListener('click', verificar);
+  document.getElementById('pararTudo').addEventListener('click', pararTudo);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) verificar(); else clearTimeout(relogio); });
+  verificar();
+} else {
+  document.getElementById('avisoDisco').hidden = false;
+}
+</script>
+</body>
+</html>

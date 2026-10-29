@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import ipaddress
 import json
 import math
 import os
@@ -70,6 +71,20 @@ def http_json(url: str, corpo: dict | None = None, timeout: int = 600) -> dict:
 def http_texto(url: str, timeout: int = 60) -> str:
     with urllib.request.urlopen(url, timeout=timeout) as r:
         return r.read().decode("utf-8", errors="replace")
+
+
+def pedido_local_ok(host: str | None, origem: str | None) -> bool:
+    """Para os servidores do cofre: recusa pedidos que um site aberto no navegador faca (o navegador
+    manda Origin) e nomes de dominio que apontam para este PC (DNS rebinding). Programas locais, como
+    o Open WebUI, nao mandam Origin e passam."""
+    host = (host or "").strip()
+    nome = host[1:host.find("]")] if host.startswith("[") else host.split(":")[0]
+    if nome != "localhost":
+        try:
+            ipaddress.ip_address(nome)
+        except ValueError:
+            return False
+    return origem is None or origem == f"http://{host}"
 
 
 def servidor_ok(url: str) -> bool:
