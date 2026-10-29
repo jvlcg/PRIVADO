@@ -131,6 +131,8 @@ Tudo começa com dois cliques em **`A:\IA.cmd`**, que abre o menu. Nada foi inst
 
 Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofre** no navegador (http://127.0.0.1:8070). Ela mostra o que está ligado, liga cada serviço com um clique, mostra o consumo da placa de vídeo, a RAM livre e os modelos na memória (com botão para descarregar), busca na biblioteca e fecha tudo no fim. A Central só atende este PC e recusa pedidos vindos de outros sites.
 
+Para imprimir e guardar junto do PC: **`A:\docs\cartao-emergencia.html`** (abra e use Ctrl+P). Numa folha A4: como ligar tudo, os endereços, onde achar cada assunto de emergência, quanto tempo o PC aguenta numa bateria e o que fazer se este PC quebrar.
+
 | Opção do menu | O que faz | Onde abre |
 | --- | --- | --- |
 | 1. Chat com todos os modelos | um servidor só com todos os modelos; escolha o modelo no topo do chat (na primeira vez, cole a chave de acesso) | http://127.0.0.1:8080 |

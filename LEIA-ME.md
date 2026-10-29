@@ -47,6 +47,11 @@ o Projeto Gutenberg, o Stack Overflow e uma copia de seguranca deste SSD.
 | o maior que roda aqui        | nemotron-3.5-bolt-74b (fica no HD: ~5 min para carregar) |
 | varias IAs decidindo juntas  | Conselho de IAs: menu, opcao 13 (http://127.0.0.1:8090) |
 
+## Cartao de emergencia
+
+Imprima `docs\cartao-emergencia.html` (abra e use Ctrl+P) e guarde junto do PC: como ligar tudo sem internet,
+onde achar cada assunto, quanto o PC aguenta numa bateria e o que fazer se ele quebrar.
+
 ## Economizar energia
 
 - Ao terminar, menu opcao 15: fecha tudo que o cofre abriu e libera a placa de video.
