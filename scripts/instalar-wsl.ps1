@@ -19,7 +19,7 @@ New-Item -ItemType Directory -Force -Path (Split-Path $pasta -Parent) | Out-Null
 
 Titulo 'WSL2'
 $status = (& wsl.exe --status 2>&1 | Out-String)
-if ($LASTEXITCODE -ne 0 -or $status -match 'not installed|nao esta instalado|não está instalado') {
+if ($LASTEXITCODE -ne 0 -or $status -match 'not installed|n.o est. instalado') {
     Info 'Ativando o WSL2 no Windows...'
     & wsl.exe --install --no-distribution
     Aviso 'Reinicie o PC e rode este script de novo para instalar o Ubuntu.'

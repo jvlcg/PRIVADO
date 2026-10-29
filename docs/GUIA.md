@@ -125,6 +125,7 @@ Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofr
 | 14. Medir energia | consumo do PC e custo em reais | no terminal |
 | 15. Fechar tudo | fecha servidor, biblioteca, ComfyUI e conselho; libera a placa de vídeo | no terminal |
 | 16. Central do Cofre | vê o que está ligado e liga ou desliga com um clique (o mesmo que `Painel.cmd`) | http://127.0.0.1:8070 |
+| 17. Testar o projeto | confere scripts, catálogo, arquivos baixados e se há segredos no que vai para o GitHub, em segundos | no terminal |
 
 Testado neste PC de 25 a 29/10/2026:
 
@@ -147,6 +148,7 @@ Testado neste PC de 25 a 29/10/2026:
 | Modelo parado sai da memória sozinho | depois de 1 min sem uso (teste) a placa liberou o modelo e acordou em 1 s na pergunta seguinte | 1 s para voltar |
 | Chave de acesso (29/10) | pedido de um site estranho barrado (401); o chat pediu a chave uma vez e abriu; conselho e "Perguntar" usam a chave sozinhos | na hora |
 | Central do Cofre (29/10) | ligou o chat com um clique, mostrou o modelo na memória, descarregou e fechou tudo sem se fechar | ~10 s para o chat ligar |
+| Teste do projeto (29/10) | achou um acento que o PowerShell 5.1 lia errado no `instalar-wsl.ps1` (corrigido) e um token falso plantado de propósito | ~20 s |
 | Busca na biblioteca por idioma (29/10) | "purificar água" achou Wikipédia e Wikcionário; "water purification", Wikipédia, WikiMed e Stack Exchange | na hora |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 11). Exemplos em `A:\dev\midia-gerada`.
@@ -267,7 +269,7 @@ A sincronização pode ser interrompida e rodada de novo: continua de onde parou
 
 ### GitHub
 
-O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é um repositório git na raiz do SSD, publicado em github.com/jvlcg/PRIVADO (repositório público). Modelos e bibliotecas ficam de fora. Cada sincronização registra as mudanças e envia ao GitHub sozinha.
+O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é um repositório git na raiz do SSD, publicado em github.com/jvlcg/PRIVADO (repositório público). Modelos e bibliotecas ficam de fora. Cada sincronização registra as mudanças e envia ao GitHub sozinha, mas antes procura segredos (a chave de acesso, tokens do Hugging Face e do GitHub, chaves privadas) nos arquivos: se achar algum, não registra nem envia nada. A mesma busca, mais a conferência dos scripts, do catálogo e dos arquivos baixados, está na opção 17 do menu (`testar-cofre.ps1`).
 
 - Parar de enviar: em `catalogo\modelos.json`, mude `"enviar_automatico"` para `false`.
 - Tornar privado depois: PRIVADO → Settings → Danger Zone → Change repository visibility → Make private.

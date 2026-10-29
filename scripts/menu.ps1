@@ -28,6 +28,7 @@ while ($true) {
     Write-Host '  8) Sincronizar o cofre inteiro (baixa o que falta, atualiza, confere)'
     Write-Host '  9) Conferir integridade (SHA256)'
     Write-Host ' 10) Ver catalogo de modelos e bibliotecas'
+    Write-Host ' 17) Testar o projeto (scripts, catalogo, arquivos e segredos; sem rodar modelos)'
     Write-Host '  0) Sair'
     $op = Read-Host 'Escolha'
     try {
@@ -61,6 +62,7 @@ while ($true) {
             '13' { Nova-Janela 'conselho.ps1' '-Servir' }
             '14' { & "$PSScriptRoot\medir-energia.ps1" -Segundos 60 | Out-Null }
             '15' { & "$PSScriptRoot\parar-tudo.ps1" }
+            '17' { & "$PSScriptRoot\testar-cofre.ps1" }
             '16' { Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSScriptRoot\central.ps1`"" }
             '0' { return }
         }

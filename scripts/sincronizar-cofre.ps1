@@ -51,6 +51,9 @@ if (-not $SemIntegridade) { Etapa 'Conferencia de integridade' { & "$PSScriptRoo
 # Guarda no git local o estado e os relatorios novos; envia ao GitHub so se o catalogo permitir.
 if (Test-Path -LiteralPath (Join-Path $Raiz '.git')) {
     Etapa 'Registrar no git' {
+        # O repositorio e publico: se algum segredo (chave, token) apareceu nos arquivos, nada e enviado.
+        & "$PSScriptRoot\testar-cofre.ps1" -SoSegredos
+        if ($LASTEXITCODE -ne 0) { Aviso 'Segredo encontrado nos arquivos do git: nada foi registrado nem enviado. Corrija e rode de novo.'; return }
         Push-Location $Raiz
         try {
             Executar-Nativo 'git' @('add', '-A')
