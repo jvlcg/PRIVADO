@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import html
 import ipaddress
+import itertools
 import json
 import math
 import os
@@ -220,19 +221,54 @@ def livros_kiwix() -> list[tuple[str, str]]:
     return livros
 
 
-def buscar_kiwix(termos: dict[str, str], livros: list[tuple[str, str]], por_livro: int, maximo: int) -> list[tuple[str, str]]:
-    """Busca em cada livro com os termos do idioma dele e intercala os resultados (o 1o de cada, depois o 2o...)."""
-    por_fonte = []
-    for nome, idioma in livros:
-        params = {"pattern": termos[idioma], "books.name": nome, "format": "xml", "pageLength": str(por_livro)}
-        try:
-            raiz = ET.fromstring(http_texto(f"{KIWIX}/search?{urllib.parse.urlencode(params)}"))
-        except Exception:
+def _itens_busca(params: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    raiz = ET.fromstring(http_texto(f"{KIWIX}/search?{urllib.parse.urlencode(params)}"))
+    itens = []
+    for i in raiz.iter("item"):
+        titulo, link = (i.findtext("title") or "").strip(), (i.findtext("link") or "").strip()
+        # Paginas de indice do Stack Exchange ("Highest Voted ... Questions") nao tem texto para citar.
+        if link and "/questions/tagged/" not in link and not titulo.startswith("Highest Voted"):
+            itens.append((titulo, link))
+    return itens
+
+
+# Fora da busca padrao: mapas (paginas de lugares) e o Stack Overflow, que so traz programacao e
+# polui palavras comuns ("burn" vira pergunta de grafico em R). Perguntas de codigo o incluem de volta.
+FORA_DA_BUSCA = ("maps_", "stackoverflow.com")
+
+
+def buscar_kiwix(termos: dict[str, str], livros: list[tuple[str, str]], por_livro: int, maximo: int,
+                 excluir: tuple[str, ...] = FORA_DA_BUSCA) -> list[tuple[str, str]]:
+    """Uma busca por idioma em todas as bibliotecas daquele idioma, que o Kiwix ordena por relevancia
+    (buscar livro a livro e intercalar deixava de fora quem vinha depois na lista). Alterna portugues e
+    ingles e pega no maximo `por_livro` artigos de cada biblioteca, para as fontes variarem."""
+    por_idioma = []
+    for idioma in ("pt", "en"):
+        nomes = [n for n, i in livros if i == idioma and not n.startswith(excluir)]
+        if not nomes:
             continue
-        itens = [((i.findtext("title") or "").strip(), (i.findtext("link") or "").strip()) for i in raiz.iter("item")]
-        por_fonte.append([x for x in itens if x[1]])
-    intercalados = [x for rodada in zip(*[f + [None] * (por_livro - len(f)) for f in por_fonte]) for x in rodada if x]
-    return intercalados[:maximo]
+        base = [("pattern", termos[idioma]), ("format", "xml")]
+        try:
+            itens = _itens_busca(base + [("pageLength", str(maximo * 3))] + [("books.name", n) for n in nomes])
+        except Exception:
+            # Bibliotecas de idiomas diferentes no mesmo grupo nao buscam juntas: uma por vez, como antes.
+            itens = []
+            for n in nomes:
+                try:
+                    itens += _itens_busca(base + [("pageLength", str(por_livro)), ("books.name", n)])
+                except Exception:
+                    continue
+        por_idioma.append(itens)
+    escolhidos, conta = [], {}
+    for rodada in itertools.zip_longest(*por_idioma):
+        for x in rodada:
+            if not x:
+                continue
+            livro = x[1].split("/")[2] if x[1].count("/") >= 2 else ""
+            if conta.get(livro, 0) < por_livro:
+                conta[livro] = conta.get(livro, 0) + 1
+                escolhidos.append(x)
+    return escolhidos[:maximo]
 
 
 def cmd_perguntar(args) -> None:
@@ -240,14 +276,16 @@ def cmd_perguntar(args) -> None:
         if not servidor_ok(url):
             sys.exit(f"O servidor de {nome} nao esta respondendo em {url}.")
     livros = livros_kiwix()
+    excluir = FORA_DA_BUSCA
     if args.livros:
         filtro = [f.strip() for f in args.livros.split(",")]
         livros = [l for l in livros if any(l[0].startswith(f) for f in filtro)]
+        excluir = ("maps_",)  # quem escolheu os livros a mao quer exatamente esses
     if not livros:
         sys.exit("Nenhuma biblioteca disponivel no kiwix-serve.")
     termos = palavras_chave(args.pergunta, args.modelo)
     print(f"Buscando em {len(livros)} biblioteca(s): \"{termos['pt']}\" / \"{termos['en']}\"", file=sys.stderr)
-    achados = buscar_kiwix(termos, livros, args.artigos, args.maximo)
+    achados = buscar_kiwix(termos, livros, args.artigos, args.maximo, excluir)
     if not achados:
         sys.exit("Nada encontrado nas bibliotecas. Tente outras palavras (a busca e por termos, como num indice).")
     trechos, origem = [], []
@@ -338,7 +376,7 @@ def main() -> None:
     a = sub.add_parser("perguntar")
     a.add_argument("pergunta")
     a.add_argument("--livros", help="comeco do nome dos livros Kiwix, separados por virgula (ex.: wikipedia_pt,mdwiki)")
-    a.add_argument("--artigos", type=int, default=3, help="resultados pedidos a cada livro")
+    a.add_argument("--artigos", type=int, default=3, help="no maximo quantos artigos de cada biblioteca")
     a.add_argument("--maximo", type=int, default=12, help="total de artigos lidos")
     a.add_argument("--trechos", type=int, default=6)
     a.add_argument("--modelo", default=MODELO_CHAT)

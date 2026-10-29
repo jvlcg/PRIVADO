@@ -235,13 +235,15 @@ def montar_time(cfg: dict, area: str, disponiveis: set[str], opcoes: Opcoes) -> 
     return time_, relator
 
 
-def buscar_fontes(pergunta: str, termos: dict) -> list[tuple[str, str, str]]:
-    """Mesma busca do sabio.py: Kiwix por termos, reranker escolhe os 6 melhores trechos."""
+def buscar_fontes(pergunta: str, termos: dict, area: str = "geral") -> list[tuple[str, str, str]]:
+    """Mesma busca do sabio.py: Kiwix por termos, reranker escolhe os 6 melhores trechos.
+    Em perguntas de codigo o Stack Overflow entra na busca."""
     livros = sabio.livros_kiwix()
     if not livros:
         return []
+    excluir = ("maps_",) if area == "codigo" else sabio.FORA_DA_BUSCA
     trechos, origem, vistos = [], [], set()
-    for titulo, link in sabio.buscar_kiwix(termos, livros, 3, 10):
+    for titulo, link in sabio.buscar_kiwix(termos, livros, 3, 10, excluir):
         if link in vistos:
             continue
         vistos.add(link)
@@ -310,7 +312,7 @@ def deliberar(pergunta: str, opcoes: Opcoes, avisar=None, imagem: str | None = N
         if sabio.servidor_ok(KIWIX):
             avisar({"tipo": "etapa", "texto": "Buscando trechos nas bibliotecas offline"})
             try:
-                fontes = buscar_fontes(pergunta, tri["termos"])
+                fontes = buscar_fontes(pergunta, tri["termos"], tri["area"])
             except Exception as erro:
                 avisar({"tipo": "aviso", "texto": f"Busca nas bibliotecas falhou: {erro}"})
             avisar({"tipo": "fontes", "fontes": [{"titulo": t, "link": l} for t, l, _ in fontes]})
