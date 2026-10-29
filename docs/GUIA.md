@@ -309,12 +309,13 @@ O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é u
 - O HD D: (Seagate ST4000DM004) é SMR: trava com duas gravações grandes ao mesmo tempo, por isso o cofre baixa uma coisa de cada vez. Para a terceira cópia, prefira um HD CMR (linhas NAS, como WD Red Plus ou Seagate IronWolf) ou um SSD.
 - Não suspenda o PC durante a sincronização: em 26/10 ele ficou 12 horas suspenso e os downloads pararam.
 - Licenças com termos próprios (uso pessoal permitido): MedGemma, TranslateGemma, Nemotron, Hunyuan3D (não vale na UE, Reino Unido e Coreia do Sul), LFM2.5.
+- Mapas: dados © colaboradores do OpenStreetMap, licença ODbL; ao mostrar ou repassar um mapa, mantenha essa atribuição (o próprio mapa já a mostra no canto).
 - MedGemma erra: use junto com a WikiMed e procure um profissional sempre que puder.
 
 ## Fontes
 
 - Ranking: auditoria de 19/10/2026 da Artificial Analysis e do BenchLM (dev.to)
 - Modelos: API do Hugging Face, consultada em 25/10/2026
-- Bibliotecas: download.kiwix.org
+- Bibliotecas: download.kiwix.org (catálogo e descrições em library.kiwix.org); mapas em download.kiwix.org/zim/maps, feitos com o openzim/maps a partir do OpenStreetMap
 - Motores: GitHub de ggml-org/llama.cpp, ggml-org/whisper.cpp, comfyanonymous/ComfyUI, ollama/ollama, astral-sh/uv; download.kiwix.org/release
 - Energia: consumo medido neste PC em 26/10/2026 com `medir-energia.ps1`; tarifa: projeção da Aneel de alta média de 8,6% em 2026 (Poder360) e bandeira de outubro de 2026 (Jornal do Brasil). Confira a sua na conta de luz.
