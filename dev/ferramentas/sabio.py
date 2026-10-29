@@ -175,15 +175,23 @@ def responder(pergunta: str, fontes: list[tuple[str, str, str]], modelo: str) ->
         "Se as fontes nao responderem a pergunta, diga isso claramente em vez de inventar. "
         "Em temas de saude ou seguranca, inclua os sinais de alerta e quando procurar ajuda."
     )
-    r = http_json(f"{LLM}/v1/chat/completions", {
+    corpo = {
         "model": modelo,
         "messages": [
             {"role": "system", "content": sistema},
             {"role": "user", "content": f"Fontes:\n{contexto}\n\nPergunta: {pergunta}"},
         ],
         "max_tokens": 4000,
-    })
-    return r["choices"][0]["message"]["content"].strip()
+        # Raciocinio curto: as fontes ja estao na mesa (mais rapido e gasta menos energia).
+        "thinking_budget_tokens": 1024,
+        "chat_template_kwargs": {"reasoning_effort": "medium"},
+    }
+    resposta = http_json(f"{LLM}/v1/chat/completions", corpo)["choices"][0]["message"]["content"].strip()
+    if not resposta:  # o raciocinio gastou tudo: de novo, sem raciocinar
+        corpo["chat_template_kwargs"] = {"enable_thinking": False, "reasoning_effort": "low"}
+        corpo.pop("thinking_budget_tokens")
+        resposta = http_json(f"{LLM}/v1/chat/completions", corpo)["choices"][0]["message"]["content"].strip()
+    return resposta
 
 
 # ---------- Kiwix ----------
@@ -196,7 +204,9 @@ def palavras_chave(pergunta: str, modelo: str) -> dict[str, str]:
         f"Pergunta: {pergunta}"
     )
     try:
-        r = http_json(f"{LLM}/v1/chat/completions", {"model": modelo, "messages": [{"role": "user", "content": pedido}], "max_tokens": 1500})
+        # Gerar palavras de busca nao precisa de raciocinio: sem ele sai em segundos.
+        r = http_json(f"{LLM}/v1/chat/completions", {"model": modelo, "messages": [{"role": "user", "content": pedido}], "max_tokens": 300,
+                                                     "chat_template_kwargs": {"enable_thinking": False, "reasoning_effort": "low"}})
         achado = re.search(r"\{.*\}", r["choices"][0]["message"]["content"], re.S)
         termos = json.loads(achado.group(0)) if achado else {}
     except Exception as erro:
@@ -271,23 +281,29 @@ def buscar_kiwix(termos: dict[str, str], livros: list[tuple[str, str]], por_livr
     return escolhidos[:maximo]
 
 
-def cmd_perguntar(args) -> None:
+def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int = 3, maximo: int = 12, n_trechos: int = 6,
+                        livros_escolhidos: str | None = None, avisar=None) -> dict:
+    """Busca nas bibliotecas, escolhe os melhores trechos e o modelo responde citando [1], [2]...
+    `avisar(texto)` recebe o andamento. Problemas que a pessoa pode resolver viram RuntimeError com a explicacao."""
+    avisar = avisar or (lambda texto: print(texto, file=sys.stderr))
     for nome, url in (("modelos (iniciar-servidor.ps1)", f"{LLM}/health"), ("biblioteca (iniciar-biblioteca.ps1)", KIWIX)):
         if not servidor_ok(url):
-            sys.exit(f"O servidor de {nome} nao esta respondendo em {url}.")
+            raise RuntimeError(f"O servidor de {nome} nao esta respondendo em {url}.")
     livros = livros_kiwix()
     excluir = FORA_DA_BUSCA
-    if args.livros:
-        filtro = [f.strip() for f in args.livros.split(",")]
+    if livros_escolhidos:
+        filtro = [f.strip() for f in livros_escolhidos.split(",")]
         livros = [l for l in livros if any(l[0].startswith(f) for f in filtro)]
         excluir = ("maps_",)  # quem escolheu os livros a mao quer exatamente esses
     if not livros:
-        sys.exit("Nenhuma biblioteca disponivel no kiwix-serve.")
-    termos = palavras_chave(args.pergunta, args.modelo)
-    print(f"Buscando em {len(livros)} biblioteca(s): \"{termos['pt']}\" / \"{termos['en']}\"", file=sys.stderr)
-    achados = buscar_kiwix(termos, livros, args.artigos, args.maximo, excluir)
+        raise RuntimeError("Nenhuma biblioteca disponivel no kiwix-serve.")
+    avisar("Escolhendo as palavras de busca")
+    termos = palavras_chave(pergunta, modelo)
+    avisar(f"Buscando em {len(livros)} biblioteca(s): \"{termos['pt']}\" / \"{termos['en']}\"")
+    achados = buscar_kiwix(termos, livros, artigos, maximo, excluir)
     if not achados:
-        sys.exit("Nada encontrado nas bibliotecas. Tente outras palavras (a busca e por termos, como num indice).")
+        raise RuntimeError("Nada encontrado nas bibliotecas. Tente outras palavras (a busca e por termos, como num indice).")
+    avisar(f"Lendo {len(achados)} artigos")
     trechos, origem = [], []
     vistos = set()
     for titulo, link in achados:
@@ -302,13 +318,24 @@ def cmd_perguntar(args) -> None:
             trechos.append(t)
             origem.append((titulo, KIWIX + link))
     if not trechos:
-        sys.exit("Os artigos encontrados nao tinham texto aproveitavel.")
-    melhores = reordenar(args.pergunta, trechos, args.trechos)
+        raise RuntimeError("Os artigos encontrados nao tinham texto aproveitavel.")
+    avisar("Escolhendo os melhores trechos")
+    melhores = reordenar(pergunta, trechos, n_trechos)
     fontes = [(origem[i][0], origem[i][1], trechos[i]) for i in melhores]
-    print("\n" + responder(args.pergunta, fontes, args.modelo) + "\n")
+    avisar(f"Escrevendo a resposta com {modelo}")
+    return {"resposta": responder(pergunta, fontes, modelo), "termos": termos,
+            "fontes": [{"titulo": t, "link": l} for t, l, _ in fontes]}
+
+
+def cmd_perguntar(args) -> None:
+    try:
+        r = perguntar_com_fonte(args.pergunta, args.modelo, args.artigos, args.maximo, args.trechos, args.livros)
+    except RuntimeError as erro:
+        sys.exit(str(erro))
+    print("\n" + r["resposta"] + "\n")
     print("Fontes:")
-    for i, (titulo, link, _) in enumerate(fontes, 1):
-        print(f"  [{i}] {titulo} - {link}")
+    for i, f in enumerate(r["fontes"], 1):
+        print(f"  [{i}] {f['titulo']} - {f['link']}")
 
 
 # ---------- Seus documentos ----------

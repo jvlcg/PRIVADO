@@ -57,6 +57,16 @@ ul.dicas { margin: 0; padding-left: 20px; }
 ul.dicas li { margin: 4px 0; }
 .topo { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 #mensagem { min-height: 24px; margin-top: 8px; }
+#pergunta { width: 100%; min-height: 72px; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto); resize: vertical; }
+.linha { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.etapas { list-style: none; padding: 0; margin: 12px 0 0; color: var(--suave); font-size: 14px; }
+.etapas li::before { content: "· "; }
+.resposta { background: var(--cartao); border: 1px solid var(--borda); border-radius: 12px; padding: 14px 16px; margin-top: 12px; }
+.resposta p { margin: 0 0 10px; }
+.resposta ul, .resposta ol { margin: 0 0 10px; padding-left: 22px; }
+.resposta a { color: var(--destaque); text-decoration: none; font-weight: 600; }
+.fontes { font-size: 14px; margin: 8px 0 0; padding-left: 22px; }
+.falha { color: var(--erro); margin-top: 12px; }
 @media (max-width: 560px) { .tabela th:nth-child(3), .tabela td:nth-child(3) { display: none; } }
 </style>
 </head>
@@ -74,6 +84,16 @@ ul.dicas li { margin: 4px 0; }
     Aberto direto do disco, o painel não consegue ver o que está ligado. Para ver e ligar tudo com um clique,
     abra a <strong>Central do Cofre</strong>: menu, opção 16, ou dois cliques em <code>A:\Painel.cmd</code>.
   </div>
+
+  <section id="perguntar" hidden>
+    <h2>Perguntar com fonte</h2>
+    <textarea id="pergunta" placeholder="Ex.: Como purificar água da chuva para beber?" aria-label="Sua pergunta"></textarea>
+    <div class="linha">
+      <button class="botao" id="perguntarBotao" type="button">Perguntar</button>
+      <span class="suave">Uma IA responde citando a Wikipédia e as outras bibliotecas. Leva 1 a 2 minutos; liga o chat e a biblioteca se precisar.</span>
+    </div>
+    <div id="saida"></div>
+  </section>
 
   <h2>Serviços</h2>
   <div class="grade" id="servicos"></div>
@@ -291,6 +311,85 @@ async function descarregar(modelo, botao) {
   verificar();
 }
 
+function escapar(t) {
+  return t.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// Markdown simples da resposta (paragrafos, listas, negrito) e [n] virando link para a fonte n.
+function renderizar(texto, fontes) {
+  const linha = t => escapar(t)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[(\d+)\]/g, (m, n) => fontes[n - 1] ? `<a href="${escapar(fontes[n - 1].link)}" target="_blank" rel="noopener">[${n}]</a>` : m);
+  // Linha a linha: titulos, itens de lista e paragrafos podem vir colados, sem linha em branco entre eles.
+  const html = [];
+  let lista = null, paragrafo = [];
+  const fecharLista = () => { if (lista) { html.push(`<${lista.tipo}>${lista.itens.map(i => `<li>${i}</li>`).join('')}</${lista.tipo}>`); lista = null; } };
+  const fecharParagrafo = () => { if (paragrafo.length) { html.push(`<p>${paragrafo.join('<br>')}</p>`); paragrafo = []; } };
+  const item = (tipo, t) => { fecharParagrafo(); if (!lista || lista.tipo !== tipo) { fecharLista(); lista = { tipo, itens: [] }; } lista.itens.push(linha(t)); };
+  for (const bruta of texto.trim().split('\n')) {
+    const l = bruta.trim();
+    let m;
+    if (!l) { fecharParagrafo(); fecharLista(); }
+    else if ((m = l.match(/^[-*•]\s+(.*)/))) item('ul', m[1]);
+    else if ((m = l.match(/^\d+[.)]\s+(.*)/))) item('ol', m[1]);
+    else if ((m = l.match(/^#+\s*(.*)/))) { fecharParagrafo(); fecharLista(); html.push(`<p><strong>${linha(m[1])}</strong></p>`); }
+    else { fecharLista(); paragrafo.push(linha(l)); }
+  }
+  fecharParagrafo();
+  fecharLista();
+  return html.join('');
+}
+
+async function perguntar() {
+  const caixa = document.getElementById('pergunta');
+  const pergunta = caixa.value.trim();
+  if (!pergunta) { caixa.focus(); return; }
+  const botao = document.getElementById('perguntarBotao');
+  const saida = document.getElementById('saida');
+  botao.disabled = true;
+  const etapas = el('ul', 'etapas');
+  saida.replaceChildren(etapas);
+  const tratar = e => {
+    if (e.tipo === 'etapa') etapas.append(el('li', '', e.texto));
+    else if (e.tipo === 'falha') saida.append(el('p', 'falha', e.texto));
+    else if (e.tipo === 'final') {
+      const r = el('div', 'resposta');
+      r.innerHTML = renderizar(e.resposta, e.fontes);
+      const lista = el('ol', 'fontes');
+      for (const f of e.fontes) {
+        const li = el('li');
+        const a = el('a', '', f.titulo);
+        a.href = f.link; a.target = '_blank'; a.rel = 'noopener';
+        li.append(a);
+        lista.append(li);
+      }
+      r.append(el('p', 'suave', 'Fontes:'), lista);
+      saida.append(r);
+    }
+  };
+  try {
+    const resp = await fetch('/api/perguntar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pergunta }) });
+    const leitor = resp.body.getReader();
+    const decodificador = new TextDecoder();
+    let resto = '';
+    for (;;) {
+      const { value, done } = await leitor.read();
+      if (done) break;
+      resto += decodificador.decode(value, { stream: true });
+      let fim;
+      while ((fim = resto.indexOf('\n\n')) >= 0) {
+        const bloco = resto.slice(0, fim);
+        resto = resto.slice(fim + 2);
+        if (bloco.startsWith('data: ')) tratar(JSON.parse(bloco.slice(6)));
+      }
+    }
+  } catch (erro) {
+    saida.append(el('p', 'falha', `A Central não respondeu: ${erro.message}`));
+  }
+  botao.disabled = false;
+  verificar();
+}
+
 async function pararTudo() {
   if (!confirm('Fechar o chat, a biblioteca, o conselho e o ComfyUI? Algo em andamento será interrompido.')) return;
   const b = document.getElementById('pararTudo');
@@ -305,6 +404,9 @@ async function pararTudo() {
 montar();
 if (CENTRAL) {
   document.getElementById('maquina').hidden = false;
+  document.getElementById('perguntar').hidden = false;
+  document.getElementById('perguntarBotao').addEventListener('click', perguntar);
+  document.getElementById('pergunta').addEventListener('keydown', ev => { if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) perguntar(); });
   document.getElementById('atualizar').hidden = false;
   document.getElementById('atualizar').addEventListener('click', verificar);
   document.getElementById('pararTudo').addEventListener('click', pararTudo);

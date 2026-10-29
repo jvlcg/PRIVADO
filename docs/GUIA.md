@@ -129,7 +129,7 @@ Modelos no HD carregam mais devagar (~150 MB/s contra ~3 GB/s do SSD), mas funci
 
 Tudo começa com dois cliques em **`A:\IA.cmd`**, que abre o menu. Nada foi instalado no Windows: os programas rodam de dentro do SSD.
 
-Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofre** no navegador (http://127.0.0.1:8070). Ela mostra o que está ligado, liga cada serviço com um clique, mostra o consumo da placa de vídeo, a RAM livre e os modelos na memória (com botão para descarregar), busca na biblioteca e fecha tudo no fim. A Central só atende este PC e recusa pedidos vindos de outros sites.
+Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofre** no navegador (http://127.0.0.1:8070). No topo há a caixa **Perguntar com fonte**: um modelo só (o Gemma 4 26B) responde citando a Wikipédia e as outras bibliotecas, com cada [1], [2] virando link para a página de onde veio; se o chat e a biblioteca estiverem desligados, ela os liga sozinha. Gasta bem menos que o conselho. A Central também mostra o que está ligado, liga cada serviço com um clique, mostra o consumo da placa de vídeo, a RAM livre e os modelos na memória (com botão para descarregar), busca na biblioteca e fecha tudo no fim. A Central só atende este PC e recusa pedidos vindos de outros sites.
 
 Para imprimir e guardar junto do PC: **`A:\docs\cartao-emergencia.html`** (abra e use Ctrl+P). Numa folha A4: como ligar tudo, os endereços, onde achar cada assunto de emergência, quanto tempo o PC aguenta numa bateria e o que fazer se este PC quebrar.
 
@@ -167,6 +167,7 @@ Testado neste PC de 25 a 29/10/2026:
 | Modelo parado sai da memória sozinho | depois de 1 min sem uso (teste) a placa liberou o modelo e acordou em 1 s na pergunta seguinte | 1 s para voltar |
 | Chave de acesso (29/10) | pedido de um site estranho barrado (401); o chat pediu a chave uma vez e abriu; conselho e "Perguntar" usam a chave sozinhos | na hora |
 | Central do Cofre (29/10) | ligou o chat com um clique, mostrou o modelo na memória, descarregou e fechou tudo sem se fechar | ~10 s para o chat ligar |
+| Perguntar com fonte pela Central (29/10) | "Como purificar água da chuva para beber?": ligou chat e biblioteca sozinha, citou Stack Exchange, Wikipédia e Wikibooks com links | ~2 min, contando ligar tudo |
 | Teste do projeto (29/10) | achou um acento que o PowerShell 5.1 lia errado no `instalar-wsl.ps1` (corrigido) e um token falso plantado de propósito | ~20 s |
 | Busca na biblioteca por idioma (29/10) | "purificar água" achou Wikipédia e Wikcionário; "water purification", Wikipédia, WikiMed e Stack Exchange | na hora |
 

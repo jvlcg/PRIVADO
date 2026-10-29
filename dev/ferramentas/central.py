@@ -4,7 +4,8 @@
 # ///
 """
 Central do Cofre: painel no navegador (http://127.0.0.1:8070) que mostra o que esta ligado, liga
-cada servico com um clique, mostra os modelos na memoria e o consumo da placa de video, e fecha tudo.
+cada servico com um clique, mostra os modelos na memoria e o consumo da placa de video, fecha tudo
+e responde perguntas citando as bibliotecas (o mesmo do sabio.py, com um modelo so).
 So atende este PC (127.0.0.1) e recusa pedidos vindos de outros sites.
 
 Uso (pelo wrapper A:\\scripts\\central.ps1: menu, opcao 16, ou dois cliques em A:\\Painel.cmd):
@@ -18,6 +19,7 @@ import json
 import os
 import subprocess
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -32,11 +34,12 @@ PAINEL = RAIZ / "docs" / "painel.html"
 
 # Cada servico: endereco que responde quando esta ligado e o script que o liga (sem abrir o navegador).
 SERVICOS = {
-    "chat": {"teste": f"{sabio.LLM}/health", "script": "iniciar-servidor.ps1", "args": ["-SemNavegador"]},
-    "biblioteca": {"teste": f"{sabio.KIWIX}/", "script": "iniciar-biblioteca.ps1", "args": ["-SemNavegador"]},
-    "conselho": {"teste": "http://127.0.0.1:8090/health", "script": "conselho.ps1", "args": ["-Servir", "-SemNavegador"]},
-    "comfyui": {"teste": "http://127.0.0.1:8188/", "script": "iniciar-comfyui.ps1", "args": ["-SemNavegador"]},
+    "chat": {"nome": "o chat", "teste": f"{sabio.LLM}/health", "script": "iniciar-servidor.ps1", "args": ["-SemNavegador"]},
+    "biblioteca": {"nome": "a biblioteca", "teste": f"{sabio.KIWIX}/", "script": "iniciar-biblioteca.ps1", "args": ["-SemNavegador"]},
+    "conselho": {"nome": "o conselho", "teste": "http://127.0.0.1:8090/health", "script": "conselho.ps1", "args": ["-Servir", "-SemNavegador"]},
+    "comfyui": {"nome": "o ComfyUI", "teste": "http://127.0.0.1:8188/", "script": "iniciar-comfyui.ps1", "args": ["-SemNavegador"]},
 }
+TRAVA_PERGUNTA = threading.Lock()  # uma pergunta por vez: a placa de video e uma so
 LIGANDO: dict[str, float] = {}  # servico -> quando foi pedido; evita abrir duas janelas do mesmo
 ESPERA_LIGAR = 300  # depois disso o painel avisa que o servico nao ligou
 _placa = {"quando": 0.0, "dados": None}
@@ -140,6 +143,19 @@ def parar_tudo() -> dict:
     return {"ok": r.returncode == 0, "texto": (r.stdout or r.stderr).strip()[-600:]}
 
 
+def garantir_ligados(nomes: list[str], avisar) -> None:
+    """Liga o que faltar e espera responder (os modelos do HD demoram mais)."""
+    for n in nomes:
+        if not sabio.servidor_ok(SERVICOS[n]["teste"]):
+            avisar(f"Ligando {SERVICOS[n]['nome']}...")
+            ligar(n)
+    prazo = time.time() + 240
+    while not all(sabio.servidor_ok(SERVICOS[n]["teste"]) for n in nomes):
+        if time.time() > prazo:
+            raise RuntimeError("O chat ou a biblioteca nao ligou em 4 minutos. Use o menu (opcoes 1 e 2) para ver o erro.")
+        time.sleep(2)
+
+
 def descarregar(modelo: str) -> dict:
     sabio.http_json(f"{sabio.LLM}/models/unload", {"model": modelo}, timeout=120)
     _placa["quando"] = 0.0
@@ -194,10 +210,43 @@ class Central(BaseHTTPRequestHandler):
                 self._json(200, parar_tudo())
             elif self.path == "/api/descarregar" and corpo.get("modelo"):
                 self._json(200, descarregar(str(corpo["modelo"])))
+            elif self.path == "/api/perguntar" and str(corpo.get("pergunta") or "").strip():
+                self._perguntar(str(corpo["pergunta"]).strip())
             else:
                 self._json(404, {"erro": "nao encontrado"})
         except Exception as erro:
             self._json(500, {"erro": str(erro)})
+
+    def _perguntar(self, pergunta: str) -> None:
+        """Perguntar com fonte (o mesmo do menu, opcao 3), com o andamento em tempo real (SSE)."""
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        vivo = [True]
+
+        def evento(obj: dict) -> None:
+            if not vivo[0]:
+                return
+            try:
+                self.wfile.write(f"data: {json.dumps(obj, ensure_ascii=False)}\n\n".encode("utf-8"))
+                self.wfile.flush()
+            except OSError:
+                vivo[0] = False  # o navegador fechou; a resposta termina mesmo assim
+
+        def avisar(texto: str) -> None:
+            evento({"tipo": "etapa", "texto": texto})
+
+        if not TRAVA_PERGUNTA.acquire(blocking=False):
+            avisar("Outra pergunta esta sendo respondida; aguardando a vez...")
+            TRAVA_PERGUNTA.acquire()
+        try:
+            garantir_ligados(["chat", "biblioteca"], avisar)
+            evento({"tipo": "final", **sabio.perguntar_com_fonte(pergunta, avisar=avisar)})
+        except Exception as erro:
+            evento({"tipo": "falha", "texto": str(erro)})
+        finally:
+            TRAVA_PERGUNTA.release()
 
 
 def main() -> None:
