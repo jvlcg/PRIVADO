@@ -82,6 +82,14 @@ foreach ($item in @($cat.conhecimento)) {
         Ok "$($item.id) $($reg.versao) em dia"
     }
 }
+# Bibliotecas que entraram no catalogo e ainda nao vieram (as "em observacao" so baixam com -Id).
+$faltam = @($cat.conhecimento | Where-Object { $_.status -ne 'observar' -and -not $estado.conhecimento.Contains($_.id) })
+if ($faltam.Count -gt 0) {
+    $gb = [math]::Round(($faltam | Measure-Object tamanho_gb -Sum).Sum, 1)
+    Aviso "$($faltam.Count) biblioteca(s) do catalogo ainda nao baixada(s), cerca de $gb GB"
+    $md.Add("- **$($faltam.Count) biblioteca(s) do catalogo ainda nao baixada(s)** (cerca de $gb GB): $(($faltam | ForEach-Object id) -join ', '). Rode a sincronizacao (menu, opcao 8).")
+    $pendencias++
+}
 
 # 2. Modelos de fronteira observados
 Titulo 'Modelos observados'

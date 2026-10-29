@@ -72,7 +72,7 @@ São 141 GB no SSD e 821 GB no cofre. Os três gigantes de fronteira não rodam 
 
 ### Bibliotecas offline
 
-São 46 no catálogo: 17 já baixadas e 29 novas de 29/10/2026 (marcadas com *), que entram na próxima sincronização (menu, opção 8). Tudo abre na biblioteca (menu, opção 2), inclusive o mapa, e a busca da Central procura em todas de uma vez.
+São 46 no catálogo: 17 já baixadas e 29 novas de 29/10/2026 (marcadas com *). Dessas, 27 (cerca de 18 GB: 4 no SSD e 14 no cofre) entram na próxima sincronização (menu, opção 8); a verificação semanal avisa enquanto faltarem. Tudo abre na biblioteca (menu, opção 2), inclusive o mapa, e a busca da Central procura em todas de uma vez.
 
 | Área | O que tem | GB |
 | --- | --- | --- |
