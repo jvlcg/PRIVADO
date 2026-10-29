@@ -152,7 +152,7 @@ ul.dicas li { margin: 4px 0; }
 
   <h2>Bom saber</h2>
   <ul class="dicas">
-    <li>Na primeira vez, o chat pede a <strong>chave de acesso</strong>. Ela fica em <code>A:\catalogo\chave-api.txt</code> e o servidor a copia sozinho: é só colar com Ctrl+V.</li>
+    <li>Na primeira vez, o chat pede a <strong>chave de acesso</strong>. Ela fica em <code>A:\catalogo\chave-api.txt</code>; aberto pelo menu, o servidor a copia sozinho. <button class="botao leve" id="copiarChave" type="button" hidden>Copiar a chave do chat</button></li>
     <li>Guia completo: <code>A:\docs\GUIA.md</code> (offline) e <a href="https://claude.ai/artifact/XuMQNn1aZENjqeAZKDqruw">versão online</a>.</li>
     <li>Imprima o <strong>cartão de emergência</strong> (<code>A:\docs\cartao-emergencia.html</code>, Ctrl+P) e guarde junto do PC: como ligar tudo, onde achar cada assunto e o que fazer se o PC quebrar.</li>
     <li>Para usar no celular, abra o servidor com <code>iniciar-servidor.ps1 -Rede</code> e acesse o IP deste PC na porta 8080.</li>
@@ -405,6 +405,17 @@ montar();
 if (CENTRAL) {
   document.getElementById('maquina').hidden = false;
   document.getElementById('perguntar').hidden = false;
+  const copiar = document.getElementById('copiarChave');
+  copiar.hidden = false;
+  copiar.addEventListener('click', async () => {
+    const original = 'Copiar a chave do chat';
+    try {
+      const { chave } = await api('/api/chave');
+      copiar.textContent = chave ? 'Copiada: no chat, "Enter API Key", Ctrl+V e "Save & Retry"' : 'Ainda não há chave: ligue o chat uma vez';
+      if (chave) await navigator.clipboard.writeText(chave);
+    } catch (erro) { copiar.textContent = 'Não deu para copiar: abra A:\\catalogo\\chave-api.txt'; }
+    setTimeout(() => { copiar.textContent = original; }, 8000);
+  });
   document.getElementById('perguntarBotao').addEventListener('click', perguntar);
   document.getElementById('pergunta').addEventListener('keydown', ev => { if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) perguntar(); });
   document.getElementById('atualizar').hidden = false;

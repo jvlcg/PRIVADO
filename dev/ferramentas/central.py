@@ -189,6 +189,12 @@ class Central(BaseHTTPRequestHandler):
             self._enviar(200, "text/html; charset=utf-8", PAINEL.read_bytes())
         elif self.path == "/api/estado":
             self._json(200, estado())
+        elif self.path == "/api/chave":
+            # So esta pagina le a resposta: a Central nao libera CORS, barra nomes de dominio (DNS rebinding)
+            # e recusa o que o navegador marca como vindo de outro site, mesmo sem Origin.
+            if self.headers.get("Sec-Fetch-Site") == "cross-site":
+                return self._json(403, {"erro": "pedido de outro site bloqueado"})
+            self._json(200, {"chave": sabio.chave_api()})
         elif self.path == "/health":
             self._json(200, {"status": "ok"})
         else:
