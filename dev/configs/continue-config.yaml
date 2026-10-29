@@ -1,5 +1,6 @@
 # Configuracao do Continue (extensao do VS Code / JetBrains) usando o servidor do SSD.
 # Copie para %USERPROFILE%\.continue\config.yaml  e abra A:\scripts\iniciar-servidor.ps1 antes.
+# Troque COLE-A-CHAVE pelo texto do arquivo A:\catalogo\chave-api.txt (a chave de acesso deste PC).
 name: SSD de IAs
 version: 1.0.0
 schema: v1
@@ -8,23 +9,23 @@ models:
     provider: openai
     model: qwen3-coder-next
     apiBase: http://127.0.0.1:8080/v1
-    apiKey: local
+    apiKey: COLE-A-CHAVE
     roles: [chat, edit, apply]
   - name: Qwen3.8 27B (melhor qualidade)
     provider: openai
     model: qwen3.8-27b
     apiBase: http://127.0.0.1:8080/v1
-    apiKey: local
+    apiKey: COLE-A-CHAVE
     roles: [chat, edit]
   - name: Gemma 4 12B (rapido, autocompletar)
     provider: openai
     model: gemma-4-12b
     apiBase: http://127.0.0.1:8080/v1
-    apiKey: local
+    apiKey: COLE-A-CHAVE
     roles: [autocomplete]
   - name: Qwen3 Embedding (busca no codigo)
     provider: openai
     model: qwen3-embedding-0.6b
     apiBase: http://127.0.0.1:8080/v1
-    apiKey: local
+    apiKey: COLE-A-CHAVE
     roles: [embed]

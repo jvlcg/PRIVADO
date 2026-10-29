@@ -114,7 +114,7 @@ Tudo começa com dois cliques em **`A:\IA.cmd`**, que abre o menu. Nada foi inst
 
 | Opção do menu | O que faz | Onde abre |
 | --- | --- | --- |
-| 1. Chat com todos os modelos | um servidor só com todos os modelos; escolha o modelo no topo do chat | http://127.0.0.1:8080 |
+| 1. Chat com todos os modelos | um servidor só com todos os modelos; escolha o modelo no topo do chat (na primeira vez, cole a chave de acesso) | http://127.0.0.1:8080 |
 | 2. Biblioteca offline | Wikipédia, WikiMed, iFixit e as outras bibliotecas, com busca | http://127.0.0.1:8081 |
 | 3. Perguntar com fonte | busca na biblioteca e o modelo responde citando [1], [2] | no terminal |
 | 4. Imagem, vídeo, música, 3D | ComfyUI (Workflow > Browse Templates) | http://127.0.0.1:8188 |
@@ -123,7 +123,7 @@ Tudo começa com dois cliques em **`A:\IA.cmd`**, que abre o menu. Nada foi inst
 | 14. Medir energia | consumo do PC e custo em reais | no terminal |
 | 15. Fechar tudo | fecha servidor, biblioteca, ComfyUI e conselho; libera a placa de vídeo | no terminal |
 
-Testado neste PC de 25 a 27/10/2026:
+Testado neste PC de 25 a 29/10/2026:
 
 | Teste | Resultado | Tempo |
 | --- | --- | --- |
@@ -142,12 +142,15 @@ Testado neste PC de 25 a 27/10/2026:
 | gpt-oss-120b, do HD (bateria de 12 V para geladeira) | conta certa (10 h), com fórmulas em LaTeX; sobrou menos de 1 GB de RAM | 8 min, sendo 4 carregando |
 | Nemotron 3.5 Bolt 74B, do HD (mesma pergunta) | conta certa (10 h), em texto simples; sobraram 8,6 GB de RAM | 6 min 14 s, quase 5 carregando |
 | Modelo parado sai da memória sozinho | depois de 1 min sem uso (teste) a placa liberou o modelo e acordou em 1 s na pergunta seguinte | 1 s para voltar |
+| Chave de acesso (29/10) | pedido de um site estranho barrado (401); o chat pediu a chave uma vez e abriu; conselho e "Perguntar" usam a chave sozinhos | na hora |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 11). Exemplos em `A:\dev\midia-gerada`.
 
-O servidor também é uma API compatível com a da OpenAI em `http://127.0.0.1:8080/v1`, com `model` igual ao id do catálogo. Configuração pronta para o Continue (VS Code) em `A:\dev\configs\continue-config.yaml`.
+O servidor também é uma API compatível com a da OpenAI em `http://127.0.0.1:8080/v1`, com `model` igual ao id do catálogo e a chave de acesso no campo "API key". Configuração pronta para o Continue (VS Code) em `A:\dev\configs\continue-config.yaml`.
 
-Para usar do celular ou de outro PC da rede: `iniciar-servidor.ps1 -Rede` e `iniciar-biblioteca.ps1 -Rede`. Se este PC quebrar, `A:\motores\llama.cpp-outras-maquinas` tem o llama.cpp para Windows sem GPU, Vulkan, Linux, Raspberry Pi, Mac e Android, mais o código-fonte.
+**Chave de acesso.** Sem ela, qualquer site aberto no navegador poderia mandar o PC rodar modelos escondido: gastaria energia e, com um gigante, poderia travar o PC sem memória. O servidor cria a chave na primeira vez em `A:\catalogo\chave-api.txt` (o arquivo nunca vai para o GitHub), mostra na janela e a copia para a área de transferência. O chat pede uma vez por navegador: cole com Ctrl+V e clique em "Save & Retry". O conselho e o "Perguntar com fonte" usam a chave sozinhos. O painel do conselho (porta 8090) não precisa dela: ele recusa pedidos vindos de outros sites. Para desligar a chave (não recomendado): `iniciar-servidor.ps1 -SemChave`.
+
+Para usar do celular ou de outro PC da rede: `iniciar-servidor.ps1 -Rede` e `iniciar-biblioteca.ps1 -Rede`; no celular, o chat pede a mesma chave. Se este PC quebrar, `A:\motores\llama.cpp-outras-maquinas` tem o llama.cpp para Windows sem GPU, Vulkan, Linux, Raspberry Pi, Mac e Android, mais o código-fonte.
 
 Fora do menu: `powershell -ExecutionPolicy Bypass -File A:\scripts\<script>.ps1`. Ajuda: `Get-Help A:\scripts\baixar-modelo.ps1 -Examples`.
 

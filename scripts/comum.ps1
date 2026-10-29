@@ -313,6 +313,19 @@ function Manter-Acordado {
     } catch {}
 }
 
+# Chave de acesso dos servidores de modelos: sem ela, um site aberto no navegador poderia mandar
+# o PC rodar modelos escondido. Cada PC gera a sua na primeira vez; o arquivo fica fora do git.
+$ArquivoChave = Join-Path $PastaCatalogo 'chave-api.txt'
+function Chave-Api {
+    if (-not (Test-Path -LiteralPath $ArquivoChave)) {
+        $bytes = New-Object byte[] 18
+        [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+        $nova = 'cofre-' + ([Convert]::ToBase64String($bytes) -replace '[+/=]', '')
+        [IO.File]::WriteAllText($ArquivoChave, $nova, (New-Object Text.UTF8Encoding $false))
+    }
+    return (Get-Content -LiteralPath $ArquivoChave -TotalCount 1).Trim()
+}
+
 # Programas abertos a partir do cofre (pastas motores e cache, no SSD e no HD): servidores, ComfyUI, conselho.
 function Processos-Cofre {
     $pastas = @((Join-Path $Raiz 'motores'), (Join-Path $Raiz 'cache'))

@@ -7,7 +7,8 @@ e as ferramentas para usar tudo isso. Montado em 25/10/2026.
 ## Como comecar
 
 1. De dois cliques em `IA.cmd` (nesta pasta). Abre o menu.
-2. Opcao 1: chat com os modelos, no navegador (http://127.0.0.1:8080).
+2. Opcao 1: chat com os modelos, no navegador (http://127.0.0.1:8080). Na primeira vez o chat pede a
+   chave de acesso: ela ja vai copiada, e so colar com Ctrl+V (fica em catalogo\chave-api.txt).
 3. Opcao 2: biblioteca offline - Wikipedia, enciclopedia medica, manuais de conserto (http://127.0.0.1:8081).
 4. Opcao 3: pergunte algo; o modelo responde citando a Wikipedia e as outras bibliotecas.
 

@@ -42,13 +42,27 @@ MODELO_EMB = "qwen3-embedding-0.6b"
 MODELO_RERANK = "qwen3-reranker-0.6b"
 BANCO = Path(os.environ.get("SABIO_BANCO", Path(__file__).resolve().parents[1] / "datasets" / "sabio.sqlite"))
 INSTRUCAO_BUSCA = "Instruct: Dada uma pergunta, encontre trechos que a respondam\nQuery: "
+# Chave de acesso do servidor de modelos (gerada por iniciar-servidor.ps1, fora do git).
+ARQUIVO_CHAVE = Path(__file__).resolve().parents[2] / "catalogo" / "chave-api.txt"
 
 
 # ---------- HTTP ----------
 
+def chave_api() -> str:
+    if os.environ.get("SABIO_CHAVE"):
+        return os.environ["SABIO_CHAVE"]
+    try:
+        return ARQUIVO_CHAVE.read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+
+
 def http_json(url: str, corpo: dict | None = None, timeout: int = 600) -> dict:
     dados = None if corpo is None else json.dumps(corpo).encode("utf-8")
-    req = urllib.request.Request(url, data=dados, headers={"Content-Type": "application/json"})
+    cabecalhos = {"Content-Type": "application/json"}
+    if url.startswith(LLM) and chave_api():
+        cabecalhos["Authorization"] = f"Bearer {chave_api()}"
+    req = urllib.request.Request(url, data=dados, headers=cabecalhos)
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode("utf-8"))
 

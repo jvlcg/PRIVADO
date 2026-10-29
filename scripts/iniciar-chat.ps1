@@ -8,6 +8,8 @@
   .\iniciar-chat.ps1 -Id qwen3-coder-next -Contexto 65536
   .\iniciar-chat.ps1 -Id gemma-4-26b-a4b -Rede         # libera para outros aparelhos da sua rede
   .\iniciar-chat.ps1 -Id qwen3.8-27b -Extra '--temp 0.6'
+.NOTES
+  Usa a mesma chave de acesso do iniciar-servidor.ps1 (catalogo\chave-api.txt); -SemChave desliga.
 #>
 param(
     [string]$Id = 'gemma-4-12b',
@@ -15,7 +17,8 @@ param(
     [int]$Porta = 8080,
     [switch]$Rede,
     [switch]$SemNavegador,
-    [string]$Extra = ''
+    [string]$Extra = '',
+    [switch]$SemChave
 )
 . "$PSScriptRoot\comum.ps1"
 
@@ -43,7 +46,7 @@ if ($Rede) { $ip = '0.0.0.0' }
 
 # O llama-server distribui sozinho as camadas entre a GPU e a RAM (--fit, ligado por padrao),
 # deixando na placa o maximo que couber. Por isso nao fixamos -ngl aqui.
-$a = @('-m', $modelo, '-c', "$ctx", '--host', $ip, '--port', "$Porta", '--alias', $m.id)
+$a = @('-m', $modelo, '-c', "$ctx", '--host', $ip, '--port', "$Porta", '--alias', $m.id, '--cors-origins', 'localhost')
 if ($mmproj -and (Test-Path -LiteralPath $mmproj)) { $a += @('--mmproj', $mmproj) }
 # Cabeca MTP: preve varios tokens de uma vez (medido: Qwen3.8 27B +76%, Gemma 4 26B +21%).
 if ($mtp) { $a += @('--spec-type', 'draft-mtp', '--spec-draft-model', $mtp) }
@@ -63,6 +66,12 @@ Titulo $m.nome
 Info "Arquivo:  $(Caminho-Relativo $modelo)"
 if ($ehEmbedding) { Info "API de embeddings: $url/v1/embeddings" } else { Info "Chat:     $url" }
 Info "API:      $url/v1   (nome do modelo: $($m.id))"
+if (-not $SemChave) {
+    $chaveApi = Chave-Api
+    $a += @('--api-key-file', $ArquivoChave)
+    Info "Chave:    $chaveApi   (o chat pede uma vez; outros programas: campo API key)"
+    if (-not $SemNavegador -and -not $ehEmbedding) { try { Set-Clipboard -Value $chaveApi; Info '          ja copiada: cole com Ctrl+V quando o chat pedir.' } catch {} }
+}
 Info 'Para parar: Ctrl+C nesta janela.'
 Write-Host ''
 Executar-Nativo $exe $a

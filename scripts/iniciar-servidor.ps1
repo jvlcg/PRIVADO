@@ -10,8 +10,12 @@
   .\iniciar-servidor.ps1 -DormirMinutos 0  # nunca tira o modelo da memoria por inatividade
   .\iniciar-servidor.ps1 -Rede           # libera para outros aparelhos da sua rede
 .NOTES
+  O servidor pede uma chave de acesso (catalogo\chave-api.txt, criada na primeira vez). Sem ela,
+  qualquer site aberto no navegador poderia mandar o PC rodar modelos escondido. O chat do navegador
+  pede a chave uma vez (ela vai copiada para a area de transferencia: cole com Ctrl+V).
   Clientes (VS Code/Continue, Cline, Open WebUI, Aider): base URL http://127.0.0.1:8080/v1,
-  chave de API qualquer texto, modelo = id do catalogo (ex.: qwen3-coder-next).
+  chave de API = o texto de catalogo\chave-api.txt, modelo = id do catalogo (ex.: qwen3-coder-next).
+  -SemChave desliga a chave (nao recomendado).
 #>
 param(
     [int]$Porta = 8080,
@@ -19,7 +23,8 @@ param(
     [int]$DormirMinutos = 15,
     [switch]$Rede,
     [switch]$SemNavegador,
-    [switch]$IncluirGigantes
+    [switch]$IncluirGigantes,
+    [switch]$SemChave
 )
 . "$PSScriptRoot\comum.ps1"
 
@@ -84,5 +89,13 @@ Info "Chat:    $url"
 Info "API:     $url/v1   (campo model = um dos ids acima)"
 Info "Ate $Carregados modelo(s) carregados ao mesmo tempo. Para parar: Ctrl+C."
 if ($DormirMinutos -gt 0) { Info "Modelo sem uso por $DormirMinutos min sai da memoria sozinho." }
+# --cors-origins localhost e a chave: um site aberto no navegador nao consegue usar os modelos escondido.
+$argumentos = @('--models-preset', $arqIni, '--models-max', "$Carregados", '--host', $ip, '--port', "$Porta", '--cors-origins', 'localhost')
+if (-not $SemChave) {
+    $chaveApi = Chave-Api
+    $argumentos += @('--api-key-file', $ArquivoChave)
+    Info "Chave:   $chaveApi   (o chat pede uma vez; outros programas: campo API key)"
+    if (-not $SemNavegador) { try { Set-Clipboard -Value $chaveApi; Info '         ja copiada: cole com Ctrl+V quando o chat pedir.' } catch {} }
+}
 Write-Host ''
-Executar-Nativo $exe @('--models-preset', $arqIni, '--models-max', "$Carregados", '--host', $ip, '--port', "$Porta")
+Executar-Nativo $exe $argumentos

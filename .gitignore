@@ -20,6 +20,7 @@
 
 # Dentro das pastas incluidas, fica de fora o que e grande, gerado ou pessoal:
 /catalogo/llama-presets.ini
+/catalogo/chave-api.txt
 /dev/datasets/
 /dev/modelos-proprios/
 /dev/audio-gerado/

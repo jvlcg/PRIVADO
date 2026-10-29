@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import ipaddress
 import json
 import mimetypes
 import os
@@ -535,6 +536,20 @@ class Painel(BaseHTTPRequestHandler):
         n = int(self.headers.get("Content-Length") or 0)
         return json.loads(self.rfile.read(n) or b"{}")
 
+    def _origem_ok(self) -> bool:
+        """Barra pedidos que um site aberto no navegador faca a este servidor (o navegador manda Origin)
+        e nomes de dominio que apontam para este PC (DNS rebinding). Programas locais, como o Open WebUI,
+        nao mandam Origin e passam."""
+        host = (self.headers.get("Host") or "").strip()
+        nome = host[1:host.find("]")] if host.startswith("[") else host.split(":")[0]
+        if nome != "localhost":
+            try:
+                ipaddress.ip_address(nome)
+            except ValueError:
+                return False
+        origem = self.headers.get("Origin")
+        return origem is None or origem == f"http://{host}"
+
     def _abrir_fluxo(self) -> None:
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream; charset=utf-8")
@@ -551,6 +566,8 @@ class Painel(BaseHTTPRequestHandler):
             return False  # o navegador fechou; a deliberacao continua e a ata e salva
 
     def do_GET(self):
+        if not self._origem_ok():
+            return self._json(403, {"erro": "pedido de outro site bloqueado"})
         if self.path in ("/", "/index.html"):
             self._enviar(200, "text/html; charset=utf-8", PAGINA.encode("utf-8"))
         elif self.path in ("/v1/models", "/models"):
@@ -564,6 +581,8 @@ class Painel(BaseHTTPRequestHandler):
             self._json(404, {"erro": "nao encontrado"})
 
     def do_POST(self):
+        if not self._origem_ok():
+            return self._json(403, {"erro": "pedido de outro site bloqueado"})
         try:
             corpo = self._corpo()
         except Exception:
