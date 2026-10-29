@@ -39,6 +39,9 @@ p { margin: 0 0 8px; }
 form.busca { display: flex; flex-wrap: wrap; gap: 8px; }
 form.busca input[type=search] { flex: 1 1 260px; font: inherit; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto); }
 form.busca select { font: inherit; padding: 8px; border-radius: 8px; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto); }
+.atalhos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.atalhos button { font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto); cursor: pointer; }
+.atalhos button:hover { border-color: var(--destaque); }
 .tabela { width: 100%; border-collapse: collapse; background: var(--cartao); border: 1px solid var(--borda); border-radius: 12px; overflow: hidden; }
 .tabela th, .tabela td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--borda); vertical-align: top; }
 .tabela th { font-size: 14px; color: var(--suave); font-weight: 600; }
@@ -95,7 +98,12 @@ ul.dicas li { margin: 4px 0; }
     </select>
     <button class="botao" type="submit">Buscar</button>
   </form>
-  <p class="suave" style="margin-top:8px">Precisa da biblioteca ligada. Para uma resposta explicada com fontes, use a opção 3 do menu.</p>
+  <div class="atalhos" id="atalhos" role="group" aria-label="Atalhos de emergência"></div>
+  <p class="suave" style="margin-top:8px">Precisa da biblioteca ligada. Os atalhos buscam no idioma escolhido; as bibliotecas de sobrevivência e medicina de campo são em inglês. Para uma resposta explicada com fontes, use a opção 3 do menu.</p>
+
+  <h2>Mapa offline</h2>
+  <p id="mapaTexto" class="suave">Abra a biblioteca (menu, opção 2) e escolha o mapa na lista.</p>
+  <a class="botao" id="mapaBotao" target="_blank" rel="noopener" hidden>Abrir o mapa</a>
 
   <h2>Qual IA usar</h2>
   <table class="tabela">
@@ -137,6 +145,19 @@ const SERVICOS = [
   { id: 'comfyui', nome: 'Imagem, vídeo, música e 3D', faz: 'ComfyUI, com modelos prontos em Browse Templates.', abrir: 'http://127.0.0.1:8188', menu: 4 },
 ];
 const ESTADOS_MODELO = { loaded: 'na memória', loading: 'carregando', sleeping: 'dormindo (memória livre)' };
+// Buscas prontas para emergencias: o termo em portugues ou em ingles, conforme o idioma escolhido.
+const ATALHOS = [
+  { pt: 'primeiros socorros', en: 'first aid' },
+  { pt: 'reanimação cardiopulmonar', en: 'cardiopulmonary resuscitation' },
+  { pt: 'hemorragia', en: 'bleeding control' },
+  { pt: 'queimadura', en: 'burn treatment' },
+  { pt: 'fratura', en: 'splint fracture' },
+  { pt: 'desidratação', en: 'oral rehydration' },
+  { pt: 'purificação da água', en: 'water purification' },
+  { pt: 'conservação de alimentos', en: 'food preservation' },
+  { pt: 'abrigo', en: 'emergency shelter' },
+  { pt: 'energia solar', en: 'solar power' },
+];
 // Aberta pela Central (http) a pagina conversa com ela; aberta do disco (file) so mostra atalhos.
 const CENTRAL = location.protocol.startsWith('http');
 let relogio = null;
@@ -188,6 +209,17 @@ function montar() {
     c.append(s.como);
     grade.append(c);
   }
+  const atalhos = document.getElementById('atalhos');
+  for (const a of ATALHOS) {
+    const b = el('button', '', a.pt[0].toUpperCase() + a.pt.slice(1));
+    b.type = 'button';
+    b.addEventListener('click', () => {
+      const idioma = document.querySelector('select[name="books.filter.lang"]').value;
+      const termo = idioma === 'por' ? a.pt : a.en;
+      window.open(`http://127.0.0.1:8081/search?pattern=${encodeURIComponent(termo)}&books.filter.lang=${idioma}`, '_blank', 'noopener');
+    });
+    atalhos.append(b);
+  }
 }
 
 function mostrar(e) {
@@ -203,6 +235,12 @@ function mostrar(e) {
     s.ligarBotao.textContent = ligando ? 'Ligando...' : 'Ligar';
     s.como.textContent = falhou ? `Não ligou em 5 min. Use o menu (opção ${s.menu}) para ver o erro.` : `Pelo menu: opção ${s.menu}.`;
   }
+  const mapaBotao = document.getElementById('mapaBotao');
+  mapaBotao.hidden = !e.mapa;
+  if (e.mapa) mapaBotao.href = e.mapa;
+  document.getElementById('mapaTexto').textContent = e.mapa ? 'Ruas, estradas, hospitais, postos e escolas, sem internet.'
+    : e.servicos.biblioteca ? 'O mapa do Brasil ainda não foi baixado: menu, opção 8 (sincronizar).'
+    : 'Ligue a biblioteca (acima) para abrir o mapa.';
   const p = e.placa;
   document.getElementById('watts').textContent = p ? `${p.watts} W` : 'sem leitura';
   document.getElementById('vram').textContent = p ? `${p.vram_usada_gb} de ${p.vram_total_gb} GB em uso` : '';
