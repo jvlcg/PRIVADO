@@ -77,6 +77,7 @@ function Mostrar-Menu {
     Write-Host ('  │' + $titulo.PadRight($largura - 4 - $direita.Length) + $direita + '│') -ForegroundColor Cyan
     Write-Host "  └$borda┘" -ForegroundColor Cyan
     Write-Host ([string]::Format($CulturaBR, '  Tarifa: {0}, R$ {1:N2}/kWh   ·   PC ligado sem uso: {2}', $e.distribuidora, (Tarifa-Kwh), (Texto-Estimativa 'pc-ligado'))) -ForegroundColor DarkGray
+    Write-Host "  Gasto do cofre neste mês: $(Texto-GastoMes)" -ForegroundColor DarkGray
     if (ModoJogo-Ativo) {
         Write-Host ''
         Write-Host '  MODO JOGO LIGADO: as IAs estão desligadas e não abrem. Escolha 12 para sair.' -ForegroundColor Black -BackgroundColor Yellow

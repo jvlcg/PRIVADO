@@ -114,6 +114,7 @@ ul.dicas li { margin: 4px 0; }
       <div class="numero"><span class="suave">Placa de vídeo</span><b id="watts">-</b><span class="suave" id="vram"></span></div>
       <div class="numero"><span class="suave">Memória RAM livre</span><b id="ram">-</b><span class="suave" id="ramTotal"></span></div>
       <div class="numero"><span class="suave">PC inteiro (estimado)</span><b id="pcW">-</b><span class="suave" id="pcCusto"></span></div>
+      <div class="numero"><span class="suave">Gasto do cofre neste mês</span><b id="gastoMes">-</b><span class="suave">tarefas registradas; o PC parado não entra</span></div>
     </div>
     <ul class="modelos" id="modelos"></ul>
     <div class="acoes">
@@ -281,6 +282,7 @@ function mostrar(e) {
   }
   document.getElementById('pcW').textContent = e.pc_w ? `~${e.pc_w} W` : 'medindo...';
   document.getElementById('pcCusto').textContent = e.pc_custo_hora || '';
+  document.getElementById('gastoMes').textContent = e.gasto_mes || '-';
   const mapaBotao = document.getElementById('mapaBotao');
   mapaBotao.hidden = !e.mapa;
   if (e.mapa) mapaBotao.href = e.mapa;
@@ -391,6 +393,7 @@ async function perguntar() {
         lista.append(li);
       }
       r.append(el('p', 'suave', 'Fontes:'), lista);
+      if (e.gasto) r.append(el('p', 'gasto', `Gasto desta pergunta: ${e.gasto}`));
       saida.append(r);
     }
   };

@@ -69,6 +69,7 @@ Info $u
 Titulo 'Aberto agora'
 if (ModoJogo-Ativo) { Aviso 'Modo jogo ligado: as IAs estao desligadas e nao abrem (menu, opcao 12, para sair).' }
 Info ("PC ligado sem uso: {0} (tarifa {1})" -f (Texto-Estimativa 'pc-ligado'), (Energia-Catalogo).distribuidora)
+Info "Gasto do cofre neste mes: $(Texto-GastoMes) (registro em logs\gasto-tarefas.csv)"
 $abertos = @(Processos-Cofre)
 if ($abertos.Count -eq 0) { Info 'Nada do cofre aberto.' }
 else {

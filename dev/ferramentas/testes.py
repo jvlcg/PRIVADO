@@ -264,6 +264,23 @@ class Responder(unittest.TestCase):
         self.assertNotIn("thinking_budget_tokens", corpo)
 
 
+class RegistroDeGasto(unittest.TestCase):
+    def test_registra_e_soma_o_mes(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as pasta:
+            arquivo = Path(pasta) / "gasto-tarefas.csv"
+            with mock.patch.object(sabio, "ARQUIVO_GASTOS", arquivo), mock.patch.object(sabio, "tarifa_kwh", return_value=1.25):
+                self.assertEqual(sabio.gasto_mes(), {"tarefas": 0, "wh": 0.0})
+                sabio.registrar_gasto("perguntar", 90, 170)   # 4,25 Wh
+                sabio.registrar_gasto("conselho", 228, 183)   # 11,59 Wh
+                with arquivo.open("a", encoding="utf-8") as f:
+                    f.write("2020-01-01T10:00:00;velha;60;100;1.000;0.00125\n")  # outro mes: nao entra
+                g = sabio.gasto_mes()
+                self.assertEqual(g["tarefas"], 2)
+                self.assertAlmostEqual(g["wh"], 4.25 + 11.59, places=1)
+                self.assertTrue(arquivo.read_text(encoding="utf-8").startswith("data;tarefa;segundos;watts;wh;reais"))
+
+
 class Energia(unittest.TestCase):
     def test_texto_custo_na_tarifa_de_goias(self):
         with mock.patch.object(central, "energia", return_value={"tarifa_kwh": 1.25}):

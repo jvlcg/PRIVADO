@@ -230,6 +230,8 @@ Este PC não tem sensor de consumo total. O script `medir-energia.ps1` (menu, op
 
 Os valores usam a tarifa da **Equatorial Goiás**: **R$ 1,25 por kWh** com impostos. A conta: a residencial B1 custa R$ 0,954/kWh sem impostos desde 22/10/2026 (TUSD R$ 0,617 + TE R$ 0,337, depois do reajuste de 7,36% aprovado pela [ANEEL](https://www.gov.br/aneel/pt-br/assuntos/noticias/2026/novas-tarifas-da-equatorial-goias-sao-aprovadas-pela-aneel)); somando ICMS de 19% (17% + 2% do Protege) e PIS/COFINS de uns 5%, cobrados "por dentro", fica 0,954 ÷ (1 − 0,24) ≈ R$ 1,25, na bandeira verde. A tarifa muda todo 22 de outubro, e as bandeiras amarela e vermelha somam uns centavos por kWh. Para usar o valor exato da sua conta (total a pagar ÷ kWh consumidos), mude `tarifa_kwh` na seção `energia` de `A:\catalogo\modelos.json`: o menu, a Central e os scripts passam a usá-lo. Lá também ficam as estimativas de cada tarefa.
 
+**Gasto do mês.** Cada tarefa que termina (pergunta, conselho, imagem, transcrição, sincronização, testes) anota o tempo e a potência em `A:\logs\gasto-tarefas.csv`, que fica só neste PC. O menu, o status (opção 13) e a Central mostram o total do mês, como "12 tarefa(s), ~85 Wh ≈ R$ 0,11". O PC ligado sem tarefa não entra nessa conta: ele é a maior parte da fatura (veja os perfis abaixo).
+
 **Medido** (26 a 29/10/2026):
 
 | Situação | Potência média do PC | Energia | Custo |

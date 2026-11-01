@@ -372,6 +372,30 @@ function Mostrar-Estimativa($tarefa, [string]$texto = '') {
     Write-Host ([string]::Format($CulturaBR, '  Energia estimada: {0}  (tarifa {1}: R$ {2:N2}/kWh)', $texto, $e.distribuidora, (Tarifa-Kwh))) -ForegroundColor DarkYellow
 }
 
+# Registro do gasto de cada tarefa (logs\gasto-tarefas.csv, so neste PC): data;tarefa;segundos;watts;wh;reais.
+$ArquivoGastos = Join-Path $PastaLogs 'gasto-tarefas.csv'
+function Registrar-Gasto([string]$tarefa, [double]$segundos, [double]$watts) {
+    try {
+        $inv = [Globalization.CultureInfo]::InvariantCulture
+        $wh = $watts * $segundos / 3600
+        New-Item -ItemType Directory -Force -Path $PastaLogs | Out-Null
+        if (-not (Test-Path -LiteralPath $ArquivoGastos)) { Add-Content -LiteralPath $ArquivoGastos -Value 'data;tarefa;segundos;watts;wh;reais' -Encoding UTF8 }
+        Add-Content -LiteralPath $ArquivoGastos -Encoding UTF8 -Value ([string]::Format($inv, '{0:s};{1};{2:F0};{3:F0};{4:F3};{5:F5}', (Get-Date), $tarefa, $segundos, $watts, $wh, $wh / 1000 * (Tarifa-Kwh)))
+    } catch {}
+}
+
+# "12 tarefas, ~85 Wh = R$ 0,11" do mes atual (o PC ligado sem tarefa nao entra).
+function Texto-GastoMes {
+    if (-not (Test-Path -LiteralPath $ArquivoGastos)) { return 'nenhuma tarefa registrada ainda' }
+    $mes = (Get-Date).ToString('yyyy-MM')
+    $inv = [Globalization.CultureInfo]::InvariantCulture
+    $linhas = @(Get-Content -LiteralPath $ArquivoGastos -Encoding UTF8 | Select-Object -Skip 1 | Where-Object { $_.StartsWith($mes) })
+    if ($linhas.Count -eq 0) { return 'nenhuma tarefa registrada neste mes' }
+    $wh = 0.0
+    foreach ($l in $linhas) { $wh += [double]::Parse(($l -split ';')[4], $inv) }
+    return "$($linhas.Count) tarefa(s), $(Texto-Custo $wh)"
+}
+
 # No fim de uma tarefa: quanto ela gastou, pelo tempo que levou e a potencia tipica dela (watts no catalogo).
 function Mostrar-GastoFinal($tarefa, [datetime]$inicio) {
     $e = Energia-Catalogo
@@ -380,6 +404,7 @@ function Mostrar-GastoFinal($tarefa, [datetime]$inicio) {
     $s = ((Get-Date) - $inicio).TotalSeconds
     if ($s -ge 120) { $tempo = [string]::Format($CulturaBR, '{0:N0} min', $s / 60) } else { $tempo = [string]::Format($CulturaBR, '{0:N0} s', $s) }
     Write-Host ("  Gasto estimado: {0} com o PC em ~{1} W -> {2}" -f $tempo, $w, (Texto-GastoTempo $s $w)) -ForegroundColor DarkYellow
+    Registrar-Gasto $tarefa $s $w
 }
 
 # Modo jogo: com este arquivo presente, nada das IAs liga (nem a verificacao semanal); modo-jogo.ps1 liga e desliga.

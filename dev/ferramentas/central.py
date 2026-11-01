@@ -112,6 +112,11 @@ def texto_custo(wh: float) -> str:
     return f"~{txt_wh} ≈ {txt_r}".replace(".", ",")
 
 
+def texto_gasto_mes() -> str:
+    g = sabio.gasto_mes()
+    return f"{g['tarefas']} tarefa(s), {texto_custo(g['wh'])}" if g["tarefas"] else "nenhuma tarefa registrada neste mês"
+
+
 def estimativa(tarefa: str) -> str:
     t = (energia().get("tarefas") or {}).get(tarefa) or {}
     if t.get("texto"):
@@ -178,6 +183,7 @@ def estado() -> dict:
         "modelos": modelos_na_memoria() if ligados["chat"] else [],
         "mapa": endereco_mapa() if ligados["biblioteca"] else None,
         "modo_jogo": MODO_JOGO.exists(),
+        "gasto_mes": texto_gasto_mes(),
         "pc_w": pc_w,
         "pc_custo_hora": texto_custo(pc_w) + " por hora" if pc_w else None,
         "energia": {"distribuidora": e.get("distribuidora", ""), "tarifa": f"R$ {float(e.get('tarifa_kwh') or 0):.2f}/kWh".replace(".", ","),
@@ -341,7 +347,12 @@ class Central(BaseHTTPRequestHandler):
                 raise RuntimeError("Modo jogo ligado: as IAs estao desligadas. Saia do modo jogo para perguntar.")
             AGORA.clear()
             garantir_ligados(["chat", "biblioteca"], avisar)
-            evento({"tipo": "final", **sabio.perguntar_com_fonte(pergunta, avisar=avisar, parar=AGORA)})
+            inicio = time.time()
+            r = sabio.perguntar_com_fonte(pergunta, avisar=avisar, parar=AGORA)
+            segundos = time.time() - inicio
+            watts = float(((energia().get("tarefas") or {}).get("perguntar") or {}).get("watts") or 170)
+            sabio.registrar_gasto("perguntar", segundos, watts)
+            evento({"tipo": "final", **r, "gasto": f"{segundos:.0f} s com o PC em ~{watts:.0f} W: {texto_custo(watts * segundos / 3600)}"})
         except Exception as erro:
             evento({"tipo": "falha", "texto": str(erro)})
         finally:

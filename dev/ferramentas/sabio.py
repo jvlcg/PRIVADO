@@ -35,6 +35,7 @@ import sqlite3
 import struct
 import sys
 import threading
+import time
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -49,10 +50,48 @@ MODELO_RERANK = "qwen3-reranker-0.6b"
 BANCO = Path(os.environ.get("SABIO_BANCO", Path(__file__).resolve().parents[1] / "datasets" / "sabio.sqlite"))
 INSTRUCAO_BUSCA = "Instruct: Dada uma pergunta, encontre trechos que a respondam\nQuery: "
 # Chave de acesso do servidor de modelos (gerada por iniciar-servidor.ps1, fora do git).
-ARQUIVO_CHAVE = Path(__file__).resolve().parents[2] / "catalogo" / "chave-api.txt"
+RAIZ_COFRE = Path(__file__).resolve().parents[2]
+ARQUIVO_CHAVE = RAIZ_COFRE / "catalogo" / "chave-api.txt"
+# Gasto de cada tarefa, o mesmo arquivo que os scripts PowerShell escrevem (so neste PC, fora do git).
+ARQUIVO_GASTOS = RAIZ_COFRE / "logs" / "gasto-tarefas.csv"
 
 
 # ---------- HTTP ----------
+
+def tarifa_kwh() -> float:
+    try:
+        return float(json.loads((RAIZ_COFRE / "catalogo" / "modelos.json").read_text(encoding="utf-8-sig"))["energia"]["tarifa_kwh"])
+    except Exception:
+        return 1.25
+
+
+def registrar_gasto(tarefa: str, segundos: float, watts: float) -> None:
+    """Anota uma tarefa em logs\\gasto-tarefas.csv (data;tarefa;segundos;watts;wh;reais)."""
+    try:
+        wh = watts * segundos / 3600
+        ARQUIVO_GASTOS.parent.mkdir(parents=True, exist_ok=True)
+        novo = not ARQUIVO_GASTOS.exists()
+        with ARQUIVO_GASTOS.open("a", encoding="utf-8") as f:
+            if novo:
+                f.write("data;tarefa;segundos;watts;wh;reais\n")
+            f.write(f"{time.strftime('%Y-%m-%dT%H:%M:%S')};{tarefa};{segundos:.0f};{watts:.0f};{wh:.3f};{wh / 1000 * tarifa_kwh():.5f}\n")
+    except OSError:
+        pass
+
+
+def gasto_mes() -> dict:
+    """Quantas tarefas e quantos Wh o cofre registrou no mes atual."""
+    mes, n, wh = time.strftime("%Y-%m"), 0, 0.0
+    try:
+        for linha in ARQUIVO_GASTOS.read_text(encoding="utf-8-sig").splitlines()[1:]:
+            partes = linha.split(";")
+            if linha.startswith(mes) and len(partes) >= 5:
+                n += 1
+                wh += float(partes[4])
+    except (OSError, ValueError):
+        pass
+    return {"tarefas": n, "wh": wh}
+
 
 def chave_api() -> str:
     if os.environ.get("SABIO_CHAVE"):

@@ -553,6 +553,7 @@ def cmd_perguntar(args) -> None:
 # ---------- Painel e API ----------
 
 TRAVA = threading.Lock()  # uma deliberacao por vez: a placa de video e uma so
+WATTS_CONSELHO = 183  # medido: o PC inteiro durante uma rodada do conselho (para o registro de gasto)
 MODELOS_API = {
     "conselho": "Cada IA responde sozinha e o relator junta as respostas",
     "conselho-debate": "Como o conselho, com uma rodada em que cada IA revisa a sua lendo as outras",
@@ -683,7 +684,8 @@ class Painel(BaseHTTPRequestHandler):
             avisar({"tipo": "etapa", "texto": "Outra pergunta esta em deliberacao; aguardando a vez..."})
             TRAVA.acquire()
         try:
-            deliberar(pergunta, opcoes, avisar, corpo.get("imagem") or None)
+            r = deliberar(pergunta, opcoes, avisar, corpo.get("imagem") or None)
+            sabio.registrar_gasto("conselho", r["segundos"], WATTS_CONSELHO)
         except Exception as erro:
             avisar({"tipo": "falha", "texto": str(erro)})
         finally:
@@ -710,7 +712,9 @@ class Painel(BaseHTTPRequestHandler):
         if not corpo.get("stream"):
             with TRAVA:
                 try:
-                    final = deliberar(pergunta, opcoes, None, imagem, historico)["final"]
+                    r = deliberar(pergunta, opcoes, None, imagem, historico)
+                    sabio.registrar_gasto("conselho", r["segundos"], WATTS_CONSELHO)
+                    final = r["final"]
                 except Exception as erro:
                     return self._json(500, {"error": {"message": str(erro)}})
             return self._json(200, {"id": ident, "object": "chat.completion", "created": criado, "model": nome,
@@ -729,7 +733,9 @@ class Painel(BaseHTTPRequestHandler):
 
         with TRAVA:
             try:
-                final = deliberar(pergunta, opcoes, avisar, imagem, historico)["final"]
+                r = deliberar(pergunta, opcoes, avisar, imagem, historico)
+                sabio.registrar_gasto("conselho", r["segundos"], WATTS_CONSELHO)
+                final = r["final"]
             except Exception as erro:
                 final = f"O conselho nao conseguiu responder: {erro}"
         if vivo[0]:
