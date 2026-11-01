@@ -105,6 +105,11 @@ if ($cat) {
         if ($cat.conselho.especialistas) { $time += @($cat.conselho.especialistas.PSObject.Properties | ForEach-Object Value) }
         foreach ($t in @($time | Where-Object { $_ } | Sort-Object -Unique)) { if ($ids -notcontains $t) { Problema "conselho usa '$t', que nao esta no catalogo para baixar" } }
     }
+    if (-not $cat.energia -or [double]$cat.energia.tarifa_kwh -le 0) { Problema 'catalogo sem a secao energia (tarifa_kwh): o menu e a Central nao conseguem estimar o gasto' }
+    else {
+        $semEstimativa = @('chat', 'perguntar', 'conselho', 'comfyui', 'pc-ligado' | Where-Object { -not $cat.energia.tarefas.$_ })
+        foreach ($t in $semEstimativa) { Problema "secao energia sem a tarefa '$t'" }
+    }
     Ok "$(@($cat.modelos).Count) modelos, $(@($cat.conhecimento).Count) bibliotecas e $(@($cat.motores).Count) motores no catalogo"
 }
 

@@ -67,6 +67,8 @@ if (-not $u) { $u = 'nunca (rode verificar-atualizacoes.ps1)' }
 Info $u
 
 Titulo 'Aberto agora'
+if (ModoJogo-Ativo) { Aviso 'Modo jogo ligado: as IAs estao desligadas e nao abrem (menu, opcao 12, para sair).' }
+Info ("PC ligado sem uso: {0} (tarifa {1})" -f (Texto-Estimativa 'pc-ligado'), (Energia-Catalogo).distribuidora)
 $abertos = @(Processos-Cofre)
 if ($abertos.Count -eq 0) { Info 'Nada do cofre aberto.' }
 else {

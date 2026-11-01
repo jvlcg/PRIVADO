@@ -8,9 +8,13 @@ Roda pelo testar-cofre.ps1 (menu, opcao 18) ou:  uv run --offline --script teste
 """
 from __future__ import annotations
 
+import json
 import os
 import sys
+import threading
+import time
 import unittest
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from unittest import mock
 
@@ -169,6 +173,108 @@ class Mapa(unittest.TestCase):
     def test_sem_mapa(self):
         with mock.patch.object(sabio, "livros_kiwix", return_value=[("wikipedia_pt", "pt")]):
             self.assertIsNone(central.endereco_mapa())
+
+
+class _LlamaFalso(BaseHTTPRequestHandler):
+    """Imita o llama-server em streaming: um pedaco de texto a cada 0,1 s. Anota se o cliente desligou."""
+    pedacos = 3
+    desconectou = threading.Event()
+
+    def log_message(self, *a):
+        pass
+
+    def do_POST(self):
+        self.rfile.read(int(self.headers.get("Content-Length") or 0))
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream")
+        self.end_headers()
+        try:
+            for i in range(self.pedacos):
+                self.wfile.write(f'data: {json.dumps({"choices": [{"delta": {"content": f"parte{i} "}}]})}\n\n'.encode())
+                self.wfile.flush()
+                time.sleep(0.1)
+            fim = {"choices": [{"delta": {}}], "timings": {"predicted_n": self.pedacos, "predicted_per_second": 10.0}}
+            self.wfile.write(f"data: {json.dumps(fim)}\n\ndata: [DONE]\n\n".encode())
+            self.wfile.flush()
+        except OSError:
+            type(self).desconectou.set()
+
+
+class GeracaoInterrompivel(unittest.TestCase):
+    """O "Responder agora" corta a geracao no meio e aproveita o que ja veio."""
+
+    def setUp(self):
+        _LlamaFalso.desconectou.clear()
+        self.servidor = ThreadingHTTPServer(("127.0.0.1", 0), _LlamaFalso)
+        threading.Thread(target=self.servidor.serve_forever, daemon=True).start()
+        self.endereco = mock.patch.object(sabio, "LLM", f"http://127.0.0.1:{self.servidor.server_address[1]}")
+        self.endereco.start()
+
+    def tearDown(self):
+        self.endereco.stop()
+        self.servidor.shutdown()
+        self.servidor.server_close()
+
+    def test_geracao_completa(self):
+        _LlamaFalso.pedacos = 3
+        r = sabio.chat_em_fluxo({"model": "x", "messages": []})
+        self.assertFalse(r["interrompido"])
+        self.assertEqual(r["texto"], "parte0 parte1 parte2")
+        self.assertEqual(r["timings"]["predicted_n"], 3)
+
+    def test_responder_agora_corta_a_conexao_e_guarda_o_texto(self):
+        _LlamaFalso.pedacos = 100  # 10 s se ninguem parar
+        parar = threading.Event()
+        threading.Timer(0.35, parar.set).start()
+        inicio = time.time()
+        r = sabio.chat_em_fluxo({"model": "x", "messages": []}, parar)
+        self.assertTrue(r["interrompido"])
+        self.assertLess(time.time() - inicio, 3)
+        self.assertTrue(r["texto"].startswith("parte0"))
+        # O servidor percebe que o cliente saiu (no llama-server, isso faz ele parar de gerar).
+        self.assertTrue(_LlamaFalso.desconectou.wait(3))
+
+
+class Responder(unittest.TestCase):
+    FONTES = [("Agua", "http://x/a", "Ferva por um minuto.")]
+
+    def test_cortada_no_raciocinio_refaz_sem_raciocinar(self):
+        respostas = [{"texto": "", "timings": {}, "interrompido": True},
+                     {"texto": "Ferva a agua por 1 minuto [1].", "timings": {}, "interrompido": False}]
+        with mock.patch.object(sabio, "chat_em_fluxo", side_effect=respostas) as falso:
+            texto = sabio.responder("como purificar agua?", self.FONTES, "m", threading.Event())
+        self.assertEqual(texto, "Ferva a agua por 1 minuto [1].")
+        self.assertFalse(falso.call_args_list[1].args[0]["chat_template_kwargs"]["enable_thinking"])
+
+    def test_cortada_com_texto_util_devolve_o_que_tinha(self):
+        parcial = "Ferva a agua por pelo menos um minuto e guarde em recipiente limpo e tampado [1]."
+        with mock.patch.object(sabio, "chat_em_fluxo", return_value={"texto": parcial, "timings": {}, "interrompido": True}) as falso:
+            texto = sabio.responder("como purificar agua?", self.FONTES, "m", threading.Event())
+        self.assertTrue(texto.startswith(parcial))
+        self.assertIn("interrompida a pedido", texto)
+        self.assertEqual(falso.call_count, 1)
+
+    def test_agora_antes_de_comecar_nem_raciocina(self):
+        parar = threading.Event()
+        parar.set()
+        with mock.patch.object(sabio, "chat_em_fluxo", return_value={"texto": "ok", "timings": {}, "interrompido": False}) as falso:
+            sabio.responder("pergunta", self.FONTES, "m", parar)
+        corpo = falso.call_args.args[0]
+        self.assertFalse(corpo["chat_template_kwargs"]["enable_thinking"])
+        self.assertNotIn("thinking_budget_tokens", corpo)
+
+
+class Energia(unittest.TestCase):
+    def test_texto_custo_na_tarifa_de_goias(self):
+        with mock.patch.object(central, "energia", return_value={"tarifa_kwh": 1.25}):
+            self.assertEqual(central.texto_custo(1.4), "~1,4 Wh ≈ R$ 0,002")
+            self.assertEqual(central.texto_custo(250), "~250 Wh ≈ R$ 0,31")
+            self.assertEqual(central.texto_custo(2400), "~2,40 kWh ≈ R$ 3,00")
+            self.assertTrue(central.texto_custo(0.1).endswith("menos de R$ 0,001"))
+
+    def test_consumo_do_pc(self):
+        self.assertEqual(central.consumo_pc(10, 0.0), round((10 + 35 + 40) / 0.88))
+        self.assertIsNone(central.consumo_pc(None, 0.5))
 
 
 if __name__ == "__main__":

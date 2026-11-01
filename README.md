@@ -7,6 +7,10 @@ motores; cerca de 1,6 TB) ficam nos discos e são baixados de novo pelos scripts
 
 - **Começar:** dois cliques em `IA.cmd` (menu) ou em `Painel.cmd` (Central do Cofre: liga e desliga tudo pelo navegador). Explicação curta em [LEIA-ME.md](LEIA-ME.md).
 - **Guia completo:** [docs/GUIA.md](docs/GUIA.md).
+- **Energia:** o menu, a Central e os scripts mostram o gasto estimado de cada tarefa em Wh e em reais (tarifa da
+  Equatorial Goias na secao `energia` do catalogo). Modo jogo (menu, opcao 12) fecha todas as IAs para jogar.
+- **Responder agora:** botao na Central e no conselho (Ctrl+C no terminal) para receber a resposta com o que ja foi
+  encontrado, sem esperar o fim do raciocinio.
 - **Base de dados:** [catalogo/modelos.json](catalogo/modelos.json) (o que existe) e `catalogo/estado.json`
   (o que foi baixado, com hashes).
 - **Recriar o cofre em outro disco:** clone este repositório na raiz do disco e rode
