@@ -192,6 +192,7 @@ def estado() -> dict:
         "modelos": modelos_na_memoria() if ligados["chat"] else [],
         "mapa": endereco_mapa() if ligados["biblioteca"] else None,
         "modo_jogo": MODO_JOGO.exists(),
+        "vigia": vigia_ligada(),
         "gasto_mes": texto_gasto_mes(),
         "gasto_mes_wh": round(sabio.gasto_mes()["wh"], 3),
         "pc_w": pc_w,
@@ -312,6 +313,49 @@ def modo_jogo(ligar_modo: bool) -> dict:
     return {"ok": r.returncode == 0, "ligado": MODO_JOGO.exists(), "texto": (r.stdout or r.stderr).strip()[-600:]}
 
 
+PID_VIGIA = RAIZ / "logs" / "vigia-desligar.pid"  # escrito pelo desligar-ao-terminar.ps1 enquanto vigia
+
+
+def processo_vivo(pid: int) -> bool:
+    """Pergunta ao Windows se o processo existe (os.kill no Windows mataria o processo em vez de testar)."""
+    k = ctypes.windll.kernel32
+    h = k.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+    if not h:
+        return False
+    try:
+        codigo = ctypes.c_ulong()
+        return bool(k.GetExitCodeProcess(h, ctypes.byref(codigo))) and codigo.value == 259  # STILL_ACTIVE
+    finally:
+        k.CloseHandle(h)
+
+
+def vigia_ligada() -> bool:
+    try:
+        return processo_vivo(int(PID_VIGIA.read_text(encoding="utf-8-sig").split()[0]))
+    except (OSError, ValueError, IndexError):
+        return False
+
+
+def vigia(ligar_vigia: bool) -> dict:
+    """Liga a vigia de desligar numa janela minimizada (como os servicos) ou para ela."""
+    script = str(SCRIPTS / "desligar-ao-terminar.ps1")
+    if ligar_vigia:
+        if vigia_ligada():
+            return {"ok": True, "texto": "a vigia já estava ligada"}
+        info = subprocess.STARTUPINFO()
+        info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        info.wShowWindow = 7  # SW_SHOWMINNOACTIVE
+        subprocess.Popen(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script],
+                         cwd=str(SCRIPTS), creationflags=subprocess.CREATE_NEW_CONSOLE, startupinfo=info)
+        prazo = time.time() + 15
+        while not vigia_ligada() and time.time() < prazo:
+            time.sleep(0.5)
+        return {"ok": vigia_ligada(), "texto": "vigia ligada" if vigia_ligada() else "a vigia não abriu: use o menu, opção 19"}
+    r = subprocess.run(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script, "-Parar"],
+                       capture_output=True, text=True, timeout=60, creationflags=subprocess.CREATE_NO_WINDOW)
+    return {"ok": not vigia_ligada(), "texto": "vigia parada" if not vigia_ligada() else (r.stdout or r.stderr).strip()[-300:]}
+
+
 def descarregar(modelo: str) -> dict:
     sabio.http_json(f"{sabio.LLM}/models/unload", {"model": modelo}, timeout=120)
     _placa["quando"] = 0.0
@@ -391,6 +435,8 @@ class Central(BaseHTTPRequestHandler):
             elif self.path == "/api/perguntar" and str(corpo.get("pergunta") or "").strip():
                 modo = corpo.get("modo") if corpo.get("modo") in ("buscar", "rapida", "fonte") else "fonte"
                 self._perguntar(str(corpo["pergunta"]).strip()[:4000], modo, bool(corpo.get("de_novo")))
+            elif self.path == "/api/vigia":
+                self._json(200, vigia(bool(corpo.get("ligar"))))
             elif self.path == "/api/esquecer" and corpo.get("id"):
                 self._json(200, {"ok": HISTORICO.esquecer(str(corpo["id"]))})
             elif self.path == "/api/agora":

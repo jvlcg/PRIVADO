@@ -70,6 +70,10 @@ Titulo 'Aberto agora'
 if (ModoJogo-Ativo) { Aviso 'Modo jogo ligado: as IAs estao desligadas e nao abrem (menu, opcao 12, para sair).' }
 Info ("PC ligado sem uso: {0} (tarifa {1})" -f (Texto-Estimativa 'pc-ligado'), (Energia-Catalogo).distribuidora)
 Info "Gasto do cofre neste mes: $(Texto-GastoMes) (registro em logs\gasto-tarefas.csv)"
+$pidVigia = Join-Path $PastaLogs 'vigia-desligar.pid'
+$vigia = if (Test-Path -LiteralPath $pidVigia) { Get-Process -Id ([int](Get-Content -LiteralPath $pidVigia -TotalCount 1)) -ErrorAction SilentlyContinue }
+if ($vigia) { Info 'Vigia de desligar: ligada (desliga o PC parado; menu, opcao 19, para ver ou parar).' }
+else { Info 'Vigia de desligar: desligada (menu, opcao 19, para ligar).' }
 $abertos = @(Processos-Cofre)
 if ($abertos.Count -eq 0) { Info 'Nada do cofre aberto.' }
 else {

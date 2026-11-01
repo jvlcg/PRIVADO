@@ -318,6 +318,22 @@ class Energia(unittest.TestCase):
         self.assertEqual(meses[0]["wh"], 0)
 
 
+class Vigia(unittest.TestCase):
+    def test_processo_vivo_sem_matar_ninguem(self):
+        self.assertTrue(central.processo_vivo(os.getpid()))
+        self.assertFalse(central.processo_vivo(0))
+
+    def test_sem_arquivo_a_vigia_esta_desligada(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as pasta:
+            with mock.patch.object(central, "PID_VIGIA", Path(pasta) / "nao-existe.pid"):
+                self.assertFalse(central.vigia_ligada())
+            arquivo = Path(pasta) / "vigia.pid"
+            arquivo.write_text(f"{os.getpid()}\n", encoding="utf-8")
+            with mock.patch.object(central, "PID_VIGIA", arquivo):
+                self.assertTrue(central.vigia_ligada())
+
+
 class QualFerramenta(unittest.TestCase):
     """O roteador escolhe a ferramenta sem ligar IA nenhuma."""
 

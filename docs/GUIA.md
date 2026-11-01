@@ -224,7 +224,7 @@ Testado neste PC de 25/10 a 01/11/2026:
 | Modo jogo (01/11) | fechou o servidor de modelos e a biblioteca; o chat se recusou a abrir enquanto ele estava ligado | na hora |
 | Escolha da ferramenta, sem IA (01/11) | 14 pedidos de exemplo foram para a ferramenta certa (emergência, mapa, imagem, tradução, código, contas, saúde, decisão, transcrição, termo solto e pergunta) | na hora |
 | Respostas guardadas (01/11) | pergunta repetida voltou na hora, sem ligar nada, inclusive no modo jogo; pergunta nova no modo jogo foi recusada com a explicação | na hora |
-| Central nova (01/11) | testada no navegador em três larguras (tela grande, janela estreita, celular) e nos temas claro e escuro; 37 testes automáticos passando | na hora |
+| Central nova (01/11) | testada no navegador em três larguras (tela grande, janela estreita, celular) e nos temas claro e escuro; 39 testes automáticos passando | na hora |
 | Vigia de desligar (01/11) | leu os três sinais (conversa do Claude, teclado e mouse, uso da placa) e ficou vigiando | a cada minuto |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 7). Exemplos em `A:\dev\midia-gerada`.
@@ -335,7 +335,7 @@ Para gastar menos:
 5. **Se tiver tarifa branca**, rode a sincronização fora do horário de ponta. A verificação semanal (segunda, 10h) já está fora da ponta.
 6. **Feche tudo ao terminar**: opção 11 do menu (`parar-tudo.ps1`); para jogar, a opção 12 (modo jogo). Mesmo sem isso, o servidor de modelos tira da memória o modelo parado há 15 minutos e o recarrega na próxima pergunta (`iniciar-servidor.ps1 -DormirMinutos 30` muda o tempo; `0` desliga). A opção 13 (status) mostra o que do cofre ainda está aberto.
 7. **Comece pelo degrau mais baixo da escada.** Só buscar não liga IA e muitas vezes já resolve; pergunta repetida sai do Histórico sem gastar nada.
-8. **Deixe a vigia ligada** quando for sair ou deixar o Claude trabalhando sozinho: opção 19 do menu, ou `desligar-ao-terminar.ps1`. A cada minuto ela confere três coisas: se a conversa do Claude parou há 20 min (por exemplo, quando acabam os créditos), se teclado e mouse estão parados há 15 min e se a placa de vídeo está folgada (um jogo aberto segura). Com as três, o Windows avisa e desliga em 5 min; mexer no mouse cancela, e `shutdown /a` também. Ela não muda nenhuma configuração do Windows: vale enquanto a janela dela estiver aberta. `-Status` mostra os sinais e `-Parar` desliga a vigia; o que ela fez fica em `A:\logs\vigia-desligar.log`.
+8. **Deixe a vigia ligada** quando for sair ou deixar o Claude trabalhando sozinho: botão no medidor da Central, opção 19 do menu, ou `desligar-ao-terminar.ps1`. A cada minuto ela confere três coisas: se a conversa do Claude parou há 20 min (por exemplo, quando acabam os créditos), se teclado e mouse estão parados há 15 min e se a placa de vídeo está folgada (um jogo aberto segura). Com as três, o Windows avisa e desliga em 5 min; mexer no mouse cancela, e `shutdown /a` também. Ela não muda nenhuma configuração do Windows: vale enquanto a janela dela estiver aberta. `-Status` mostra os sinais e `-Parar` desliga a vigia; o que ela fez fica em `A:\logs\vigia-desligar.log`.
 
 ## Catálogo e atualização constante
 

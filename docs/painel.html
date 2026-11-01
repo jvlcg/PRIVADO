@@ -102,6 +102,8 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
 .lampada.falhou { background: var(--urucum); }
 @keyframes piscar { 50% { opacity: .35; } }
 .tarifa { font-size: 13px; color: var(--suave); margin: 0; }
+.vigia { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--suave); }
+.vigia.ligada span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ipe); margin-right: 6px; vertical-align: 1px; }
 .medidor-acoes { display: grid; gap: 8px; margin-top: auto; }
 
 /* ---------- Botoes e campos ---------- */
@@ -518,6 +520,7 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
     <div class="leitura"><span class="rotulo">Memória livre</span><b id="ram">-</b><span class="sub" id="ramTotal"></span></div>
     <div class="leitura"><span class="rotulo">Gasto do cofre no mês</span><span class="visor" id="visorMes" aria-hidden="true"></span><span class="sub" id="gastoMes"></span></div>
     <ul class="lampadas" id="lampadas" aria-label="O que está ligado"></ul>
+    <div class="vigia" id="vigia" hidden><span id="vigiaTexto"></span><button class="botao leve pequeno" id="vigiaBotao" type="button"></button></div>
     <p class="tarifa" id="tarifa"></p>
     <div class="medidor-acoes">
       <button class="botao perigo pequeno" id="pararTudo" type="button">Fechar tudo e liberar a placa</button>
@@ -777,6 +780,10 @@ function mostrar(e) {
       if (url) avisar(p.texto || `${s.nome} ligou.`, { href: url, texto: 'Abrir' });
     }
   }
+  $('#vigia').hidden = false;
+  $('#vigia').classList.toggle('ligada', !!e.vigia);
+  $('#vigiaTexto').textContent = e.vigia ? 'Vigia ligada: desliga o PC parado' : 'Vigia de desligar desligada';
+  $('#vigiaBotao').textContent = e.vigia ? 'Parar' : 'Ligar';
   $('#avisoJogo').hidden = !e.modo_jogo;
   $('#entrarJogo').hidden = e.modo_jogo;
   // No modo jogo perguntar continua possivel: a Central so responde com o que ja estiver guardado.
@@ -901,6 +908,18 @@ async function entrarModoJogo() {
 async function sairModoJogo() {
   try { await api('/api/modo-jogo', { ligar: false }); avisar('Modo jogo desligado: as IAs voltam a ligar normalmente.'); }
   catch (erro) { avisar(`Não deu para sair do modo jogo: ${erro.message}. Use o menu, opção 12.`); }
+  verificar();
+}
+
+// A vigia desliga o PC quando o Claude para, ninguem mexe e a placa esta folgada (scripts\desligar-ao-terminar.ps1).
+async function alternarVigia() {
+  const ligar = !(E && E.vigia);
+  if (ligar && !confirm('Ligar a vigia? O PC desliga sozinho quando o Claude estiver parado há 20 min, ninguém mexer no teclado e no mouse há 15 min e a placa de vídeo estiver folgada. Antes, o Windows avisa e dá 5 min para cancelar (mexer no mouse cancela).')) return;
+  const b = $('#vigiaBotao');
+  b.disabled = true;
+  try { const r = await api('/api/vigia', { ligar }); avisar(r.texto[0].toUpperCase() + r.texto.slice(1) + '.'); }
+  catch (erro) { avisar(`Não deu para mudar a vigia: ${erro.message}. Use o menu, opção 19.`); }
+  b.disabled = false;
   verificar();
 }
 
@@ -1261,6 +1280,7 @@ function acoesPaleta(q) {
     if (E && E.modo_jogo) lista.push({ titulo: 'Sair do modo jogo', icone: 'energia', chaves: 'jogo jogar', fazer: sairModoJogo });
     else lista.push({ titulo: 'Modo jogo: desligar todas as IAs', icone: 'energia', chaves: 'jogo jogar game', fazer: entrarModoJogo });
     lista.push({ titulo: 'Copiar a chave do chat', icone: 'copiar', chaves: 'api senha acesso', fazer: copiarChave });
+    lista.push({ titulo: E && E.vigia ? 'Parar a vigia de desligar' : 'Ligar a vigia de desligar o PC parado', icone: 'energia', chaves: 'desligar vigia ocioso dormir', fazer: alternarVigia });
   }
   lista.push({ titulo: 'Mudar o tema (claro, escuro, automático)', icone: 'tema', chaves: 'cor noite escuro claro', fazer: trocarTema });
   for (const a of ATALHOS) lista.push({ titulo: `Emergência: ${a.pt}`, dica: 'abre os artigos', icone: 'cruz', chaves: a.en, fazer: () => abrirEmergencia(a) });
@@ -1366,6 +1386,7 @@ $('#pararTudo').addEventListener('click', pararTudo);
 $('#entrarJogo').addEventListener('click', entrarModoJogo);
 $('#sairJogo').addEventListener('click', sairModoJogo);
 $('#copiarChave').addEventListener('click', copiarChave);
+$('#vigiaBotao').addEventListener('click', alternarVigia);
 
 if (CENTRAL) {
   document.addEventListener('visibilitychange', () => { if (!document.hidden) verificar(); else clearTimeout(relogio); });
