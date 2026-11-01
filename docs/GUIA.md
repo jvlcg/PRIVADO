@@ -85,7 +85,7 @@ São 46 no catálogo e 44 já baixadas e conferidas pelo SHA256: as 17 de antes 
 | Ensino | Wikilivros, Wikiversidade*, simulações PhET em português*, LibreTexts Física, Matemática, Química, Biologia e Escola* | 12 |
 | Livros e programação | Projeto Gutenberg em português e inglês, Stack Overflow | 314 |
 
-As duas marcadas "em observação" são gigantes e não baixam sozinhas: `baixar-conhecimento.ps1 -Id mapa-mundo` ou `-Id survivor-library`. O mapa do Brasil foi testado com um mapa pequeno do mesmo tipo: abre na biblioteca, com zoom até o nível da rua e escala de 100 m.
+As duas marcadas "em observação" são gigantes e não baixam sozinhas: `baixar-conhecimento.ps1 -Id mapa-mundo` ou `-Id survivor-library`. O mapa do Brasil foi testado em 01/11: abre na biblioteca (e pelo botão da Central), com zoom até o nível da rua. Em Goiânia aparecem as ruas, a Praça Cívica, o Lago dos Buritis, a Avenida Anhanguera e os pontos de ônibus.
 
 ## Seu hardware e o sistema
 
@@ -160,7 +160,7 @@ O menu agrupa as opções em Usar, Criar, Energia e Manter e mostra ao lado de c
 
 **Modo jogo.** Antes de jogar, use a opção 12 do menu ou o botão **Modo jogo** na Central ou no painel do conselho: fecha o chat, a biblioteca, o conselho, o ComfyUI, o Ollama e a própria Central, e libera a placa de vídeo, a memória e o disco. Enquanto ele estiver ligado, nada das IAs abre (nem a verificação semanal nem a sincronização) e o menu só deixa usar as opções leves. Para sair: a opção 12 de novo, ou `Painel.cmd` e "Sair do modo jogo".
 
-Testado neste PC de 25 a 29/10/2026:
+Testado neste PC de 25/10 a 01/11/2026:
 
 | Teste | Resultado | Tempo |
 | --- | --- | --- |
@@ -184,6 +184,9 @@ Testado neste PC de 25 a 29/10/2026:
 | Perguntar com fonte pela Central (29/10) | "Como purificar água da chuva para beber?": ligou chat e biblioteca sozinha, citou Stack Exchange, Wikipédia e Wikibooks com links | ~2 min, contando ligar tudo |
 | Teste do projeto (29/10) | achou um acento que o PowerShell 5.1 lia errado no `instalar-wsl.ps1` (corrigido) e um token falso plantado de propósito | ~20 s |
 | Busca na biblioteca por idioma (29/10) | "purificar água" achou Wikipédia e Wikcionário; "water purification", Wikipédia, WikiMed e Stack Exchange | na hora |
+| Mapa do Brasil (01/11) | abriu na biblioteca; Goiânia com ruas, Praça Cívica, Lago dos Buritis e pontos de ônibus, escala de 200 m | na hora |
+| Responder agora, com modelo real (01/11) | Gemma 4 12B escrevendo a 179 W; cortado aos 3 s, guardou o texto já escrito e a placa voltou a 30 W em 3 s (o servidor parou de gerar) | 3 s; ~0,7 Wh |
+| Modo jogo (01/11) | fechou o servidor de modelos e a biblioteca; o chat se recusou a abrir enquanto ele estava ligado | na hora |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 7). Exemplos em `A:\dev\midia-gerada`.
 
