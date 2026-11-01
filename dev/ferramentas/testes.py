@@ -283,7 +283,7 @@ class RegistroDeGasto(unittest.TestCase):
 
 class Energia(unittest.TestCase):
     def test_texto_custo_na_tarifa_de_goias(self):
-        with mock.patch.object(central, "energia", return_value={"tarifa_kwh": 1.25}):
+        with mock.patch.object(sabio, "tarifa_kwh", return_value=1.25):
             self.assertEqual(central.texto_custo(1.4), "~1,4 Wh ≈ R$ 0,002")
             self.assertEqual(central.texto_custo(250), "~250 Wh ≈ R$ 0,31")
             self.assertEqual(central.texto_custo(2400), "~2,40 kWh ≈ R$ 3,00")

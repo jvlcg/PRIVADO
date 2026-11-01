@@ -452,7 +452,8 @@ def deliberar(pergunta: str, opcoes: Opcoes, avisar=None, imagem: str | None = N
     except Exception as erro:
         resultado["ata"] = ""
         avisar({"tipo": "aviso", "texto": f"Nao consegui salvar a ata: {erro}"})
-    avisar({"tipo": "final", "texto": final, "ata": resultado["ata"], "segundos": resultado["segundos"], "relator": relator})
+    avisar({"tipo": "final", "texto": final, "ata": resultado["ata"], "segundos": resultado["segundos"], "relator": relator,
+            "gasto": sabio.texto_custo(WATTS_CONSELHO * resultado["segundos"] / 3600)})
     return resultado
 
 
@@ -923,7 +924,7 @@ function tratar(e){
     case 'erro': { const c = cartao(e); c.querySelector('.estado').textContent = 'falhou'; c.querySelector('.md').innerHTML = `<p class="erro">${esc(e.texto)}</p>`; break; }
     case 'final': {
       const f = $('#final'); f.className = 'cartao final';
-      f.innerHTML = `<h2>Resposta do conselho (relator: ${esc(e.relator)})</h2><div class="md">${md(e.texto)}</div><p class="estado">Tempo total ${duracao(e.segundos)}${e.ata ? ' · ata salva em ' + esc(e.ata) : ''}</p>`;
+      f.innerHTML = `<h2>Resposta do conselho (relator: ${esc(e.relator)})</h2><div class="md">${md(e.texto)}</div><p class="estado">Tempo total ${duracao(e.segundos)}${e.gasto ? ' · gasto estimado ' + esc(e.gasto) : ''}${e.ata ? ' · ata salva em ' + esc(e.ata) : ''}</p>`;
       passo('Pronto. Abra os cartões abaixo para ver o que cada IA disse.');
       break;
     }

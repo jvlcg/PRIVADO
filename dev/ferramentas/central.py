@@ -104,12 +104,7 @@ def energia() -> dict:
     return _energia["dados"]
 
 
-def texto_custo(wh: float) -> str:
-    """'~1,4 Wh ≈ R$ 0,002' na tarifa do catalogo."""
-    reais = wh / 1000 * float(energia().get("tarifa_kwh") or 1.25)
-    txt_wh = f"{wh / 1000:.2f} kWh" if wh >= 1000 else f"{wh:.0f} Wh" if wh >= 10 else f"{wh:.1f} Wh"
-    txt_r = "menos de R$ 0,001" if reais < 0.0005 else f"R$ {reais:.3f}" if reais < 0.1 else f"R$ {reais:.2f}"
-    return f"~{txt_wh} ≈ {txt_r}".replace(".", ",")
+texto_custo = sabio.texto_custo  # "~1,4 Wh ≈ R$ 0,002" na tarifa do catalogo
 
 
 def texto_gasto_mes() -> str:
