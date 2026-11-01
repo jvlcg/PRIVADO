@@ -19,8 +19,11 @@ from pathlib import Path
 from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import urllib.parse  # noqa: E402
+
 import central  # noqa: E402
 import sabio  # noqa: E402
+import tarefas  # noqa: E402
 
 
 class PedidoLocal(unittest.TestCase):
@@ -292,6 +295,190 @@ class Energia(unittest.TestCase):
     def test_consumo_do_pc(self):
         self.assertEqual(central.consumo_pc(10, 0.0), round((10 + 35 + 40) / 0.88))
         self.assertIsNone(central.consumo_pc(None, 0.5))
+
+    def test_gasto_por_tarefa_e_por_mes(self):
+        import tempfile
+        mes = time.strftime("%Y-%m")
+        with tempfile.TemporaryDirectory() as pasta:
+            arquivo = Path(pasta) / "gasto-tarefas.csv"
+            arquivo.write_text("data;tarefa;segundos;watts;wh;reais\n"
+                               f"{mes}-01T10:00:00;perguntar;90;170;4.250;0.005\n"
+                               f"{mes}-02T10:00:00;conselho;228;183;11.590;0.014\n"
+                               f"{mes}-03T10:00:00;perguntar;90;170;4.250;0.005\n"
+                               "2020-01-01T10:00:00;velha;60;100;1.000;0.001\n", encoding="utf-8")
+            with mock.patch.object(sabio, "ARQUIVO_GASTOS", arquivo):
+                por_tarefa = sabio.gasto_por_tarefa()
+                meses = sabio.gasto_meses(3)
+        self.assertEqual([t["tarefa"] for t in por_tarefa], ["conselho", "perguntar"])  # do que mais gastou
+        self.assertEqual(por_tarefa[1]["vezes"], 2)
+        self.assertAlmostEqual(por_tarefa[1]["wh"], 8.5)
+        self.assertEqual(len(meses), 3)
+        self.assertEqual(meses[-1]["mes"], mes)
+        self.assertAlmostEqual(meses[-1]["wh"], 20.09)
+        self.assertEqual(meses[0]["wh"], 0)
+
+
+class QualFerramenta(unittest.TestCase):
+    """O roteador escolhe a ferramenta sem ligar IA nenhuma."""
+
+    def tipo_e_acoes(self, texto):
+        r = tarefas.sugerir(texto)
+        return r["tipo"], [s["acao"] for s in r["sugestoes"]]
+
+    def test_cada_pedido_vai_para_a_ferramenta_certa(self):
+        casos = {
+            "meu filho cortou o dedo e está sangrando muito": ("emergencia", "buscar"),
+            "onde fica o hospital mais próximo": ("mapa", "mapa"),
+            "gere uma imagem de um gato astronauta": ("criar", "comfyui"),
+            "traduza para o inglês: bom dia": ("traduzir", "chat"),
+            "meu script python dá erro de import": ("codigo", "chat"),
+            "quanto é 15% de 230": ("contas", "chat"),
+            "estou com febre e dor de cabeça": ("saude", "fonte"),
+            "devo comprar painel solar ou gerador?": ("decisao", "conselho"),
+            "transcreva a gravação da reunião": ("transcrever", "menu"),
+            "torniquete": ("termo", "buscar"),
+            "Como purificar água da chuva para beber?": ("pergunta", "fonte"),
+        }
+        for texto, (tipo, primeira) in casos.items():
+            with self.subTest(texto=texto):
+                t, acoes = self.tipo_e_acoes(texto)
+                self.assertEqual(t, tipo)
+                self.assertEqual(acoes[0], primeira)
+                self.assertLessEqual(len(acoes), 4)
+                modos = [a for a in acoes if a in tarefas.MODOS]
+                self.assertEqual(len(modos), len(set(modos)))  # nenhum modo repetido
+
+    def test_avisos_de_emergencia_e_saude(self):
+        self.assertIn("192", tarefas.sugerir("ele desmaiou e não respira")["aviso"])
+        self.assertIn("médico", tarefas.sugerir("qual a dose de dipirona para criança")["aviso"])
+        self.assertIsNone(tarefas.sugerir("como fazer pão caseiro")["aviso"])
+
+    def test_vazio(self):
+        self.assertEqual(tarefas.sugerir("   ")["sugestoes"], [])
+
+    def test_palavras_da_pergunta(self):
+        self.assertEqual(sabio.palavras_da_pergunta("Como purificar a água da chuva?"), ["purificar", "água", "chuva"])
+        self.assertEqual(sabio.palavras_da_pergunta("o que é"), ["o", "que", "é"])  # so palavras vazias: ficam as originais
+
+
+class RespostasGuardadas(unittest.TestCase):
+    def setUp(self):
+        import tempfile
+        self.pasta = tempfile.TemporaryDirectory()
+        self.h = tarefas.Historico(Path(self.pasta.name) / "perguntas.jsonl")
+
+    def tearDown(self):
+        self.pasta.cleanup()
+
+    def test_mesma_pergunta_com_outras_palavras_vazias(self):
+        self.assertEqual(tarefas.chave("Como purificar a água da chuva?"), tarefas.chave("purificar agua chuva"))
+
+    def test_resposta_com_fonte_serve_para_rapida_mas_nao_o_contrario(self):
+        self.h.guardar("Como purificar a água?", "rapida", "Ferva.")
+        self.assertIsNone(self.h.procurar("como purificar agua", "fonte"))
+        self.h.guardar("Como purificar a água?", "fonte", "Ferva por 1 minuto [1].", [{"titulo": "Água", "link": "x"}], 5.0)
+        self.assertEqual(self.h.procurar("como purificar agua", "rapida")["modo"], "fonte")
+        self.assertEqual(self.h.procurar("como purificar agua", "fonte")["fontes"][0]["titulo"], "Água")
+
+    def test_interrompida_nao_conta(self):
+        self.h.guardar("capital da bolívia", "rapida", "La Paz (resposta interrompida a pedido)", interrompida=True)
+        self.assertIsNone(self.h.procurar("capital da bolívia", "rapida"))
+        self.assertEqual(len(self.h.listar()), 1)  # mas aparece no historico
+
+    def test_parecidas_listar_pegar_e_esquecer(self):
+        a = self.h.guardar("como tratar queimadura de segundo grau", "fonte", "Água corrente fria por 20 minutos.")
+        self.h.guardar("receita de pão caseiro", "rapida", "Farinha, água, sal e fermento.")
+        parecidas = self.h.parecidas("tratamento de queimaduras de segundo grau")
+        self.assertEqual([p["id"] for p in parecidas], [a["id"]])
+        self.assertEqual(len(self.h.listar("corrente fria")), 1)
+        self.assertEqual(self.h.listar()[0]["pergunta"], "receita de pão caseiro")  # mais recente primeiro
+        self.assertEqual(self.h.pegar(a["id"])["resposta"], "Água corrente fria por 20 minutos.")
+        self.assertTrue(self.h.esquecer(a["id"]))
+        self.assertFalse(self.h.esquecer(a["id"]))
+        self.assertIsNone(self.h.pegar(a["id"]))
+        self.assertEqual(len(self.h.listar()), 1)
+
+
+class SoBuscar(unittest.TestCase):
+    """O "So buscar" acha artigos sem IA, tirando palavras ate o indice achar algo."""
+    LIVROS = [("wikipedia_pt", "pt"), ("wikipedia_en", "en"), ("maps_en_brazil", "en")]
+
+    def test_tira_palavras_ate_achar_e_completa_em_ingles(self):
+        pedidos = []
+
+        def falsa(params):
+            termos = dict(params)["pattern"]
+            livros = [v for k, v in params if k == "books.name"]
+            pedidos.append((termos, livros))
+            if livros == ["wikipedia_pt"] and termos == "purificar água":
+                return [{"titulo": "Tratamento de água", "link": "/content/wikipedia_pt/A", "trecho": "ferver", "livro": "Wikipédia"}]
+            if livros == ["wikipedia_en"] and termos == "purificar":
+                return [{"titulo": "Water purification", "link": "/content/wikipedia_en/W", "trecho": "boil", "livro": "Wikipedia"}]
+            return []
+
+        with mock.patch.object(sabio, "livros_kiwix", return_value=self.LIVROS), mock.patch.object(sabio, "_itens_busca_detalhes", side_effect=falsa):
+            r = sabio.buscar_sem_ia("Como purificar água da chuva?")
+        self.assertEqual(r["termos"], "purificar água")
+        self.assertEqual([a["titulo"] for a in r["artigos"]], ["Tratamento de água", "Water purification"])
+        self.assertTrue(r["artigos"][0]["link"].startswith(sabio.KIWIX + "/content/"))
+        self.assertTrue(all("maps_en_brazil" not in livros for _, livros in pedidos))  # mapa fica de fora
+
+    def test_sem_biblioteca_explica(self):
+        with mock.patch.object(sabio, "livros_kiwix", return_value=[]):
+            with self.assertRaises(RuntimeError):
+                sabio.buscar_sem_ia("agua")
+
+
+class CentralRespostaGuardada(unittest.TestCase):
+    """Pergunta repetida volta guardada, sem ligar nada, mesmo no modo jogo."""
+
+    def setUp(self):
+        import tempfile
+        self.pasta = tempfile.TemporaryDirectory()
+        jogo = Path(self.pasta.name) / "modo-jogo.txt"
+        jogo.write_text("ligado", encoding="utf-8")
+        historico = tarefas.Historico(Path(self.pasta.name) / "perguntas.jsonl")
+        historico.guardar("Como purificar a água?", "fonte", "Ferva por 1 minuto [1].", [{"titulo": "Água", "link": "x"}], 5.0)
+        self.trocas = [mock.patch.object(central, "HISTORICO", historico), mock.patch.object(central, "MODO_JOGO", jogo)]
+        for t in self.trocas:
+            t.start()
+        self.servidor = ThreadingHTTPServer(("127.0.0.1", 0), central.Central)
+        threading.Thread(target=self.servidor.serve_forever, daemon=True).start()
+        self.base = f"http://127.0.0.1:{self.servidor.server_address[1]}"
+
+    def tearDown(self):
+        self.servidor.shutdown()
+        self.servidor.server_close()
+        for t in self.trocas:
+            t.stop()
+        self.pasta.cleanup()
+
+    def perguntar(self, pergunta, modo="fonte"):
+        import urllib.request
+        corpo = json.dumps({"pergunta": pergunta, "modo": modo}).encode()
+        req = urllib.request.Request(self.base + "/api/perguntar", corpo, {"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return [json.loads(b[6:]) for b in r.read().decode("utf-8").split("\n\n") if b.startswith("data: ")]
+
+    def test_guardada_sai_na_hora_sem_ligar_nada(self):
+        with mock.patch.object(central, "garantir_ligados", side_effect=AssertionError("nao devia ligar nada")):
+            eventos = self.perguntar("como purificar agua?", "rapida")
+        self.assertEqual(eventos[-1]["tipo"], "final")
+        self.assertIn("Ferva", eventos[-1]["resposta"])
+        self.assertTrue(eventos[-1]["gasto"].startswith("0 Wh"))
+
+    def test_nova_no_modo_jogo_e_recusada(self):
+        eventos = self.perguntar("qual a capital do Peru?")
+        self.assertEqual(eventos[-1]["tipo"], "falha")
+        self.assertIn("Modo jogo", eventos[-1]["texto"])
+
+    def test_sugerir_avisa_da_guardada(self):
+        import urllib.request
+        with urllib.request.urlopen(self.base + "/api/sugerir?texto=" + urllib.parse.quote("purificar água"), timeout=10) as r:
+            dados = json.loads(r.read())
+        self.assertIsNotNone(dados["guardada"])
+        self.assertEqual(dados["sugestoes"][0]["acao"], "buscar")  # termo solto: o artigo primeiro
+        self.assertIn("gasto", dados["sugestoes"][0])
 
 
 if __name__ == "__main__":

@@ -9,13 +9,18 @@
   .\perguntar.ps1 -Indexar C:\Users\voce\Documents\manuais
   .\perguntar.ps1 -Buscar "qual a garantia do inversor solar?"
   .\perguntar.ps1 "..." -Modelo qwen3.8-27b
+  .\perguntar.ps1 "torniquete" -Modo buscar      # so a biblioteca, sem IA (quase nada de energia)
+  .\perguntar.ps1 "capital da Bolivia" -Modo rapida   # IA pequena, sem fontes (~1 Wh)
+  Pergunta repetida mostra a resposta guardada (0 Wh); -DeNovo pergunta outra vez.
 #>
 param(
     [Parameter(Position = 0)][string]$Pergunta,
     [string]$Indexar,
     [string]$Buscar,
     [string]$Livros,
-    [string]$Modelo = 'gemma-4-26b-a4b'
+    [string]$Modelo = 'gemma-4-26b-a4b',
+    [ValidateSet('fonte', 'rapida', 'buscar')][string]$Modo = 'fonte',
+    [switch]$DeNovo
 )
 . "$PSScriptRoot\comum.ps1"
 Bloquear-SeModoJogo 'o Perguntar com fonte'
@@ -23,16 +28,20 @@ Bloquear-SeModoJogo 'o Perguntar com fonte'
 $uv = Preparar-Uv
 $sabio = Join-Path $Raiz 'dev\ferramentas\sabio.py'
 $inicio = Get-Date
-if (-not $Indexar) { Mostrar-Estimativa 'perguntar' }
+$tarefa = @{ fonte = 'perguntar'; rapida = 'rapida'; buscar = 'buscar' }[$Modo]
+if (-not $Indexar) { Mostrar-Estimativa $tarefa }
 if ($Indexar) { $a = @('indexar', $Indexar) }
 elseif ($Buscar) { $a = @('buscar', $Buscar, '--modelo', $Modelo) }
 elseif ($Pergunta) {
-    $a = @('perguntar', $Pergunta, '--modelo', $Modelo)
+    $a = @('perguntar', $Pergunta, '--modelo', $Modelo, '--modo', $Modo)
     if ($Livros) { $a += @('--livros', $Livros) }
+    if ($DeNovo) { $a += '--de-novo' }
 } else { throw 'Informe uma pergunta, -Indexar <pasta> ou -Buscar <pergunta>.' }
 
 # --offline usa so o que ja esta no cache do SSD; sem cache, tenta a internet uma vez.
 $env:PYTHONIOENCODING = 'utf-8'
 Executar-Nativo $uv (@('run', '--offline', '--script', $sabio) + $a)
-if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) { Executar-Nativo $uv (@('run', '--script', $sabio) + $a) }
-Mostrar-GastoFinal 'perguntar' $inicio
+# Saida 10 = resposta guardada (pergunta repetida): nada foi ligado, nao ha gasto a anotar.
+if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1 -and $LASTEXITCODE -ne 10) { Executar-Nativo $uv (@('run', '--script', $sabio) + $a) }
+if ($LASTEXITCODE -eq 10) { Write-Host '  Gasto: 0 Wh (resposta guardada).' -ForegroundColor DarkYellow }
+else { Mostrar-GastoFinal $tarefa $inicio }

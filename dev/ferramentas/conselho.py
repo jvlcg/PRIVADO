@@ -811,6 +811,7 @@ footer code{background:var(--codigo);padding:1px 4px;border-radius:4px}
 </head>
 <body>
 <main>
+<p class="sub"><a href="http://127.0.0.1:8070" style="color:var(--destaque)">Voltar para a Central do Cofre</a></p>
 <h1>Conselho de IAs</h1>
 <p class="sub">Várias IAs do seu acervo respondem à mesma pergunta; um relator compara e escreve a resposta final. Tudo offline.</p>
 <form id="form">
@@ -983,6 +984,9 @@ $('#jogo').onclick = async () => {
   $('main').innerHTML = '<h1>Modo jogo ligado</h1><p>Todas as IAs estão sendo fechadas, inclusive este conselho. Bom jogo!</p>' +
     '<p class="sub">Para voltar: dois cliques em <code>A:\\Painel.cmd</code> e "Sair do modo jogo", ou no menu (<code>A:\\IA.cmd</code>), opção 12.</p>';
 };
+// Vindo da Central ("Conselho de IAs" na escada): a pergunta chega pronta no endereco.
+const vinda = new URLSearchParams(location.search).get('pergunta');
+if (vinda) $('#pergunta').value = vinda;
 carregarConfig();
 </script>
 </body>

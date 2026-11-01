@@ -20,7 +20,7 @@ motores; cerca de 1,6 TB) ficam nos discos e são baixados de novo pelos scripts
 | --- | --- |
 | `scripts/` | todos os comandos (menu, downloads, servidores, integridade, backup) |
 | `catalogo/` | catálogo de modelos, bibliotecas e motores; estado; relatórios semanais |
-| `dev/ferramentas/` | Sabio (perguntas com fonte e RAG), Conselho de IAs, Central do Cofre e falar (texto para voz) |
+| `dev/ferramentas/` | Sabio (perguntas com fonte e RAG), Conselho de IAs, Central do Cofre, tarefas (escolhe a ferramenta mais barata e guarda as respostas) e falar (texto para voz) |
 | `dev/lora/` | modelo de treino LoRA |
 | `dev/configs/` | configuração do Continue (VS Code) |
 | `docs/` | guia offline e a página da Central (`painel.html`) |

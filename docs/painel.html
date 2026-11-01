@@ -5,182 +5,566 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Central do Cofre</title>
 <style>
+/* Central do Cofre. Tudo neste arquivo (sem fontes nem scripts da internet): funciona offline.
+   Cores com papel fixo: pinho = acoes, ipe (amarelo) = energia, urucum (vermelho) = emergencia e perigo. */
 :root {
-  --fundo: #f6f5f2; --cartao: #ffffff; --texto: #1d1d1b; --suave: #6b6a66; --borda: #e2e0da;
-  --destaque: #2f5d50; --destaque-fundo: #e6efe9; --ligado: #2f7d4f; --desligado: #9a9893;
-  --aviso-fundo: #f9eeda; --erro: #a3352b;
+  --papel: #eef1eb; --folha: #fafbf8; --tinta: #1e2b25; --suave: #5c6a62; --linha: #d3dad1; --linha-forte: #b9c3b7;
+  --pinho: #2f5d50; --pinho-fundo: #dce8e1; --sobre-pinho: #fafbf8;
+  --ipe: #e1a915; --ipe-fundo: #f8ecc4; --ipe-tinta: #5a4200;
+  --urucum: #b8432b; --urucum-fundo: #f6e0d8;
+  --ligado: #2f8a57; --desligado: #9aa39c;
+  --sombra: 0 10px 30px rgba(30, 43, 37, .16);
+  --titulo: Bahnschrift, "DIN Alternate", "DIN 2014", "Roboto Condensed", "Segoe UI", sans-serif;
+  --texto: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+:root[data-tema="escuro"] {
+  --papel: #131b17; --folha: #1a2520; --tinta: #e4ebe5; --suave: #9fada4; --linha: #2c3a33; --linha-forte: #3d4d45;
+  --pinho: #86c2ab; --pinho-fundo: #213a31; --sobre-pinho: #10201a;
+  --ipe: #f0c24a; --ipe-fundo: #3a2f12; --ipe-tinta: #f6d98a;
+  --urucum: #ef8a72; --urucum-fundo: #3d221b;
+  --ligado: #6fd197; --desligado: #6d7a72;
+  --sombra: 0 10px 30px rgba(0, 0, 0, .45);
+  color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
-    --fundo: #161716; --cartao: #1f211f; --texto: #ecebe7; --suave: #a19f99; --borda: #333632;
-    --destaque: #8cc5ad; --destaque-fundo: #223029; --ligado: #6fcf97; --desligado: #77756f;
-    --aviso-fundo: #3a3222; --erro: #f08a7e;
+  :root:not([data-tema="claro"]) {
+    --papel: #131b17; --folha: #1a2520; --tinta: #e4ebe5; --suave: #9fada4; --linha: #2c3a33; --linha-forte: #3d4d45;
+    --pinho: #86c2ab; --pinho-fundo: #213a31; --sobre-pinho: #10201a;
+    --ipe: #f0c24a; --ipe-fundo: #3a2f12; --ipe-tinta: #f6d98a;
+    --urucum: #ef8a72; --urucum-fundo: #3d221b;
+    --ligado: #6fd197; --desligado: #6d7a72;
+    --sombra: 0 10px 30px rgba(0, 0, 0, .45);
+    color-scheme: dark;
   }
 }
+
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--fundo); color: var(--texto); font: 16px/1.5 system-ui, "Segoe UI", sans-serif; }
-main { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; }
-h1 { font-size: 28px; margin: 0 0 4px; }
-h2 { font-size: 19px; margin: 32px 0 12px; }
+html { background: var(--papel); }
+body { margin: 0; background: var(--papel); color: var(--tinta); font: 16px/1.55 var(--texto); -webkit-font-smoothing: antialiased; }
+a { color: var(--pinho); }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--pinho); outline-offset: 2px; border-radius: 4px; }
+[hidden] { display: none !important; }
+h1, h2, h3 { font-family: var(--titulo); font-weight: 600; letter-spacing: -.005em; line-height: 1.2; }
+h1 { font-size: 31px; margin: 0 0 6px; }
+h1:focus { outline: none; }
+h2 { font-size: 20px; margin: 36px 0 12px; }
+h3 { font-size: 17px; margin: 0; }
 p { margin: 0 0 8px; }
+kbd { font-family: var(--titulo); font-size: 12px; border: 1px solid var(--linha-forte); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; color: var(--suave); background: var(--folha); }
+code { font-family: Consolas, ui-monospace, monospace; font-size: 14px; background: var(--pinho-fundo); padding: 1px 5px; border-radius: 4px; }
 .suave { color: var(--suave); }
-.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-.cartao { background: var(--cartao); border: 1px solid var(--borda); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
-.cartao h3 { font-size: 17px; margin: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-.estado { font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; color: var(--desligado); white-space: nowrap; padding-top: 2px; }
-.estado::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
-.estado.ligado { color: var(--ligado); }
-.estado.falhou { color: var(--erro); }
-.cartao .como { font-size: 14px; color: var(--suave); margin-top: auto; }
-.botao { font: inherit; font-size: 15px; border-radius: 8px; padding: 8px 14px; border: 1px solid var(--destaque); background: var(--destaque); color: var(--cartao); text-decoration: none; text-align: center; cursor: pointer; }
-.botao.leve { background: transparent; color: var(--destaque); }
-.botao:disabled { opacity: .55; cursor: default; }
-.botao.perigo { background: transparent; color: var(--erro); border-color: var(--erro); }
-form.busca { display: flex; flex-wrap: wrap; gap: 8px; }
-form.busca input[type=search] { flex: 1 1 260px; font: inherit; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto); }
-form.busca select { font: inherit; padding: 8px; border-radius: 8px; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto); }
-.atalhos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-.atalhos button { font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto); cursor: pointer; }
-.atalhos button:hover { border-color: var(--destaque); }
-.tabela { width: 100%; border-collapse: collapse; background: var(--cartao); border: 1px solid var(--borda); border-radius: 12px; overflow: hidden; }
-.tabela th, .tabela td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--borda); vertical-align: top; }
-.tabela th { font-size: 14px; color: var(--suave); font-weight: 600; }
+.pular { position: absolute; left: -999px; top: 8px; background: var(--folha); padding: 8px 12px; z-index: 50; }
+.pular:focus { left: 8px; }
+.ic { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Estrutura: trilho | conteudo | medidor ---------- */
+.app { display: grid; grid-template-columns: 216px minmax(0, 1fr) 272px; grid-template-areas: "trilho main medidor"; min-height: 100vh; }
+.trilho { grid-area: trilho; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 4px; padding: 20px 12px; border-right: 1px solid var(--linha); background: var(--papel); }
+main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; }
+.medidor { grid-area: medidor; position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 24px 20px; border-left: 1px solid var(--linha); background: var(--folha); display: flex; flex-direction: column; gap: 16px; }
+
+.marca { display: flex; gap: 10px; align-items: center; text-decoration: none; color: var(--tinta); padding: 4px 8px 16px; }
+.marca svg { width: 30px; height: 30px; flex: none; }
+.marca b { display: block; font-family: var(--titulo); font-size: 18px; font-weight: 600; line-height: 1.1; }
+.marca small { color: var(--suave); font-size: 13px; }
+.secoes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.secoes a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: var(--tinta); text-decoration: none; }
+.secoes a span { flex: 1; }
+.secoes a kbd { opacity: 0; transition: opacity .15s; }
+.trilho:hover .secoes a kbd, .secoes a:focus-visible kbd { opacity: 1; }
+.secoes a:hover { background: var(--pinho-fundo); }
+.secoes a[aria-current="page"] { background: var(--pinho); color: var(--sobre-pinho); }
+.secoes a[aria-current="page"] kbd { color: var(--sobre-pinho); background: transparent; border-color: currentColor; }
+.trilho-pe { margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
+.trilho-pe button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border: 1px solid var(--linha); border-radius: 8px; background: var(--folha); cursor: pointer; text-align: left; font-size: 14px; }
+.trilho-pe button span { flex: 1; }
+.trilho-pe button:hover { border-color: var(--pinho); }
+
+/* ---------- Medidor (como o relogio de luz: o que o PC gasta agora e no mes) ---------- */
+.medidor-titulo { margin: 0; font-size: 15px; color: var(--suave); font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.medidor-titulo .ic { color: var(--ipe); }
+.leitura { display: flex; flex-direction: column; }
+.leitura .rotulo { font-size: 13px; color: var(--suave); }
+.leitura b { font-family: var(--titulo); font-weight: 600; font-size: 25px; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.leitura .sub { font-size: 13px; color: var(--suave); }
+.leitura.agora b { font-size: 39px; }
+.leitura.agora b::after { content: ""; display: block; height: 4px; width: var(--carga, 0%); max-width: 100%; background: var(--ipe); border-radius: 2px; margin-top: 4px; transition: width .6s; }
+.visor { display: inline-flex; align-self: flex-start; gap: 2px; margin-top: 4px; }
+.visor span { font-family: var(--titulo); font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 600; min-width: 20px; padding: 2px 4px; text-align: center; background: var(--tinta); color: var(--ipe); border-radius: 3px; line-height: 1.3; }
+.visor span.sep { background: transparent; color: var(--tinta); min-width: 0; padding: 2px 1px; }
+.lampadas { list-style: none; margin: 0; padding: 12px 0 0; border-top: 1px solid var(--linha); display: grid; gap: 6px; font-size: 14px; }
+.lampadas li { display: flex; align-items: center; gap: 8px; }
+.lampada { width: 10px; height: 10px; border-radius: 50%; background: var(--desligado); flex: none; }
+.lampada.ligado { background: var(--ligado); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ligado) 25%, transparent); }
+.lampada.ligando { background: var(--ipe); animation: piscar 1.2s infinite; }
+.lampada.falhou { background: var(--urucum); }
+@keyframes piscar { 50% { opacity: .35; } }
+.tarifa { font-size: 13px; color: var(--suave); margin: 0; }
+.medidor-acoes { display: grid; gap: 8px; margin-top: auto; }
+
+/* ---------- Botoes e campos ---------- */
+.botao { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 600; border-radius: 8px; padding: 9px 16px; border: 1px solid var(--pinho); background: var(--pinho); color: var(--sobre-pinho); text-decoration: none; cursor: pointer; line-height: 1.2; }
+.botao:hover { filter: brightness(1.08); }
+.botao.leve { background: transparent; color: var(--pinho); }
+.botao.leve:hover { background: var(--pinho-fundo); filter: none; }
+.botao.perigo { background: transparent; color: var(--urucum); border-color: var(--urucum); }
+.botao.perigo:hover { background: var(--urucum-fundo); filter: none; }
+.botao.pequeno { font-size: 14px; padding: 6px 12px; }
+.botao:disabled, .botao[aria-disabled="true"] { opacity: .5; cursor: not-allowed; filter: none; }
+.campo { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--linha-forte); background: var(--folha); }
+.campo:focus { border-color: var(--pinho); outline: none; box-shadow: 0 0 0 3px var(--pinho-fundo); }
+.linha { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.dica { font-size: 14px; color: var(--suave); margin: 8px 0 0; }
+
+/* ---------- Faixas de aviso ---------- */
+.faixa { border-radius: 10px; padding: 12px 16px; margin: 0 0 20px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; border: 1px solid var(--linha); background: var(--folha); }
+.faixa.jogo { background: var(--ipe-fundo); border-color: var(--ipe); color: var(--ipe-tinta); }
+.faixa.jogo strong { color: inherit; }
+.faixa span { flex: 1 1 280px; }
+
+/* ---------- Inicio: o pedido e a escada de esforco ---------- */
+.titulo-grande { font-size: 39px; margin-bottom: 14px; }
+.pedido { display: flex; gap: 8px; }
+.pedido input { flex: 1; font-size: 19px; padding: 14px 16px; border-radius: 12px; }
+.pedido .botao { padding: 0 22px; font-size: 16px; border-radius: 12px; }
+.exemplos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.exemplos button { border: 1px dashed var(--linha-forte); background: transparent; border-radius: 999px; padding: 5px 12px; font-size: 14px; cursor: pointer; color: var(--suave); }
+.exemplos button:hover { color: var(--tinta); border-style: solid; border-color: var(--pinho); }
+.sugestao { margin-top: 22px; display: grid; gap: 14px; }
+.alerta { border-left: 4px solid var(--urucum); background: var(--urucum-fundo); padding: 10px 14px; border-radius: 0 8px 8px 0; font-weight: 600; }
+.alerta.saude { border-color: var(--ipe); background: var(--ipe-fundo); color: var(--ipe-tinta); font-weight: 500; }
+.guardada { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 12px 14px; border: 1px solid var(--pinho); border-radius: 10px; background: var(--pinho-fundo); }
+.guardada span { flex: 1 1 260px; }
+.atalho-certo { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: center; padding: 16px 18px; background: var(--folha); border: 1px solid var(--linha); border-left: 4px solid var(--pinho); border-radius: 10px; }
+.atalho-certo h3 { font-size: 19px; }
+.atalho-certo p { margin: 0; color: var(--suave); }
+.atalho-certo .botao { grid-row: 1 / span 3; grid-column: 2; }
+.selo { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--pinho); color: var(--sobre-pinho); vertical-align: middle; }
+.selo.claro { background: var(--pinho-fundo); color: var(--pinho); }
+.gasto { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--ipe-tinta); background: var(--ipe-fundo); border-radius: 6px; padding: 1px 8px; font-variant-numeric: tabular-nums; }
+.gasto .ic { width: 14px; height: 14px; color: var(--ipe); stroke-width: 2.2; }
+
+/* A escada: um degrau por jeito de responder, do que gasta menos ao que gasta mais. A altura e o gasto. */
+.escada-titulo { font-size: 14px; color: var(--suave); margin: 4px 0 -4px; }
+/* Duas linhas comuns a todos os degraus (subgrid): as barras de pe na mesma base e os corpos da mesma altura. */
+.escada { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: auto auto; column-gap: 10px; margin-top: 30px; }
+.degrau { position: relative; display: grid; grid-row: span 2; grid-template-rows: subgrid; row-gap: 0; text-align: left; padding: 0; border: 0; background: none; cursor: pointer; color: var(--tinta); }
+.degrau-barra { position: relative; align-self: end; display: block; height: var(--altura, 12px); background: color-mix(in srgb, var(--ipe) 45%, var(--papel)); border-radius: 6px 6px 0 0; transition: height .45s cubic-bezier(.2, .8, .2, 1), background .2s; }
+.degrau-corpo { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 12px; border: 1px solid var(--linha); border-top: 0; border-radius: 0 0 10px 10px; background: var(--folha); }
+.degrau-titulo { font-family: var(--titulo); font-weight: 600; font-size: 16px; line-height: 1.2; }
+.degrau-porque { font-size: 13px; color: var(--suave); line-height: 1.4; }
+.degrau .gasto { align-self: flex-start; margin-top: auto; font-size: 13px; }
+.degrau-barra .selo { position: absolute; bottom: calc(100% + 6px); left: 0; white-space: nowrap; }
+.degrau:hover .degrau-barra { background: var(--ipe); }
+.degrau:hover .degrau-corpo { border-color: var(--pinho); }
+.degrau.recomendado .degrau-barra, .degrau[aria-checked="true"] .degrau-barra { background: var(--ipe); }
+.degrau.recomendado .degrau-corpo, .degrau[aria-checked="true"] .degrau-corpo { border: 2px solid var(--pinho); border-top: 0; padding: 10px 11px 11px; }
+.degrau.recomendado .degrau-barra, .degrau[aria-checked="true"] .degrau-barra { box-shadow: inset 0 -2px 0 var(--pinho); }
+.degrau:disabled { opacity: .5; cursor: not-allowed; }
+.escada.inicio-vazio .degrau-barra { height: 12px; }
+.parecidas { font-size: 14px; color: var(--suave); }
+.parecidas button { border: 0; background: none; padding: 0; color: var(--pinho); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+
+/* Emergencia e ferramentas no inicio */
+.emergencia { display: flex; flex-wrap: wrap; gap: 8px; }
+.emergencia button { border: 1px solid var(--urucum); color: var(--urucum); background: var(--folha); border-radius: 8px; padding: 7px 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.emergencia button:hover { background: var(--urucum-fundo); }
+.idioma { display: inline-flex; border: 1px solid var(--linha-forte); border-radius: 8px; overflow: hidden; font-size: 13px; vertical-align: middle; margin-left: 8px; }
+.idioma button { border: 0; background: transparent; padding: 3px 10px; cursor: pointer; color: var(--suave); }
+.idioma button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
+.titulo-linha { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 36px 0 12px; }
+.titulo-linha h2 { margin: 0; }
+.ferramentas { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.ferramenta { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--linha); border-radius: 10px; background: var(--folha); cursor: pointer; text-align: left; }
+.ferramenta:hover { border-color: var(--pinho); }
+.ferramenta .ic { color: var(--pinho); }
+.ferramenta span { flex: 1; line-height: 1.25; }
+.ferramenta small { display: block; color: var(--suave); font-size: 12px; }
+
+/* ---------- Perguntar ---------- */
+#pergunta { min-height: 96px; resize: vertical; font-size: 17px; }
+.modos-rotulo { margin: 18px 0 -18px; font-size: 14px; color: var(--suave); }
+.cronometro { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--ipe-tinta); }
+.etapas { list-style: none; padding: 0; margin: 18px 0 0; font-size: 14px; color: var(--suave); display: grid; gap: 4px; }
+.etapas li { display: flex; gap: 8px; align-items: center; }
+.etapas li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--linha-forte); flex: none; }
+.etapas li.atual { color: var(--tinta); }
+.etapas li.atual::before { background: var(--ipe); animation: piscar 1.2s infinite; }
+.resposta { background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
+.resposta-topo { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; font-size: 13px; color: var(--suave); }
+.md { max-width: 72ch; }
+.md p { margin: 0 0 10px; }
+.md ul, .md ol { margin: 0 0 10px; padding-left: 22px; }
+.md li { margin: 3px 0; }
+.md a { color: var(--pinho); font-weight: 600; text-decoration: none; }
+.fontes-titulo { font-size: 14px; color: var(--suave); margin: 14px 0 4px; font-family: var(--texto); font-weight: 600; }
+.fontes { font-size: 14px; margin: 0; padding-left: 22px; }
+.resposta .acoes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--linha); align-items: center; }
+.falha { color: var(--urucum); margin-top: 14px; font-weight: 600; }
+.artigos { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.artigos li { border-bottom: 1px solid var(--linha); padding-bottom: 10px; }
+.artigos li:last-child { border-bottom: 0; }
+.artigos a { font-weight: 600; text-decoration: none; }
+.artigos small { color: var(--suave); margin-left: 6px; }
+.artigos p { margin: 2px 0 0; font-size: 14px; color: var(--suave); max-width: 72ch; }
+
+/* ---------- Servicos: como um quadro de disjuntores ---------- */
+.quadro { border: 1px solid var(--linha); border-radius: 12px; background: var(--folha); overflow: hidden; }
+.disjuntor { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 14px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--linha); }
+.disjuntor:last-child { border-bottom: 0; }
+.disjuntor .lampada { width: 12px; height: 12px; grid-row: 1 / span 2; }
+.disjuntor h3 { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.disjuntor .estado { font-family: var(--texto); font-weight: 500; font-size: 13px; color: var(--suave); }
+.disjuntor p { margin: 0; font-size: 14px; color: var(--suave); grid-column: 2; }
+.disjuntor .acoes { grid-column: 3; grid-row: 1 / span 2; display: flex; gap: 8px; }
+.modelos { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.modelos li { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 8px 12px; border: 1px solid var(--linha); border-radius: 8px; background: var(--folha); }
+
+/* ---------- Biblioteca ---------- */
+.busca { display: flex; flex-wrap: wrap; gap: 8px; }
+.busca input { flex: 1 1 260px; }
+.busca select { padding: 10px; border-radius: 10px; border: 1px solid var(--linha-forte); background: var(--folha); }
+.mapa { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 16px; border: 1px solid var(--linha); border-radius: 12px; background: var(--folha); }
+.mapa .ic { width: 34px; height: 34px; color: var(--pinho); stroke-width: 1.5; }
+.mapa p { margin: 0; }
+.acervo-grupo { margin: 20px 0 6px; font-size: 15px; color: var(--suave); font-family: var(--texto); font-weight: 600; }
+.acervo { list-style: none; padding: 0; margin: 0; border: 1px solid var(--linha); border-radius: 12px; background: var(--folha); }
+.acervo li { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 14px; border-bottom: 1px solid var(--linha); align-items: center; }
+.acervo li:last-child { border-bottom: 0; }
+.acervo b { font-weight: 600; }
+.acervo span.uso { font-size: 14px; color: var(--suave); grid-column: 1; }
+.acervo .lado { grid-column: 2; grid-row: 1 / span 2; text-align: right; font-size: 13px; color: var(--suave); display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.acervo li.falta b { color: var(--suave); }
+
+/* ---------- Energia ---------- */
+.numeros { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.numero { padding: 14px 16px; border: 1px solid var(--linha); border-radius: 10px; background: var(--folha); }
+.numero span { font-size: 13px; color: var(--suave); display: block; }
+.numero b { font-family: var(--titulo); font-size: 25px; font-weight: 600; font-variant-numeric: tabular-nums; display: block; }
+.barras { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.barras li { display: grid; grid-template-columns: minmax(130px, 210px) 1fr auto; gap: 12px; align-items: center; font-size: 14px; }
+.barras .trilha { height: 12px; background: var(--linha); border-radius: 6px; overflow: hidden; }
+.barras .trilha i { display: block; height: 100%; background: var(--ipe); border-radius: 6px; min-width: 3px; }
+.barras small { color: var(--suave); font-variant-numeric: tabular-nums; }
+.meses { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; align-items: end; height: 170px; padding: 0 4px; border-bottom: 1px solid var(--linha-forte); }
+.mes { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; height: 100%; font-size: 12px; color: var(--suave); font-variant-numeric: tabular-nums; }
+.mes i { display: block; width: 100%; max-width: 56px; background: color-mix(in srgb, var(--ipe) 50%, var(--papel)); border-radius: 4px 4px 0 0; min-height: 2px; }
+.mes.atual i { background: var(--ipe); }
+.mes.atual { color: var(--tinta); font-weight: 600; }
+.meses-rotulos { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; text-align: center; font-size: 13px; color: var(--suave); padding-top: 4px; }
+.vazio { padding: 16px; border: 1px dashed var(--linha-forte); border-radius: 10px; color: var(--suave); }
+.dicas { margin: 0; padding-left: 20px; }
+.dicas li { margin: 5px 0; }
+
+/* ---------- Historico ---------- */
+.historico { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 8px; }
+.hist-item { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; text-align: left; padding: 12px 14px; border: 1px solid var(--linha); border-radius: 10px; background: var(--folha); cursor: pointer; }
+.hist-item:hover, .hist-item[aria-expanded="true"] { border-color: var(--pinho); }
+.hist-item b { font-weight: 600; }
+.hist-item .trecho { grid-column: 1; font-size: 14px; color: var(--suave); }
+.hist-item .lado { grid-column: 2; grid-row: 1 / span 2; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font-size: 13px; color: var(--suave); }
+.hist-detalhe .resposta { margin-top: 6px; }
+
+/* ---------- Ajuda ---------- */
+.tabela { width: 100%; border-collapse: collapse; background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; overflow: hidden; }
+.tabela th, .tabela td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+.tabela th { font-size: 13px; color: var(--suave); font-weight: 600; }
 .tabela tr:last-child td { border-bottom: 0; }
-code { font-family: Consolas, ui-monospace, monospace; font-size: 14px; background: var(--destaque-fundo); padding: 1px 5px; border-radius: 4px; }
-.aviso { background: var(--aviso-fundo); border-radius: 12px; padding: 12px 16px; }
-.numeros { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
-.numero { background: var(--cartao); border: 1px solid var(--borda); border-radius: 12px; padding: 12px 16px; }
-.numero b { display: block; font-size: 24px; font-variant-numeric: tabular-nums; }
-.modelos { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-direction: column; gap: 8px; }
-.modelos li { background: var(--cartao); border: 1px solid var(--borda); border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-ul.dicas { margin: 0; padding-left: 20px; }
-ul.dicas li { margin: 4px 0; }
-.topo { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
-#mensagem { min-height: 24px; margin-top: 8px; }
-#pergunta { width: 100%; min-height: 72px; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--borda); background: var(--cartao); color: var(--texto); resize: vertical; }
-.linha { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
-.etapas { list-style: none; padding: 0; margin: 12px 0 0; color: var(--suave); font-size: 14px; }
-.etapas li::before { content: "· "; }
-.resposta { background: var(--cartao); border: 1px solid var(--borda); border-radius: 12px; padding: 14px 16px; margin-top: 12px; }
-.resposta p { margin: 0 0 10px; }
-.resposta ul, .resposta ol { margin: 0 0 10px; padding-left: 22px; }
-.resposta a { color: var(--destaque); text-decoration: none; font-weight: 600; }
-.fontes { font-size: 14px; margin: 8px 0 0; padding-left: 22px; }
-.falha { color: var(--erro); margin-top: 12px; }
-.gasto { font-size: 13px; color: var(--suave); margin: 0; }
-#avisoJogo { margin-top: 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-.acoes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-@media (max-width: 560px) { .tabela th:nth-child(3), .tabela td:nth-child(3) { display: none; } }
+.teclas { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0; }
+.teclas dt { white-space: nowrap; }
+.teclas dd { margin: 0; color: var(--suave); }
+
+/* ---------- Paleta de acoes (Ctrl+K) e avisos ---------- */
+.paleta { position: fixed; inset: 0; background: rgba(15, 24, 20, .45); display: flex; align-items: flex-start; justify-content: center; padding: 12vh 16px 16px; z-index: 40; }
+.paleta-caixa { width: min(620px, 100%); background: var(--folha); border-radius: 14px; box-shadow: var(--sombra); overflow: hidden; border: 1px solid var(--linha); }
+.paleta input { width: 100%; border: 0; border-bottom: 1px solid var(--linha); padding: 16px 18px; font-size: 18px; background: transparent; outline: none; }
+.paleta ul { list-style: none; margin: 0; padding: 6px; max-height: 52vh; overflow-y: auto; }
+.paleta li { display: flex; gap: 10px; align-items: center; padding: 9px 12px; border-radius: 8px; cursor: pointer; }
+.paleta li span { flex: 1; }
+.paleta li small { color: var(--suave); font-size: 12px; }
+.paleta li[aria-selected="true"] { background: var(--pinho); color: var(--sobre-pinho); }
+.paleta li[aria-selected="true"] small { color: inherit; }
+.paleta-dica { margin: 0; padding: 8px 16px; font-size: 12px; color: var(--suave); border-top: 1px solid var(--linha); }
+.avisos { position: fixed; left: 50%; transform: translateX(-50%); bottom: 20px; display: grid; gap: 8px; z-index: 45; width: min(560px, calc(100% - 32px)); }
+.aviso-toast { display: flex; gap: 12px; align-items: center; padding: 12px 16px; border-radius: 10px; background: var(--tinta); color: var(--papel); box-shadow: var(--sombra); font-size: 15px; }
+.aviso-toast span { flex: 1; }
+.aviso-toast a, .aviso-toast button { color: var(--ipe); font-weight: 600; background: none; border: 0; cursor: pointer; padding: 0; text-decoration: none; }
+
+/* ---------- Telas menores ---------- */
+@media (max-width: 1200px) {
+  .app { grid-template-columns: 200px minmax(0, 1fr); grid-template-areas: "trilho medidor" "trilho main"; }
+  .medidor { position: static; height: auto; border-left: 0; border-bottom: 1px solid var(--linha); flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 12px 28px; padding: 14px 40px; }
+  .medidor-titulo { display: none; }
+  .leitura.agora b { font-size: 25px; }
+  .lampadas { border-top: 0; padding: 0; grid-template-columns: repeat(2, auto); gap: 4px 18px; }
+  .medidor-acoes { margin: 0 0 0 auto; grid-auto-flow: column; }
+  .tarifa { flex-basis: 100%; }
+}
+@media (max-width: 760px) {
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "trilho" "medidor" "main"; }
+  .trilho { position: sticky; z-index: 30; height: auto; flex-direction: row; align-items: center; padding: 8px 12px; border-right: 0; border-bottom: 1px solid var(--linha); overflow-x: auto; gap: 8px; }
+  .marca { padding: 0 8px 0 0; }
+  .marca span, .secoes a kbd, .trilho-pe button span, .trilho-pe kbd { display: none; }
+  .secoes { flex-direction: row; gap: 2px; }
+  .secoes a { padding: 8px; }
+  .secoes a span { display: none; }
+  .trilho-pe { margin: 0 0 0 auto; flex-direction: row; }
+  .trilho-pe button { width: auto; padding: 8px; }
+  main { padding: 20px 16px 72px; }
+  .medidor { padding: 12px 16px; gap: 10px 20px; }
+  .medidor-acoes { margin: 0; flex-basis: 100%; grid-auto-flow: column; grid-auto-columns: 1fr; }
+  .lampadas { display: none; }
+  .titulo-grande { font-size: 28px; }
+  .pedido input { font-size: 17px; }
+  /* No celular a escada deita: a barra vira uma faixa a esquerda, mais larga quanto mais gasta. */
+  .escada { grid-template-columns: 1fr; grid-template-rows: none; gap: 8px; margin-top: 8px; }
+  .degrau { display: flex; grid-row: auto; flex-direction: row; align-items: stretch; }
+  .degrau-barra { align-self: stretch; height: auto; width: var(--largura, 8px); border-radius: 8px 0 0 8px; }
+  .escada.inicio-vazio .degrau-barra { height: auto; }
+  .degrau-corpo, .degrau.recomendado .degrau-corpo, .degrau[aria-checked="true"] .degrau-corpo { flex: 1; border-top: 1px solid var(--linha); border-left: 0; border-radius: 0 10px 10px 0; }
+  .degrau.recomendado .degrau-corpo, .degrau[aria-checked="true"] .degrau-corpo { border: 2px solid var(--pinho); border-left: 0; }
+  .degrau-barra .selo { display: none; }
+  .degrau.recomendado .degrau-titulo::after { content: " (recomendado)"; font-family: var(--texto); font-weight: 500; font-size: 13px; color: var(--pinho); }
+  .modos-rotulo { margin-bottom: 8px; }
+  .atalho-certo { grid-template-columns: 1fr; }
+  .atalho-certo .botao { grid-row: auto; grid-column: 1; justify-self: start; margin-top: 8px; }
+  .disjuntor { grid-template-columns: auto 1fr; }
+  .disjuntor .acoes { grid-column: 2; grid-row: auto; margin-top: 6px; }
+  .barras li { grid-template-columns: 1fr auto; }
+  .barras .trilha { grid-column: 1 / -1; grid-row: 2; }
+  .tabela th:nth-child(3), .tabela td:nth-child(3) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
 </style>
 </head>
 <body>
-<main>
-  <div class="topo">
-    <div>
-      <h1>Cofre de IAs</h1>
-      <p class="suave">Tudo roda neste PC, sem internet. <span id="tarifa"></span></p>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-cofre" viewBox="0 0 32 32"><rect x="3" y="4" width="26" height="23" rx="3" fill="var(--pinho)"/><circle cx="16" cy="15.5" r="6.5" fill="none" stroke="var(--folha)" stroke-width="2"/><path d="M16 9v3M16 19v3M9.5 15.5h3M19.5 15.5h3" stroke="var(--folha)" stroke-width="2"/><path d="M14.5 13.2 17.8 15.5 14.5 17.8Z" fill="var(--ipe)"/><path d="M7 27v2M25 27v2" stroke="var(--pinho)" stroke-width="2.5"/></symbol>
+  <symbol id="i-inicio" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-perguntar" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M9.8 8.6a2.3 2.3 0 1 1 3.3 2c-.7.4-1.1.9-1.1 1.6M12 14.2v.1"/></symbol>
+  <symbol id="i-servicos" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h3v4H8zM13 7h3v4h-3zM8 14h3v3H8zM13 14h3v3h-3z"/></symbol>
+  <symbol id="i-biblioteca" viewBox="0 0 24 24"><path d="M5 4h4v16H5zM10 4h4v16h-4zM15.5 5.5l3.6-1 3 14.5-3.6 1z"/></symbol>
+  <symbol id="i-energia" viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/></symbol>
+  <symbol id="i-historico" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/><path d="M12 8v4.5l3 2"/></symbol>
+  <symbol id="i-ajuda" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8M12 16.5v.1"/></symbol>
+  <symbol id="i-procurar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+  <symbol id="i-tema" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11h-6l-4 4v-4H4z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
+  <symbol id="i-mapa" viewBox="0 0 24 24"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20z"/><path d="M9 4v13.5M15 6.5V20"/></symbol>
+  <symbol id="i-conselho" viewBox="0 0 24 24"><circle cx="7" cy="8" r="2.5"/><circle cx="17" cy="8" r="2.5"/><circle cx="12" cy="6" r="2.5"/><path d="M3 18c0-3 2-5 4-5s4 2 4 5M13 18c0-3 2-5 4-5s4 2 4 5M8.5 15c.8-2 2-3 3.5-3s2.7 1 3.5 3"/></symbol>
+  <symbol id="i-criar" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5.5-5 3.5 3 3-2.5 4.5 4"/></symbol>
+  <symbol id="i-copiar" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+  <symbol id="i-cruz" viewBox="0 0 24 24"><path d="M9 3.5h6v5.5h5.5v6H15v5.5H9V15H3.5V9H9z"/></symbol>
+</svg>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<div class="app" id="app">
+  <nav class="trilho" aria-label="Seções da Central">
+    <a class="marca" href="#inicio"><svg viewBox="0 0 32 32"><use href="#i-cofre"/></svg><span><b>Cofre de IAs</b><small>funciona sem internet</small></span></a>
+    <ul class="secoes" id="secoes"></ul>
+    <div class="trilho-pe">
+      <button type="button" id="abrirPaleta" title="Procurar qualquer ação (Ctrl+K)"><svg class="ic"><use href="#i-procurar"/></svg><span>Procurar ação</span><kbd>Ctrl K</kbd></button>
+      <button type="button" id="tema" title="Mudar o tema"><svg class="ic"><use href="#i-tema"/></svg><span id="temaNome">Tema automático</span></button>
     </div>
-    <button class="botao leve" id="atualizar" type="button" hidden>Verificar de novo</button>
-  </div>
+  </nav>
 
-  <div class="aviso" id="avisoJogo" hidden>
-    <span><strong>Modo jogo ligado:</strong> as IAs estão desligadas e não abrem até você sair.</span>
-    <button class="botao" id="sairJogo" type="button">Sair do modo jogo</button>
-  </div>
-
-  <div class="aviso" id="avisoDisco" hidden>
-    Aberto direto do disco, o painel não consegue ver o que está ligado. Para ver e ligar tudo com um clique,
-    abra a <strong>Central do Cofre</strong>: menu, opção 1, ou dois cliques em <code>A:\Painel.cmd</code>.
-  </div>
-
-  <section id="perguntar" hidden>
-    <h2>Perguntar com fonte</h2>
-    <textarea id="pergunta" placeholder="Ex.: Como purificar água da chuva para beber?" aria-label="Sua pergunta"></textarea>
-    <div class="linha">
-      <button class="botao" id="perguntarBotao" type="button">Perguntar</button>
-      <button class="botao leve" id="agoraBotao" type="button" hidden title="Para o raciocínio e responde com o que já foi encontrado">Responder agora</button>
-      <span class="suave">Uma IA responde citando a Wikipédia e as outras bibliotecas. Leva 1 a 2 minutos; liga o chat e a biblioteca se precisar. <span id="gastoPergunta"></span></span>
+  <main id="conteudo" tabindex="-1">
+    <div class="faixa jogo" id="avisoJogo" hidden>
+      <span><strong>Modo jogo ligado.</strong> As IAs e a biblioteca estão desligadas e não abrem até você sair. Respostas guardadas continuam abrindo.</span>
+      <button class="botao" id="sairJogo" type="button">Sair do modo jogo</button>
     </div>
-    <div id="saida"></div>
-  </section>
-
-  <h2>Serviços</h2>
-  <div class="grade" id="servicos"></div>
-  <p id="mensagem" class="suave" role="status" aria-live="polite"></p>
-
-  <section id="maquina" hidden>
-    <h2>Agora na máquina</h2>
-    <div class="numeros">
-      <div class="numero"><span class="suave">Placa de vídeo</span><b id="watts">-</b><span class="suave" id="vram"></span></div>
-      <div class="numero"><span class="suave">Memória RAM livre</span><b id="ram">-</b><span class="suave" id="ramTotal"></span></div>
-      <div class="numero"><span class="suave">PC inteiro (estimado)</span><b id="pcW">-</b><span class="suave" id="pcCusto"></span></div>
-      <div class="numero"><span class="suave">Gasto do cofre neste mês</span><b id="gastoMes">-</b><span class="suave">tarefas registradas; o PC parado não entra</span></div>
+    <div class="faixa" id="avisoDisco" hidden>
+      <span>Aberto direto do disco, o painel não vê o que está ligado nem responde perguntas. Para tudo funcionar, abra a <strong>Central do Cofre</strong>: dois cliques em <code>A:\Painel.cmd</code> ou menu, opção 1.</span>
     </div>
-    <ul class="modelos" id="modelos"></ul>
-    <div class="acoes">
-      <button class="botao perigo" id="pararTudo" type="button">Fechar tudo e liberar a placa</button>
-      <button class="botao perigo" id="entrarJogo" type="button">Modo jogo: desligar todas as IAs</button>
+
+    <section class="vista" data-vista="inicio" aria-labelledby="t-inicio">
+      <h1 class="titulo-grande" id="t-inicio" tabindex="-1">Do que você precisa?</h1>
+      <form class="pedido" id="pedidoForm" role="search">
+        <input class="campo" id="pedido" type="search" autocomplete="off" placeholder="Ex.: como purificar água da chuva" aria-label="Do que você precisa" aria-describedby="pedidoDica">
+        <button class="botao" type="submit">Ir</button>
+      </form>
+      <p class="dica" id="pedidoDica">Escreva com suas palavras. A Central mostra o jeito que resolve gastando menos energia; Enter faz o recomendado.</p>
+      <div class="exemplos" id="exemplos" aria-label="Exemplos"></div>
+      <div class="sugestao" id="sugestao" aria-live="polite"></div>
+
+      <div class="titulo-linha">
+        <h2>Emergência</h2>
+        <span class="suave" style="font-size:14px">Buscar em <span class="idioma" id="idiomaInicio" role="group" aria-label="Idioma da busca"></span></span>
+      </div>
+      <div class="emergencia" id="emergenciaInicio" role="group" aria-label="Atalhos de emergência"></div>
+      <p class="dica">Abre os artigos na hora, sem IA. Em inglês há mais conteúdo (WikiMed, medicina militar, sobrevivência).</p>
+
+      <h2>Abrir direto</h2>
+      <div class="ferramentas" id="ferramentas"></div>
+    </section>
+
+    <section class="vista" data-vista="perguntar" aria-labelledby="t-perguntar" hidden>
+      <h1 id="t-perguntar" tabindex="-1">Perguntar</h1>
+      <p class="suave">Escolha quanto esforço a resposta merece. Pergunta repetida mostra a resposta guardada, sem ligar nada.</p>
+      <textarea class="campo" id="pergunta" placeholder="Ex.: Como tratar uma queimadura de segundo grau?" aria-label="Sua pergunta"></textarea>
+      <p class="modos-rotulo" id="modosRotulo">Como responder (do que gasta menos ao que gasta mais):</p>
+      <div class="escada" id="modos" role="radiogroup" aria-labelledby="modosRotulo"></div>
+      <div class="linha">
+        <button class="botao" id="perguntarBotao" type="button">Perguntar</button>
+        <button class="botao leve" id="agoraBotao" type="button" hidden title="Para o raciocínio e responde com o que já foi encontrado">Responder agora</button>
+        <span class="cronometro" id="cronometro" hidden></span>
+        <span class="dica" style="margin:0">Ctrl+Enter também pergunta.</span>
+      </div>
+      <div id="saida"></div>
+    </section>
+
+    <section class="vista" data-vista="servicos" aria-labelledby="t-servicos" hidden>
+      <h1 id="t-servicos" tabindex="-1">Serviços</h1>
+      <p class="suave">Cada serviço liga numa janela minimizada; fechar a Central não derruba nenhum.</p>
+      <div class="quadro" id="quadro"></div>
+      <h2>Modelos na memória</h2>
+      <ul class="modelos" id="modelos"><li class="suave">Ligue o chat para ver os modelos carregados.</li></ul>
+      <p class="dica">O servidor tira da memória o modelo parado há 15 minutos; descarregar libera a placa na hora.</p>
+      <h2>Chave de acesso do chat</h2>
+      <p>Na primeira vez, o chat pede a chave. Ela fica em <code>A:\catalogo\chave-api.txt</code>; aberto pelo menu, o servidor a copia sozinho.</p>
+      <button class="botao leve" id="copiarChave" type="button">Copiar a chave do chat</button>
+    </section>
+
+    <section class="vista" data-vista="biblioteca" aria-labelledby="t-biblioteca" hidden>
+      <h1 id="t-biblioteca" tabindex="-1">Biblioteca e mapa</h1>
+      <p class="suave">Wikipédia, WikiMed, iFixit, livros, manuais e fóruns práticos, sem internet.</p>
+      <form class="busca" id="buscaForm" role="search">
+        <input class="campo" type="search" id="buscaTermo" placeholder="Ex.: purificar água, torniquete, painel solar" required aria-label="O que procurar">
+        <select id="buscaIdioma" aria-label="Idioma das bibliotecas"><option value="por">Em português</option><option value="eng">Em inglês (mais conteúdo)</option></select>
+        <button class="botao" type="submit">Buscar</button>
+      </form>
+      <h2>Emergência</h2>
+      <div class="emergencia" id="emergenciaBiblioteca" role="group" aria-label="Atalhos de emergência"></div>
+      <h2>Mapa offline</h2>
+      <div class="mapa">
+        <svg class="ic"><use href="#i-mapa"/></svg>
+        <p id="mapaTexto">Ruas, estradas, hospitais, postos e escolas do Brasil.</p>
+        <button class="botao" id="mapaBotao" type="button">Abrir o mapa</button>
+      </div>
+      <div class="titulo-linha">
+        <h2>O acervo</h2>
+        <input class="campo" type="search" id="acervoFiltro" placeholder="Filtrar: medicina, solar, livros..." aria-label="Filtrar as bibliotecas" style="width:min(280px,100%);padding:7px 12px">
+      </div>
+      <div id="acervo"><p class="vazio">Abra a Central para ver o acervo.</p></div>
+    </section>
+
+    <section class="vista" data-vista="energia" aria-labelledby="t-energia" hidden>
+      <h1 id="t-energia" tabindex="-1">Energia</h1>
+      <p class="suave" id="tarifaDetalhe"></p>
+      <div class="numeros" id="energiaNumeros"></div>
+      <h2>Neste mês, por tarefa</h2>
+      <div id="porTarefa"><p class="vazio">Abra a Central para ver o gasto.</p></div>
+      <h2>Últimos 6 meses</h2>
+      <div id="meses"></div>
+      <h2>Para gastar menos</h2>
+      <ul class="dicas">
+        <li>Comece pela escada: <strong>só buscar</strong> não liga IA nenhuma e muitas vezes já resolve.</li>
+        <li>Pergunta repetida não gasta nada: a resposta fica guardada no Histórico.</li>
+        <li>Ao terminar, use <strong>Fechar tudo</strong> (no medidor): libera a placa de vídeo.</li>
+        <li>O PC ligado à toa pesa mais que as IAs. Suspenda quando não for usar, ou deixe a vigia ligada (menu, opção 19): ela desliga o PC parado.</li>
+      </ul>
+    </section>
+
+    <section class="vista" data-vista="historico" aria-labelledby="t-historico" hidden>
+      <h1 id="t-historico" tabindex="-1">Histórico</h1>
+      <p class="suave">Perguntas já respondidas, só neste PC (fora do GitHub). Abrir uma resposta guardada não gasta energia.</p>
+      <input class="campo" type="search" id="histBusca" placeholder="Procurar no histórico" aria-label="Procurar no histórico">
+      <ul class="historico" id="historico"></ul>
+    </section>
+
+    <section class="vista" data-vista="ajuda" aria-labelledby="t-ajuda" hidden>
+      <h1 id="t-ajuda" tabindex="-1">Ajuda</h1>
+      <h2>Qual IA usar</h2>
+      <table class="tabela">
+        <thead><tr><th>Para</th><th>Use</th><th>Observação</th></tr></thead>
+        <tbody>
+          <tr><td>Conversar rápido</td><td><code>gemma-4-12b</code></td><td>cabe inteiro na placa de vídeo</td></tr>
+          <tr><td>Melhor resposta geral</td><td><code>gemma-4-26b-a4b</code></td><td><code>qwen3.8-27b</code> é melhor, porém lento</td></tr>
+          <tr><td>Raciocínio e contas</td><td><code>gpt-oss-20b</code></td><td>o mais veloz</td></tr>
+          <tr><td>Programar</td><td><code>qwen3-coder-next</code></td><td>agente de código</td></tr>
+          <tr><td>Saúde</td><td><code>medgemma-27b</code></td><td>junto com a WikiMed; não substitui um médico</td></tr>
+          <tr><td>Traduzir</td><td><code>translategemma-12b</code></td><td>55 idiomas, inclusive texto em fotos</td></tr>
+          <tr><td>Ler foto ou documento</td><td><code>glm-ocr</code></td><td>tabelas e PDFs escaneados</td></tr>
+          <tr><td>Segunda opinião</td><td>Conselho de IAs</td><td>várias IAs respondem e um relator decide (3 a 6 min)</td></tr>
+          <tr><td>O maior que roda aqui</td><td><code>nemotron-3.5-bolt-74b</code></td><td>fica no HD: ~5 min para carregar</td></tr>
+        </tbody>
+      </table>
+      <h2>Atalhos de teclado</h2>
+      <dl class="teclas">
+        <dt><kbd>Ctrl</kbd> <kbd>K</kbd></dt><dd>procurar qualquer ação: ligar, abrir, perguntar, emergência</dd>
+        <dt><kbd>/</kbd></dt><dd>escrever o que você precisa (no Início)</dd>
+        <dt><kbd>1</kbd> a <kbd>7</kbd></dt><dd>ir para cada seção, na ordem do menu lateral</dd>
+        <dt><kbd>Ctrl</kbd> <kbd>Enter</kbd></dt><dd>perguntar</dd>
+        <dt><kbd>Esc</kbd></dt><dd>fechar a procura de ações</dd>
+      </dl>
+      <h2>Bom saber</h2>
+      <ul class="dicas">
+        <li>Guia completo: <code>A:\docs\GUIA.md</code> (offline) e a <a href="https://claude.ai/artifact/XuMQNn1aZENjqeAZKDqruw">versão online</a>.</li>
+        <li>Imprima o <strong>cartão de emergência</strong> (<code>A:\docs\cartao-emergencia.html</code>, Ctrl+P) e guarde junto do PC.</li>
+        <li>O menu do terminal (<code>A:\IA.cmd</code>) aceita palavras: escreva “mapa”, “jogo” ou já a sua pergunta.</li>
+        <li>Para usar no celular, abra o servidor com <code>iniciar-servidor.ps1 -Rede</code> e acesse o IP deste PC na porta 8080.</li>
+      </ul>
+    </section>
+  </main>
+
+  <aside class="medidor" id="medidor" aria-label="Medidor do PC">
+    <h2 class="medidor-titulo"><svg class="ic"><use href="#i-energia"/></svg>Medidor</h2>
+    <div class="leitura agora"><span class="rotulo">PC inteiro agora (estimado)</span><b id="pcW">-</b><span class="sub" id="pcCusto"></span></div>
+    <div class="leitura"><span class="rotulo">Placa de vídeo</span><b id="watts">-</b><span class="sub" id="vram"></span></div>
+    <div class="leitura"><span class="rotulo">Memória livre</span><b id="ram">-</b><span class="sub" id="ramTotal"></span></div>
+    <div class="leitura"><span class="rotulo">Gasto do cofre no mês</span><span class="visor" id="visorMes" aria-hidden="true"></span><span class="sub" id="gastoMes"></span></div>
+    <ul class="lampadas" id="lampadas" aria-label="O que está ligado"></ul>
+    <p class="tarifa" id="tarifa"></p>
+    <div class="medidor-acoes">
+      <button class="botao perigo pequeno" id="pararTudo" type="button">Fechar tudo e liberar a placa</button>
+      <button class="botao perigo pequeno" id="entrarJogo" type="button" hidden>Modo jogo</button>
     </div>
-  </section>
+  </aside>
+</div>
 
-  <h2>Buscar na biblioteca offline</h2>
-  <form class="busca" action="http://127.0.0.1:8081/search" method="get" target="_blank">
-    <input type="search" name="pattern" placeholder="Ex.: purificar água, torniquete, painel solar" required aria-label="O que procurar">
-    <select name="books.filter.lang" aria-label="Idioma das bibliotecas">
-      <option value="por">Em português</option>
-      <option value="eng">Em inglês (mais conteúdo)</option>
-    </select>
-    <button class="botao" type="submit">Buscar</button>
-  </form>
-  <div class="atalhos" id="atalhos" role="group" aria-label="Atalhos de emergência"></div>
-  <p class="suave" style="margin-top:8px">Precisa da biblioteca ligada. Os atalhos buscam no idioma escolhido; as bibliotecas de sobrevivência e medicina de campo são em inglês. Para uma resposta explicada com fontes, use a opção 4 do menu.</p>
-
-  <h2>Mapa offline</h2>
-  <p id="mapaTexto" class="suave">Abra a biblioteca (menu, opção 3) e escolha o mapa na lista.</p>
-  <a class="botao" id="mapaBotao" target="_blank" rel="noopener" hidden>Abrir o mapa</a>
-
-  <h2>Qual IA usar</h2>
-  <table class="tabela">
-    <thead><tr><th>Para</th><th>Use</th><th>Observação</th></tr></thead>
-    <tbody>
-      <tr><td>Conversar rápido</td><td><code>gemma-4-12b</code></td><td>cabe inteiro na placa de vídeo</td></tr>
-      <tr><td>Melhor resposta geral</td><td><code>gemma-4-26b-a4b</code></td><td><code>qwen3.8-27b</code> é melhor, porém lento</td></tr>
-      <tr><td>Raciocínio e contas</td><td><code>gpt-oss-20b</code></td><td>o mais veloz</td></tr>
-      <tr><td>Programar</td><td><code>qwen3-coder-next</code></td><td>agente de código</td></tr>
-      <tr><td>Saúde</td><td><code>medgemma-27b</code></td><td>junto com a WikiMed; não substitui um médico</td></tr>
-      <tr><td>Traduzir</td><td><code>translategemma-12b</code></td><td>55 idiomas, inclusive texto em fotos</td></tr>
-      <tr><td>Ler foto ou documento</td><td><code>glm-ocr</code></td><td>tabelas e PDFs escaneados</td></tr>
-      <tr><td>Segunda opinião</td><td>Conselho de IAs</td><td>várias IAs respondem e um relator decide (3 a 6 min)</td></tr>
-      <tr><td>O maior que roda aqui</td><td><code>nemotron-3.5-bolt-74b</code></td><td>fica no HD: ~5 min para carregar</td></tr>
-    </tbody>
-  </table>
-
-  <h2>Economizar energia</h2>
-  <div class="aviso">
-    <ul class="dicas">
-      <li>Ao terminar, feche tudo (botão acima ou opção 11 do menu): libera a placa de vídeo.</li>
-      <li>Mesmo sem isso, o servidor de modelos tira da memória o modelo parado há 15 minutos.</li>
-      <li>Suspenda o PC quando não for usar. As IAs custam centavos; o PC ligado à toa é o que pesa na conta.</li>
-    </ul>
+<div class="paleta" id="paleta" hidden>
+  <div class="paleta-caixa" role="dialog" aria-modal="true" aria-label="Procurar ação">
+    <input id="paletaBusca" type="text" autocomplete="off" placeholder="Ligar o chat, mapa, hemorragia, modo jogo..." aria-label="Procurar ação" aria-controls="paletaLista" role="combobox" aria-expanded="true">
+    <ul id="paletaLista" role="listbox"></ul>
+    <p class="paleta-dica">Setas para escolher, Enter para fazer, Esc para fechar.</p>
   </div>
+</div>
+<div class="avisos" id="avisos" role="status" aria-live="polite"></div>
 
-  <h2>Bom saber</h2>
-  <ul class="dicas">
-    <li>Na primeira vez, o chat pede a <strong>chave de acesso</strong>. Ela fica em <code>A:\catalogo\chave-api.txt</code>; aberto pelo menu, o servidor a copia sozinho. <button class="botao leve" id="copiarChave" type="button" hidden>Copiar a chave do chat</button></li>
-    <li>Guia completo: <code>A:\docs\GUIA.md</code> (offline) e <a href="https://claude.ai/artifact/XuMQNn1aZENjqeAZKDqruw">versão online</a>.</li>
-    <li>Imprima o <strong>cartão de emergência</strong> (<code>A:\docs\cartao-emergencia.html</code>, Ctrl+P) e guarde junto do PC: como ligar tudo, onde achar cada assunto e o que fazer se o PC quebrar.</li>
-    <li>Para usar no celular, abra o servidor com <code>iniciar-servidor.ps1 -Rede</code> e acesse o IP deste PC na porta 8080.</li>
-  </ul>
-</main>
 <script>
-const SERVICOS = [
-  { id: 'chat', nome: 'Chat com os modelos', faz: 'Todas as IAs de texto; escolha o modelo no topo.', abrir: 'http://127.0.0.1:8080', menu: 2 },
-  { id: 'biblioteca', nome: 'Biblioteca offline', faz: 'Wikipédia, WikiMed, iFixit, livros e fóruns práticos.', abrir: 'http://127.0.0.1:8081', menu: 3 },
-  { id: 'conselho', nome: 'Conselho de IAs', faz: 'Várias IAs respondem e um relator decide.', abrir: 'http://127.0.0.1:8090', menu: 5 },
-  { id: 'comfyui', nome: 'Imagem, vídeo, música e 3D', faz: 'ComfyUI, com modelos prontos em Browse Templates.', abrir: 'http://127.0.0.1:8188', menu: 6 },
+'use strict';
+// Aberta pela Central (http) a pagina conversa com ela; aberta do disco (file) mostra so links e ajuda.
+const CENTRAL = location.protocol.startsWith('http');
+const KIWIX = 'http://127.0.0.1:8081';
+const SVG = 'http://www.w3.org/2000/svg';
+const VISTAS = [
+  { id: 'inicio', nome: 'Início', icone: 'inicio' },
+  { id: 'perguntar', nome: 'Perguntar', icone: 'perguntar' },
+  { id: 'servicos', nome: 'Serviços', icone: 'servicos' },
+  { id: 'biblioteca', nome: 'Biblioteca e mapa', icone: 'biblioteca' },
+  { id: 'energia', nome: 'Energia', icone: 'energia' },
+  { id: 'historico', nome: 'Histórico', icone: 'historico' },
+  { id: 'ajuda', nome: 'Ajuda', icone: 'ajuda' },
 ];
+const SERVICOS = [
+  { id: 'chat', nome: 'Chat com os modelos', curto: 'Chat', faz: 'Todas as IAs de texto; escolha o modelo no topo.', abrir: 'http://127.0.0.1:8080', menu: 2, icone: 'chat' },
+  { id: 'biblioteca', nome: 'Biblioteca offline', curto: 'Biblioteca', faz: 'Wikipédia, WikiMed, iFixit, livros e o mapa.', abrir: KIWIX, menu: 3, icone: 'biblioteca' },
+  { id: 'conselho', nome: 'Conselho de IAs', curto: 'Conselho', faz: 'Várias IAs respondem e um relator decide.', abrir: 'http://127.0.0.1:8090', menu: 5, icone: 'conselho' },
+  { id: 'comfyui', nome: 'Imagem, vídeo, música e 3D', curto: 'ComfyUI', faz: 'ComfyUI, com modelos prontos em Browse Templates.', abrir: 'http://127.0.0.1:8188', menu: 6, icone: 'criar' },
+];
+// Os jeitos de responder, do que gasta menos ao que gasta mais (a "escada"). wh vem do catalogo pela Central.
+const MODOS = [
+  { id: 'buscar', titulo: 'Só buscar na biblioteca', porque: 'Lista os artigos que falam disso, sem ligar IA.', wh: 0 },
+  { id: 'rapida', titulo: 'Resposta rápida', porque: 'Uma IA pequena responde em segundos, sem fontes.', wh: 1 },
+  { id: 'fonte', titulo: 'Com fonte', porque: 'A IA lê a biblioteca e cita de onde tirou.', wh: 5 },
+  { id: 'conselho', titulo: 'Conselho de IAs', porque: 'Várias IAs respondem e um relator decide.', wh: 11.5 },
+];
+const NOME_MODO = { buscar: 'Só buscar', rapida: 'Rápida', fonte: 'Com fonte', conselho: 'Conselho' };
 const ESTADOS_MODELO = { loaded: 'na memória', loading: 'carregando', sleeping: 'dormindo (memória livre)' };
-// Buscas prontas para emergencias: o termo em portugues ou em ingles, conforme o idioma escolhido.
 const ATALHOS = [
   { pt: 'primeiros socorros', en: 'first aid' },
   { pt: 'reanimação cardiopulmonar', en: 'cardiopulmonary resuscitation' },
@@ -193,22 +577,64 @@ const ATALHOS = [
   { pt: 'abrigo', en: 'emergency shelter' },
   { pt: 'energia solar', en: 'solar power' },
 ];
-// Aberta pela Central (http) a pagina conversa com ela; aberta do disco (file) so mostra atalhos.
-const CENTRAL = location.protocol.startsWith('http');
-let relogio = null;
+const EXEMPLOS = ['Como purificar água da chuva?', 'Mapa de Goiânia', 'Febre alta em criança', 'Traduzir “bom dia” para o inglês', 'Devo comprar painel solar ou gerador?', 'torniquete'];
 
-function el(tag, classe, texto) {
+let E = null;                 // ultimo estado da Central
+let relogio = null;           // proxima verificacao do estado
+let modoEscolhido = 'fonte';
+let rodando = false;          // uma pergunta por vez nesta pagina
+const pendentes = new Map();  // servico -> o que abrir quando ele ligar
+
+// ---------- Utilidades ----------
+const $ = s => document.querySelector(s);
+function el(tag, props = {}, ...filhos) {
   const e = document.createElement(tag);
-  if (classe) e.className = classe;
-  if (texto !== undefined) e.textContent = texto;
+  for (const [k, v] of Object.entries(props)) {
+    if (v === undefined || v === null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'texto') e.textContent = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const f of filhos.flat()) if (f !== null && f !== undefined && f !== false) e.append(f);
   return e;
 }
+function icone(nome) {
+  const s = document.createElementNS(SVG, 'svg');
+  s.setAttribute('class', 'ic'); s.setAttribute('aria-hidden', 'true');
+  const u = document.createElementNS(SVG, 'use');
+  u.setAttribute('href', '#i-' + nome);
+  s.append(u);
+  return s;
+}
+function semAcento(t) { return t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+function escapar(t) { return t.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function tarifa() { return (E && E.energia && E.energia.tarifa_kwh) || 1.25; }
+function textoWh(wh) {
+  if (!wh) return '0 Wh';
+  if (wh >= 1000) return (wh / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + ' kWh';
+  return wh.toLocaleString('pt-BR', wh >= 10 ? { maximumFractionDigits: 0 } : { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' Wh';
+}
+function textoReais(wh) {
+  const r = wh / 1000 * tarifa();
+  if (r < 0.0005) return 'menos de R$ 0,001';
+  const casas = r < 0.1 ? 3 : 2;
+  return 'R$ ' + r.toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
+}
+function gastoSelo(texto) { return el('span', { class: 'gasto' }, icone('energia'), texto); }
+function lerPref(chave, padrao) { try { return localStorage.getItem('cofre-' + chave) || padrao; } catch { return padrao; } }
+function salvarPref(chave, valor) { try { localStorage.setItem('cofre-' + chave, valor); } catch { /* sem armazenamento: so nesta visita */ } }
+function digitando(alvo) { return alvo && (alvo.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(alvo.tagName)); }
 
-let limparAviso = null;
-function avisar(texto) {
-  document.getElementById('mensagem').textContent = texto;
-  clearTimeout(limparAviso);
-  limparAviso = setTimeout(() => { document.getElementById('mensagem').textContent = ''; }, 20000);
+function avisar(texto, acao) {
+  const caixa = el('div', { class: 'aviso-toast' }, el('span', { texto }));
+  if (acao && acao.href) caixa.append(el('a', { href: acao.href, target: '_blank', rel: 'noopener', texto: acao.texto, onclick: () => caixa.remove() }));
+  else if (acao && acao.fazer) caixa.append(el('button', { type: 'button', texto: acao.texto, onclick: () => { caixa.remove(); acao.fazer(); } }));
+  caixa.append(el('button', { type: 'button', 'aria-label': 'Fechar aviso', texto: '×', onclick: () => caixa.remove() }));
+  const lista = $('#avisos');
+  lista.append(caixa);
+  while (lista.children.length > 3) lista.firstChild.remove();
+  setTimeout(() => caixa.remove(), acao ? 30000 : 9000);
 }
 
 async function api(rota, corpo) {
@@ -219,116 +645,226 @@ async function api(rota, corpo) {
   return dados;
 }
 
+async function copiar(texto) {
+  try { await navigator.clipboard.writeText(texto); return true; } catch { return false; }
+}
+
+// ---------- Navegacao entre as secoes ----------
+function vistaAtual() { const h = location.hash.slice(1); return VISTAS.some(v => v.id === h) ? h : 'inicio'; }
+function mostrarVista(focar) {
+  const v = vistaAtual();
+  for (const s of document.querySelectorAll('.vista')) s.hidden = s.dataset.vista !== v;
+  for (const a of document.querySelectorAll('#secoes a')) {
+    if (a.dataset.vista === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  }
+  const info = VISTAS.find(x => x.id === v);
+  document.title = v === 'inicio' ? 'Central do Cofre' : `${info.nome}: Central do Cofre`;
+  if (focar) { const h = document.querySelector(`.vista[data-vista="${v}"] h1`); if (h) h.focus({ preventScroll: true }); window.scrollTo(0, 0); }
+  if (!CENTRAL) return;
+  if (v === 'energia') carregarEnergia();
+  if (v === 'historico') carregarHistorico();
+  if (v === 'biblioteca') carregarAcervo();
+}
+function irPara(v) { if (location.hash.slice(1) === v) mostrarVista(true); else location.hash = v; }
+
+// ---------- Montagem ----------
 function montar() {
-  const grade = document.getElementById('servicos');
+  const secoes = $('#secoes');
+  VISTAS.forEach((v, i) => secoes.append(el('li', {}, el('a', { href: '#' + v.id, 'data-vista': v.id, title: v.nome },
+    icone(v.icone), el('span', { texto: v.nome }), el('kbd', { texto: String(i + 1) })))));
+
+  for (const ex of EXEMPLOS) $('#exemplos').append(el('button', { type: 'button', texto: ex, onclick: () => { $('#pedido').value = ex; pedirSugestao(); $('#pedido').focus(); } }));
+
+  montarIdioma();
+  for (const alvo of ['#emergenciaInicio', '#emergenciaBiblioteca']) {
+    for (const a of ATALHOS) $(alvo).append(el('button', { type: 'button', texto: a.pt[0].toUpperCase() + a.pt.slice(1), onclick: () => abrirEmergencia(a) }));
+  }
+
+  const ferramentas = $('#ferramentas');
+  ferramentas.append(el('button', { type: 'button', class: 'ferramenta', onclick: () => irPara('perguntar') },
+    icone('perguntar'), el('span', {}, 'Perguntar', el('small', { texto: 'buscar, rápida ou com fonte' }))));
+  ferramentas.append(el('button', { type: 'button', class: 'ferramenta', onclick: abrirMapa },
+    icone('mapa'), el('span', {}, 'Mapa offline', el('small', { texto: 'ruas, hospitais, postos' }))));
   for (const s of SERVICOS) {
-    const c = el('div', 'cartao');
-    const h = el('h3');
-    h.append(el('span', '', s.nome));
-    s.estado = el('span', 'estado', CENTRAL ? 'verificando' : '');
-    if (!CENTRAL) s.estado.hidden = true;
-    h.append(s.estado);
-    c.append(h, el('p', 'suave', s.faz));
-    s.abrirLink = el('a', 'botao', 'Abrir');
-    s.abrirLink.href = s.abrir;
-    s.abrirLink.target = '_blank';
-    s.abrirLink.rel = 'noopener';
-    c.append(s.abrirLink);
-    if (CENTRAL) {
-      s.ligarBotao = el('button', 'botao leve', 'Ligar');
-      s.ligarBotao.type = 'button';
-      s.ligarBotao.addEventListener('click', () => ligar(s));
-      c.append(s.ligarBotao);
-    }
-    s.gasto = el('p', 'gasto', '');
-    s.como = el('p', 'como', `Pelo menu: opção ${s.menu}.`);
-    c.append(s.gasto, s.como);
-    grade.append(c);
+    s.lampadaFerramenta = el('i', { class: 'lampada' });
+    ferramentas.append(el('button', { type: 'button', class: 'ferramenta', onclick: () => abrirServico(s.id) },
+      icone(s.icone), el('span', {}, s.curto === 'ComfyUI' ? 'Criar imagem e vídeo' : s.nome, el('small', { texto: s.faz.split(';')[0].replace(/\.$/, '') })), s.lampadaFerramenta));
   }
-  const atalhos = document.getElementById('atalhos');
-  for (const a of ATALHOS) {
-    const b = el('button', '', a.pt[0].toUpperCase() + a.pt.slice(1));
-    b.type = 'button';
-    b.addEventListener('click', () => {
-      const idioma = document.querySelector('select[name="books.filter.lang"]').value;
-      const termo = idioma === 'por' ? a.pt : a.en;
-      window.open(`http://127.0.0.1:8081/search?pattern=${encodeURIComponent(termo)}&books.filter.lang=${idioma}`, '_blank', 'noopener');
-    });
-    atalhos.append(b);
+
+  const quadro = $('#quadro');
+  for (const s of SERVICOS) {
+    s.lampada = el('i', { class: 'lampada' });
+    s.estado = el('span', { class: 'estado', texto: CENTRAL ? 'verificando' : '' });
+    s.gasto = el('span');
+    s.ligarBotao = el('button', { class: 'botao leve pequeno', type: 'button', texto: 'Ligar', onclick: () => ligar(s.id) });
+    s.abrirLink = el('a', { class: 'botao pequeno', href: s.abrir, target: '_blank', rel: 'noopener', texto: 'Abrir' });
+    s.como = el('span', { texto: ` Menu: opção ${s.menu}.` });
+    if (!CENTRAL) { s.ligarBotao.hidden = true; s.lampada.hidden = true; }
+    quadro.append(el('div', { class: 'disjuntor' }, s.lampada, el('h3', {}, s.nome, s.estado),
+      el('div', { class: 'acoes' }, s.ligarBotao, s.abrirLink), el('p', {}, s.faz + ' ', s.gasto, s.como)));
+    s.lampadaMedidor = el('i', { class: 'lampada' });
+    $('#lampadas').append(el('li', {}, s.lampadaMedidor, s.curto));
   }
+
+  montarModos();
 }
 
-function mostrar(e) {
-  for (const s of SERVICOS) {
-    const ok = e.servicos[s.id];
-    const ligando = e.ligando.includes(s.id);
-    const falhou = e.falhou.includes(s.id);
-    s.estado.textContent = ok ? 'ligado' : ligando ? 'ligando...' : falhou ? 'não ligou' : 'desligado';
-    s.estado.className = 'estado' + (ok ? ' ligado' : falhou ? ' falhou' : '');
-    s.abrirLink.hidden = !ok;
-    s.ligarBotao.hidden = ok;
-    s.ligarBotao.disabled = ligando || e.modo_jogo;
-    const g = e.energia && e.energia.estimativas[s.id];
-    s.gasto.textContent = g ? `Gasto: ${g}` : '';
-    s.ligarBotao.textContent = ligando ? 'Ligando...' : 'Ligar';
-    s.como.textContent = falhou ? `Não ligou em 5 min. Use o menu (opção ${s.menu}) para ver o erro.` : `Pelo menu: opção ${s.menu}.`;
+function montarIdioma() {
+  const caixa = $('#idiomaInicio');
+  caixa.replaceChildren();
+  const atual = lerPref('idioma', 'por');
+  for (const [valor, nome] of [['por', 'português'], ['eng', 'inglês']]) {
+    caixa.append(el('button', { type: 'button', 'aria-pressed': String(valor === atual), texto: nome, onclick: () => { salvarPref('idioma', valor); $('#buscaIdioma').value = valor; montarIdioma(); } }));
   }
-  document.getElementById('avisoJogo').hidden = !e.modo_jogo;
-  document.getElementById('entrarJogo').hidden = e.modo_jogo;
-  document.getElementById('perguntarBotao').disabled = e.modo_jogo;
-  if (e.energia) {
-    document.getElementById('tarifa').textContent = `Tarifa: ${e.energia.distribuidora}, ${e.energia.tarifa}.`;
-    document.getElementById('gastoPergunta').textContent = `Gasto: ${e.energia.estimativas.perguntar}.`;
-  }
-  document.getElementById('pcW').textContent = e.pc_w ? `~${e.pc_w} W` : 'medindo...';
-  document.getElementById('pcCusto').textContent = e.pc_custo_hora || '';
-  document.getElementById('gastoMes').textContent = e.gasto_mes || '-';
-  const mapaBotao = document.getElementById('mapaBotao');
-  mapaBotao.hidden = !e.mapa;
-  if (e.mapa) mapaBotao.href = e.mapa;
-  document.getElementById('mapaTexto').textContent = e.mapa ? 'Ruas, estradas, hospitais, postos e escolas, sem internet.'
-    : e.servicos.biblioteca ? 'O mapa do Brasil ainda não foi baixado: menu, opção 15 (sincronizar).'
-    : 'Ligue a biblioteca (acima) para abrir o mapa.';
-  const p = e.placa;
-  document.getElementById('watts').textContent = p ? `${p.watts} W` : 'sem leitura';
-  document.getElementById('vram').textContent = p ? `${p.vram_usada_gb} de ${p.vram_total_gb} GB em uso` : '';
-  const m = e.memoria;
-  document.getElementById('ram').textContent = m ? `${m.ram_livre_gb} GB` : '-';
-  document.getElementById('ramTotal').textContent = m ? `de ${m.ram_total_gb} GB` : '';
-  const lista = document.getElementById('modelos');
-  lista.replaceChildren();
-  if (e.servicos.chat && e.modelos.length === 0) lista.append(el('li', 'suave', 'Nenhum modelo na memória: o próximo pedido carrega o escolhido.'));
-  for (const mod of e.modelos) {
-    const li = el('li');
-    const nome = el('span');
-    nome.append(el('code', '', mod.id), document.createTextNode(' ' + (ESTADOS_MODELO[mod.estado] || mod.estado)));
-    li.append(nome);
-    if (mod.estado !== 'sleeping') {
-      const b = el('button', 'botao leve', 'Descarregar');
-      b.type = 'button';
-      b.addEventListener('click', () => descarregar(mod.id, b));
-      li.append(b);
-    }
-    lista.append(li);
-  }
-  // Mais vezes so enquanto algo esta ligando; parado, a cada 20 s e so com a aba visivel.
-  clearTimeout(relogio);
-  if (!document.hidden) relogio = setTimeout(verificar, e.ligando.length ? 3000 : 20000);
+  $('#buscaIdioma').value = atual;
 }
 
+// Altura do degrau: cresce com o gasto (escala logaritmica, para o conselho nao achatar os outros).
+function altura(wh) { return Math.round(12 + 26 * Math.log2(1 + wh)); }
+function whModo(id) { return (E && E.energia && E.energia.wh_modos && E.energia.wh_modos[id]) ?? MODOS.find(m => m.id === id).wh; }
+function gastoModo(id) {
+  const wh = whModo(id);
+  return wh ? `~${textoWh(wh)} ≈ ${textoReais(wh)}` : 'quase nada, sem IA';
+}
+
+function degrau(m, { selo, ...props }) {
+  const h = altura(whModo(m.id));
+  return el('button', { type: 'button', class: 'degrau', style: `--altura:${h}px;--largura:${Math.max(6, Math.round(h / 4))}px`, ...props },
+    el('span', { class: 'degrau-barra' }, selo ? el('span', { class: 'selo', texto: selo }) : null),
+    el('span', { class: 'degrau-corpo' },
+      el('span', { class: 'degrau-titulo', texto: m.titulo }),
+      el('span', { class: 'degrau-porque', texto: m.porque }),
+      gastoSelo(gastoModo(m.id))));
+}
+
+function montarModos() {
+  const caixa = $('#modos');
+  caixa.replaceChildren();
+  for (const m of MODOS) {
+    caixa.append(degrau(m, { role: 'radio', 'aria-checked': String(m.id === modoEscolhido), 'data-modo': m.id,
+      onclick: () => { modoEscolhido = m.id; montarModos(); caixa.querySelector(`[data-modo="${m.id}"]`).focus(); } }));
+  }
+  $('#perguntarBotao').textContent = modoEscolhido === 'buscar' ? 'Buscar' : modoEscolhido === 'conselho' ? 'Abrir no conselho' : 'Perguntar';
+}
+
+// ---------- Estado da Central ----------
 async function verificar() {
   if (!CENTRAL) return;
   try { mostrar(await api('/api/estado')); }
   catch { avisar('A Central não respondeu. Ela ainda está aberta? (menu, opção 1)'); }
 }
 
-async function ligar(s) {
+function mostrar(e) {
+  const antes = E;
+  E = e;
+  for (const s of SERVICOS) {
+    const ok = e.servicos[s.id], ligando = e.ligando.includes(s.id), falhou = e.falhou.includes(s.id);
+    const classe = 'lampada' + (ok ? ' ligado' : ligando ? ' ligando' : falhou ? ' falhou' : '');
+    s.lampada.className = s.lampadaMedidor.className = s.lampadaFerramenta.className = classe;
+    s.estado.textContent = ok ? 'ligado' : ligando ? 'ligando...' : falhou ? 'não ligou' : 'desligado';
+    s.abrirLink.hidden = !ok;
+    s.ligarBotao.hidden = ok;
+    s.ligarBotao.disabled = ligando || e.modo_jogo;
+    s.ligarBotao.textContent = ligando ? 'Ligando...' : 'Ligar';
+    const g = e.energia && e.energia.estimativas[s.id];
+    s.gasto.textContent = g ? `Gasto: ${g}.` : '';
+    s.como.textContent = falhou ? ` Não ligou em 5 min: abra pelo menu (opção ${s.menu}) para ver o erro.` : ` Menu: opção ${s.menu}.`;
+    // Pediu para abrir algo que estava desligado: avisa com o link assim que ligar (abrir sozinho seria bloqueado).
+    const p = pendentes.get(s.id);
+    if (ok && p) {
+      pendentes.delete(s.id);
+      const url = p.url === 'mapa' ? e.mapa : p.url;
+      if (url) avisar(p.texto || `${s.nome} ligou.`, { href: url, texto: 'Abrir' });
+    }
+  }
+  $('#avisoJogo').hidden = !e.modo_jogo;
+  $('#entrarJogo').hidden = e.modo_jogo;
+  // No modo jogo perguntar continua possivel: a Central so responde com o que ja estiver guardado.
+  $('#perguntarBotao').disabled = rodando;
+
+  $('#tarifa').textContent = e.energia ? `Tarifa ${e.energia.distribuidora}: ${e.energia.tarifa}, com impostos.` : '';
+  $('#pcW').textContent = e.pc_w ? `~${e.pc_w} W` : 'medindo...';
+  $('#pcW').parentElement.style.setProperty('--carga', e.pc_w ? `${Math.min(100, e.pc_w / 450 * 100)}%` : '0%');
+  $('#pcCusto').textContent = e.pc_custo_hora || '';
+  const p = e.placa;
+  $('#watts').textContent = p ? `${p.watts} W` : 'sem leitura';
+  $('#vram').textContent = p ? `${p.vram_usada_gb.toLocaleString('pt-BR')} de ${p.vram_total_gb.toLocaleString('pt-BR')} GB em uso` : '';
+  const m = e.memoria;
+  $('#ram').textContent = m ? `${m.ram_livre_gb.toLocaleString('pt-BR')} GB` : '-';
+  $('#ramTotal').textContent = m ? `de ${m.ram_total_gb.toLocaleString('pt-BR')} GB` : '';
+  mostrarVisor(e.gasto_mes_wh || 0);
+  $('#gastoMes').textContent = e.gasto_mes;
+
+  $('#mapaBotao').disabled = e.modo_jogo;
+  $('#mapaTexto').textContent = e.mapa ? 'Ruas, estradas, hospitais, postos e escolas do Brasil, sem internet.'
+    : e.servicos.biblioteca ? 'O mapa do Brasil ainda não foi baixado: menu, opção 15 (sincronizar).'
+    : 'Ruas, estradas, hospitais, postos e escolas do Brasil. Abrir liga a biblioteca.';
+
+  const lista = $('#modelos');
+  lista.replaceChildren();
+  if (!e.servicos.chat) lista.append(el('li', { class: 'suave', texto: 'O chat está desligado: nenhum modelo na memória.' }));
+  else if (!e.modelos.length) lista.append(el('li', { class: 'suave', texto: 'Nenhum modelo na memória: o próximo pedido carrega o escolhido.' }));
+  for (const mod of e.modelos) {
+    const li = el('li', {}, el('span', {}, el('code', { texto: mod.id }), ' ' + (ESTADOS_MODELO[mod.estado] || mod.estado)));
+    if (mod.estado !== 'sleeping') li.append(el('button', { class: 'botao leve pequeno', type: 'button', texto: 'Descarregar', onclick: ev => descarregar(mod.id, ev.currentTarget) }));
+    lista.append(li);
+  }
+  if (!antes) {  // chegaram os gastos reais do catalogo: redesenha os degraus
+    montarModos();
+    if (sugestaoAtual) mostrarSugestao(sugestaoAtual);
+  }
+
+  // Mais vezes so enquanto algo esta ligando; parado, a cada 20 s e so com a aba visivel.
+  clearTimeout(relogio);
+  if (!document.hidden) relogio = setTimeout(verificar, e.ligando.length || pendentes.size ? 3000 : 20000);
+}
+
+// O gasto do mes num visor de digitos, como o relogio de luz.
+function mostrarVisor(wh) {
+  const r = wh / 1000 * tarifa();
+  const texto = r.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const visor = $('#visorMes');
+  visor.replaceChildren(el('span', { class: 'sep', texto: 'R$' }));
+  for (const c of texto) visor.append(el('span', { class: /\d/.test(c) ? '' : 'sep', texto: c }));
+}
+
+// ---------- Acoes ----------
+async function ligar(id) {
+  const s = SERVICOS.find(x => x.id === id);
+  if (E && E.modo_jogo) { avisar('Modo jogo ligado: saia dele para ligar as IAs.'); return; }
   s.ligarBotao.disabled = true;
   try {
-    const r = await api('/api/ligar', { servico: s.id });
-    avisar(r.texto === 'ligando' ? `${s.nome}: ligando em uma janela minimizada. Os modelos do HD demoram mais.` : `${s.nome}: ${r.texto}.`);
+    const r = await api('/api/ligar', { servico: id });
+    if (r.texto === 'ligando') avisar(`${s.nome}: ligando numa janela minimizada. Os modelos do HD demoram mais.`);
+    else if (!r.ok) avisar(`${s.nome}: ${r.texto}.`);
   } catch (erro) { avisar(`${s.nome}: ${erro.message}`); }
   verificar();
+}
+
+// Abre o servico; desligado, liga e avisa com o link quando estiver pronto.
+function abrirServico(id, url, texto) {
+  const s = SERVICOS.find(x => x.id === id);
+  if (!CENTRAL || (E && E.servicos[id])) { window.open(url || s.abrir, '_blank', 'noopener'); if (texto) avisar(texto); return; }
+  if (E && E.modo_jogo) { avisar('Modo jogo ligado: saia dele para abrir as IAs e a biblioteca.'); return; }
+  pendentes.set(id, { url: url || s.abrir, texto: texto || `${s.nome} ligou.` });
+  ligar(id);
+}
+
+function abrirMapa() {
+  if (E && E.mapa) { window.open(E.mapa, '_blank', 'noopener'); return; }
+  if (E && E.servicos.biblioteca) { avisar('O mapa do Brasil ainda não foi baixado: menu, opção 15 (sincronizar).'); return; }
+  abrirServico('biblioteca', 'mapa', 'A biblioteca ligou: o mapa está pronto.');
+}
+
+function abrirEmergencia(a) {
+  const idioma = lerPref('idioma', 'por');
+  const url = `${KIWIX}/search?pattern=${encodeURIComponent(idioma === 'por' ? a.pt : a.en)}&books.filter.lang=${idioma}`;
+  abrirServico('biblioteca', url, `A biblioteca ligou: “${idioma === 'por' ? a.pt : a.en}” está pronto.`);
+}
+
+function abrirConselho(pergunta) {
+  const url = 'http://127.0.0.1:8090/' + (pergunta ? '?pergunta=' + encodeURIComponent(pergunta) : '');
+  abrirServico('conselho', url, pergunta ? 'O conselho abre com a sua pergunta: escolha o modo e clique em "Perguntar ao conselho".' : '');
 }
 
 async function descarregar(modelo, botao) {
@@ -338,16 +874,142 @@ async function descarregar(modelo, botao) {
   verificar();
 }
 
-function escapar(t) {
-  return t.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+async function pararTudo() {
+  if (!confirm('Fechar o chat, a biblioteca, o conselho e o ComfyUI? Algo em andamento será interrompido.')) return;
+  const b = $('#pararTudo');
+  b.disabled = true;
+  avisar('Fechando...');
+  try { const r = await api('/api/parar-tudo', {}); avisar(r.ok ? 'Tudo fechado; a placa de vídeo está livre.' : 'Algo não fechou. Use a opção 11 do menu para ver.'); }
+  catch (erro) { avisar(`Não deu para fechar: ${erro.message}`); }
+  b.disabled = false;
+  verificar();
+}
+
+async function entrarModoJogo() {
+  if (!confirm('Modo jogo: fechar todas as IAs (chat, biblioteca, conselho, ComfyUI e esta Central) para jogar? Nada delas abre até você sair.')) return;
+  avisar('Ligando o modo jogo...');
+  try {
+    await api('/api/modo-jogo', { ligar: true });
+    clearTimeout(relogio);
+    $('#app').replaceChildren(el('main', { id: 'conteudo' },
+      el('h1', { class: 'titulo-grande', texto: 'Modo jogo ligado' }),
+      el('p', { texto: 'Tudo do cofre foi fechado, inclusive a Central: a placa de vídeo, a memória e o disco estão livres. Bom jogo!' }),
+      el('p', { class: 'suave', texto: 'Para voltar a usar as IAs: dois cliques em A:\\Painel.cmd e "Sair do modo jogo", ou no menu (A:\\IA.cmd), opção 12.' })));
+  } catch (erro) { avisar(`Não deu para ligar o modo jogo: ${erro.message}. Use o menu, opção 12.`); }
+}
+
+async function sairModoJogo() {
+  try { await api('/api/modo-jogo', { ligar: false }); avisar('Modo jogo desligado: as IAs voltam a ligar normalmente.'); }
+  catch (erro) { avisar(`Não deu para sair do modo jogo: ${erro.message}. Use o menu, opção 12.`); }
+  verificar();
+}
+
+async function copiarChave() {
+  const b = $('#copiarChave');
+  try {
+    const { chave } = await api('/api/chave');
+    if (!chave) { avisar('Ainda não há chave: ligue o chat uma vez.'); return; }
+    avisar(await copiar(chave) ? 'Chave copiada. No chat: "Enter API Key", Ctrl+V e "Save & Retry".' : 'Não deu para copiar: abra A:\\catalogo\\chave-api.txt');
+  } catch { avisar('Não deu para copiar: abra A:\\catalogo\\chave-api.txt'); }
+  b.blur();
+}
+
+// ---------- Inicio: o que usar para este pedido ----------
+let sugestaoAtual = null, pedidoSeq = 0, esperaSugestao = null;
+function pedirSugestao() {
+  clearTimeout(esperaSugestao);
+  esperaSugestao = setTimeout(buscarSugestao, 180);
+}
+async function buscarSugestao() {
+  const texto = $('#pedido').value.trim();
+  const seq = ++pedidoSeq;
+  if (!texto) { sugestaoAtual = null; $('#sugestao').replaceChildren(); $('#exemplos').hidden = false; return null; }
+  if (!CENTRAL) { sugestaoAtual = null; return null; }
+  try {
+    const r = await api('/api/sugerir?texto=' + encodeURIComponent(texto));
+    if (seq !== pedidoSeq) return sugestaoAtual;
+    sugestaoAtual = { texto, ...r };
+    mostrarSugestao(sugestaoAtual);
+    return sugestaoAtual;
+  } catch { return null; }
+}
+
+function mostrarSugestao(r) {
+  const caixa = $('#sugestao');
+  caixa.replaceChildren();
+  $('#exemplos').hidden = true;
+  if (r.aviso) caixa.append(el('p', { class: 'alerta' + (r.tipo === 'saude' ? ' saude' : ''), texto: r.aviso }));
+  if (r.guardada) {
+    caixa.append(el('div', { class: 'guardada' },
+      el('span', {}, el('strong', { texto: 'Você já perguntou isso' }), ` em ${r.guardada.quando_br} (${NOME_MODO[r.guardada.modo] || r.guardada.modo}).`),
+      el('button', { class: 'botao pequeno', type: 'button', texto: 'Ver a resposta guardada', onclick: () => verGuardada(r.guardada.id) }),
+      gastoSelo('0 Wh')));
+  }
+  const primeira = r.sugestoes[0];
+  const modos = MODOS.filter(m => r.sugestoes.some(s => s.acao === m.id));
+  if (primeira && !MODOS.some(m => m.id === primeira.acao)) {
+    caixa.append(el('div', { class: 'atalho-certo' },
+      el('h3', {}, primeira.titulo, ' ', el('span', { class: 'selo', texto: 'Recomendado' })),
+      el('p', { texto: primeira.porque }),
+      primeira.gasto ? el('p', {}, gastoSelo(primeira.gasto)) : null,
+      el('button', { class: 'botao', type: 'button', texto: textoBotao(primeira), onclick: () => executar(primeira, r.texto) })));
+    for (const s of r.sugestoes.slice(1).filter(s => !MODOS.some(m => m.id === s.acao))) {
+      caixa.append(el('div', { class: 'atalho-certo' }, el('h3', { texto: s.titulo }), el('p', { texto: s.porque }),
+        s.gasto ? el('p', {}, gastoSelo(s.gasto)) : null,
+        el('button', { class: 'botao leve', type: 'button', texto: textoBotao(s), onclick: () => executar(s, r.texto) })));
+    }
+  }
+  if (modos.length) {
+    caixa.append(el('p', { class: 'escada-titulo', texto: primeira && MODOS.some(m => m.id === primeira.acao) ? 'Do que gasta menos ao que gasta mais:' : 'Ou responda com a escada, do que gasta menos ao que gasta mais:' }));
+    const escada = el('div', { class: 'escada inicio-vazio', role: 'group', 'aria-label': 'Jeitos de responder' });
+    for (const m of modos) {
+      const s = r.sugestoes.find(x => x.acao === m.id);
+      const recomendado = s === primeira;
+      escada.append(degrau({ ...m, titulo: s.titulo, porque: s.porque }, { class: 'degrau' + (recomendado ? ' recomendado' : ''), selo: recomendado ? 'Recomendado' : null,
+        onclick: () => executar(s, r.texto) }));
+    }
+    caixa.append(escada);
+    requestAnimationFrame(() => requestAnimationFrame(() => escada.classList.remove('inicio-vazio')));  // os degraus sobem
+  }
+  if (r.parecidas && r.parecidas.length) {
+    const p = el('p', { class: 'parecidas' }, 'Parecidas que você já fez: ');
+    r.parecidas.forEach((x, i) => { if (i) p.append('; '); p.append(el('button', { type: 'button', texto: x.pergunta, onclick: () => verGuardada(x.id) })); });
+    caixa.append(p);
+  }
+}
+
+function textoBotao(s) {
+  return { chat: 'Abrir o chat', mapa: 'Abrir o mapa', comfyui: 'Abrir o ComfyUI', menu: 'Como fazer', buscar: 'Buscar' }[s.acao] || 'Fazer';
+}
+
+async function executar(s, texto) {
+  // Os modos de responder vao sempre a Central (no modo jogo ela so mostra o que estiver guardado);
+  // abrir um servico no modo jogo e barrado em abrirServico.
+  if (['buscar', 'rapida', 'fonte'].includes(s.acao)) { irPerguntar(texto, s.acao); return; }
+  if (s.acao === 'conselho') { abrirConselho(texto); return; }
+  if (s.acao === 'mapa') { abrirMapa(); return; }
+  if (s.acao === 'menu') { avisar(`Isso é pelo menu do terminal: abra A:\\IA.cmd e escolha a opção ${s.menu}.`); return; }
+  if (E && E.modo_jogo) { avisar('Modo jogo ligado: saia dele para abrir as IAs.'); return; }
+  const copiou = await copiar(texto);
+  if (s.acao === 'chat') abrirServico('chat', null, `No chat, escolha ${s.modelo} no topo.` + (copiou ? ' Seu pedido foi copiado: Ctrl+V.' : ''));
+  if (s.acao === 'comfyui') abrirServico('comfyui', null, 'No ComfyUI, abra Browse Templates e escolha um modelo pronto.' + (copiou ? ' Seu pedido foi copiado: Ctrl+V.' : ''));
+}
+
+// ---------- Perguntar ----------
+function irPerguntar(texto, modo) {
+  $('#pergunta').value = texto;
+  modoEscolhido = modo;
+  montarModos();
+  irPara('perguntar');
+  perguntar(false);
 }
 
 // Markdown simples da resposta (paragrafos, listas, negrito) e [n] virando link para a fonte n.
 function renderizar(texto, fontes) {
   const linha = t => escapar(t)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[\s(])_(.+?)_(?=[\s).,;:]|$)/g, '$1<em>$2</em>')
     .replace(/\[(\d+)\]/g, (m, n) => fontes[n - 1] ? `<a href="${escapar(fontes[n - 1].link)}" target="_blank" rel="noopener">[${n}]</a>` : m);
-  // Linha a linha: titulos, itens de lista e paragrafos podem vir colados, sem linha em branco entre eles.
   const html = [];
   let lista = null, paragrafo = [];
   const fecharLista = () => { if (lista) { html.push(`<${lista.tipo}>${lista.itens.map(i => `<li>${i}</li>`).join('')}</${lista.tipo}>`); lista = null; } };
@@ -367,38 +1029,88 @@ function renderizar(texto, fontes) {
   return html.join('');
 }
 
-async function perguntar() {
-  const caixa = document.getElementById('pergunta');
+function cartaoResposta(r, pergunta) {
+  const md = el('div', { class: 'md' });
+  md.innerHTML = renderizar(r.resposta || '', r.fontes || []);
+  const topo = el('div', { class: 'resposta-topo' }, el('span', { class: 'selo claro', texto: NOME_MODO[r.modo] || 'Resposta' }));
+  if (r.guardada) topo.append(el('span', { texto: `Guardada em ${r.guardada.quando_br}` }));
+  else if (r.quando_br) topo.append(el('span', { texto: r.quando_br }));
+  const cartao = el('article', { class: 'resposta' }, topo, md);
+  if (r.fontes && r.fontes.length) {
+    cartao.append(el('h3', { class: 'fontes-titulo', texto: 'Fontes' }),
+      el('ol', { class: 'fontes' }, r.fontes.map(f => el('li', {}, el('a', { href: f.link, target: '_blank', rel: 'noopener', texto: f.titulo })))));
+  }
+  const acoes = el('div', { class: 'acoes' });
+  if (r.gasto) acoes.append(gastoSelo(r.gasto));
+  acoes.append(el('button', { class: 'botao leve pequeno', type: 'button', onclick: async () => avisar(await copiar(r.resposta) ? 'Resposta copiada.' : 'Não deu para copiar.') }, icone('copiar'), 'Copiar'));
+  if (pergunta && (r.guardada || r.modo === 'rapida')) {
+    const modo = r.modo === 'rapida' ? 'fonte' : r.modo;
+    acoes.append(el('button', { class: 'botao leve pequeno', type: 'button', texto: r.modo === 'rapida' && !r.guardada ? 'Responder com fonte' : 'Perguntar de novo',
+      onclick: () => { $('#pergunta').value = pergunta; modoEscolhido = modo; montarModos(); irPara('perguntar'); perguntar(true); } }));
+  }
+  if (pergunta) acoes.append(el('button', { class: 'botao leve pequeno', type: 'button', texto: 'Levar ao conselho', onclick: () => abrirConselho(pergunta) }));
+  cartao.append(acoes);
+  return cartao;
+}
+
+function cartaoArtigos(r, pergunta) {
+  const cartao = el('article', { class: 'resposta' },
+    el('div', { class: 'resposta-topo' }, el('span', { class: 'selo claro', texto: 'Só buscar' }),
+      el('span', { texto: r.artigos.length ? `${r.artigos.length} artigo(s) com “${r.termos}”, sem IA` : `Nada com “${r.termos}”` })));
+  if (r.artigos.length) {
+    cartao.append(el('ol', { class: 'artigos' }, r.artigos.map(a => el('li', {},
+      el('a', { href: a.link, target: '_blank', rel: 'noopener', texto: a.titulo }), a.livro ? el('small', { texto: a.livro }) : null,
+      a.trecho ? el('p', { texto: a.trecho.length > 240 ? a.trecho.slice(0, 240) + '...' : a.trecho }) : null))));
+  } else cartao.append(el('p', { class: 'suave', texto: 'Tente outras palavras ou peça uma resposta com fonte: a IA escolhe os termos de busca por você.' }));
+  cartao.append(el('div', { class: 'acoes' }, gastoSelo(r.gasto || 'quase nada'),
+    el('button', { class: 'botao leve pequeno', type: 'button', texto: 'Explicar com fonte', onclick: () => { modoEscolhido = 'fonte'; montarModos(); $('#pergunta').value = pergunta; perguntar(false); } }),
+    el('button', { class: 'botao leve pequeno', type: 'button', texto: 'Resposta rápida', onclick: () => { modoEscolhido = 'rapida'; montarModos(); $('#pergunta').value = pergunta; perguntar(false); } })));
+  return cartao;
+}
+
+let cronometro = null;
+function iniciarCronometro(watts) {
+  const inicio = Date.now(), visor = $('#cronometro');
+  visor.hidden = false;
+  clearInterval(cronometro);
+  const atualizar = () => {
+    const s = (Date.now() - inicio) / 1000;
+    visor.textContent = `${Math.round(s)} s com o PC em ~${watts} W: ${textoWh(watts * s / 3600)} até agora`;
+  };
+  atualizar();
+  cronometro = setInterval(atualizar, 1000);
+}
+function pararCronometro() { clearInterval(cronometro); $('#cronometro').hidden = true; }
+
+async function perguntar(deNovo) {
+  const caixa = $('#pergunta');
   const pergunta = caixa.value.trim();
   if (!pergunta) { caixa.focus(); return; }
-  const botao = document.getElementById('perguntarBotao');
-  const agora = document.getElementById('agoraBotao');
-  const saida = document.getElementById('saida');
+  if (!CENTRAL) { window.open(`${KIWIX}/search?pattern=${encodeURIComponent(pergunta)}&books.filter.lang=${lerPref('idioma', 'por')}`, '_blank', 'noopener'); return; }
+  if (modoEscolhido === 'conselho') { abrirConselho(pergunta); return; }
+  if (rodando) { avisar('Espere a pergunta em andamento terminar (ou use "Responder agora").'); return; }
+  rodando = true;
+  const modo = modoEscolhido;
+  const botao = $('#perguntarBotao'), agora = $('#agoraBotao'), saida = $('#saida');
   botao.disabled = true;
-  agora.hidden = false; agora.disabled = false; agora.textContent = 'Responder agora';
-  const etapas = el('ul', 'etapas');
+  agora.hidden = true; agora.disabled = false; agora.textContent = 'Responder agora';
+  const etapas = el('ul', { class: 'etapas' });
   saida.replaceChildren(etapas);
+  const etapa = texto => {
+    for (const li of etapas.children) li.classList.remove('atual');
+    etapas.append(el('li', { class: 'atual', texto }));
+  };
   const tratar = e => {
-    if (e.tipo === 'etapa') etapas.append(el('li', '', e.texto));
-    else if (e.tipo === 'falha') saida.append(el('p', 'falha', e.texto));
+    if (e.tipo === 'etapa') etapa(e.texto);
+    else if (e.tipo === 'inicio') { agora.hidden = false; iniciarCronometro(e.watts); }
+    else if (e.tipo === 'falha') saida.append(el('p', { class: 'falha', texto: e.texto }));
     else if (e.tipo === 'final') {
-      const r = el('div', 'resposta');
-      r.innerHTML = renderizar(e.resposta, e.fontes);
-      const lista = el('ol', 'fontes');
-      for (const f of e.fontes) {
-        const li = el('li');
-        const a = el('a', '', f.titulo);
-        a.href = f.link; a.target = '_blank'; a.rel = 'noopener';
-        li.append(a);
-        lista.append(li);
-      }
-      r.append(el('p', 'suave', 'Fontes:'), lista);
-      if (e.gasto) r.append(el('p', 'gasto', `Gasto desta pergunta: ${e.gasto}`));
-      saida.append(r);
+      for (const li of etapas.children) li.classList.remove('atual');
+      saida.append(e.modo === 'buscar' ? cartaoArtigos(e, pergunta) : cartaoResposta(e, pergunta));
     }
   };
   try {
-    const resp = await fetch('/api/perguntar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pergunta }) });
+    const resp = await fetch('/api/perguntar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pergunta, modo, de_novo: !!deNovo }) });
     const leitor = resp.body.getReader();
     const decodificador = new TextDecoder();
     let resto = '';
@@ -414,76 +1126,258 @@ async function perguntar() {
       }
     }
   } catch (erro) {
-    saida.append(el('p', 'falha', `A Central não respondeu: ${erro.message}`));
+    saida.append(el('p', { class: 'falha', texto: `A Central não respondeu: ${erro.message}` }));
   }
-  botao.disabled = false;
+  rodando = false;
+  pararCronometro();
+  botao.disabled = !!(E && E.modo_jogo);
   agora.hidden = true;
   verificar();
 }
 
-// Para o raciocínio: a IA responde já, com os artigos que tinha lido até aqui.
+// Para o raciocinio: a IA responde ja, com o que tinha encontrado ate aqui.
 async function responderAgora() {
-  const agora = document.getElementById('agoraBotao');
+  const agora = $('#agoraBotao');
   agora.disabled = true; agora.textContent = 'Respondendo agora...';
   try { await api('/api/agora', {}); } catch (erro) { avisar(`Não deu para pedir a resposta agora: ${erro.message}`); }
 }
 
-async function entrarModoJogo() {
-  if (!confirm('Modo jogo: fechar todas as IAs (chat, biblioteca, conselho, ComfyUI e esta Central) para jogar? Nada delas abre até você sair.')) return;
-  avisar('Ligando o modo jogo...');
+async function verGuardada(id) {
   try {
-    const r = await api('/api/modo-jogo', { ligar: true });
-    clearTimeout(relogio);
-    document.querySelector('main').innerHTML = '<h1>Modo jogo ligado</h1><p>Tudo do cofre foi fechado, inclusive a Central: a placa de vídeo, a memória e o disco estão livres. Bom jogo!</p>' +
-      '<p class="suave">Para voltar a usar as IAs: dois cliques em <code>A:\\Painel.cmd</code> e "Sair do modo jogo", ou no menu (<code>A:\\IA.cmd</code>), opção 12.</p>';
-    if (!r.ok) console.warn(r.texto);
-  } catch (erro) { avisar(`Não deu para ligar o modo jogo: ${erro.message}. Use o menu, opção 12.`); }
+    const item = await api('/api/historico?id=' + encodeURIComponent(id));
+    $('#pergunta').value = item.pergunta;
+    modoEscolhido = item.modo in NOME_MODO ? item.modo : 'fonte';
+    montarModos();
+    irPara('perguntar');
+    $('#saida').replaceChildren(cartaoResposta({ ...item, guardada: { quando_br: item.quando_br }, gasto: '0 Wh: resposta guardada' }, item.pergunta));
+  } catch (erro) { avisar(`Não deu para abrir a resposta guardada: ${erro.message}`); }
 }
 
-async function sairModoJogo() {
-  try { await api('/api/modo-jogo', { ligar: false }); avisar('Modo jogo desligado: as IAs voltam a ligar normalmente.'); }
-  catch (erro) { avisar(`Não deu para sair do modo jogo: ${erro.message}. Use o menu, opção 12.`); }
-  verificar();
+// ---------- Biblioteca ----------
+let acervoCache = null;
+async function carregarAcervo() {
+  try { acervoCache = await api('/api/acervo'); mostrarAcervo(); }
+  catch (erro) { $('#acervo').replaceChildren(el('p', { class: 'vazio', texto: `Não deu para ler o acervo: ${erro.message}` })); }
+}
+function mostrarAcervo() {
+  if (!acervoCache) return;
+  const filtro = semAcento($('#acervoFiltro').value.trim()).split(/\s+/).filter(Boolean);
+  const caixa = $('#acervo');
+  caixa.replaceChildren();
+  const grupos = [['nucleo', 'No SSD (rápido, o que você usa)'], ['cofre', 'No HD do cofre (arquivo profundo)']];
+  let total = 0;
+  for (const [local, nome] of grupos) {
+    const itens = acervoCache.bibliotecas.filter(b => b.local === local && filtro.every(f => semAcento(`${b.nome} ${b.uso}`).includes(f)));
+    if (!itens.length) continue;
+    total += itens.length;
+    caixa.append(el('h3', { class: 'acervo-grupo', texto: `${nome}: ${itens.length}` }));
+    caixa.append(el('ul', { class: 'acervo' }, itens.map(b => {
+      const lado = el('span', { class: 'lado' }, `${(b.tamanho_gb || 0).toLocaleString('pt-BR')} GB`);
+      if (b.link) lado.append(el('a', { class: 'botao leve pequeno', href: b.link, target: '_blank', rel: 'noopener', texto: 'Abrir' }));
+      else lado.append(el('span', { texto: b.baixada ? `versão ${b.versao}` : b.observar ? 'só acompanhando' : 'falta baixar' }));
+      return el('li', { class: b.baixada ? '' : 'falta' }, el('b', { texto: b.nome }), el('span', { class: 'uso', texto: b.uso }), lado);
+    })));
+  }
+  if (!total) caixa.append(el('p', { class: 'vazio', texto: 'Nenhuma biblioteca com essas palavras.' }));
+  else if (!acervoCache.ligada) caixa.prepend(el('p', { class: 'dica', texto: 'Ligue a biblioteca para abrir cada uma daqui.' }));
 }
 
-async function pararTudo() {
-  if (!confirm('Fechar o chat, a biblioteca, o conselho e o ComfyUI? Algo em andamento será interrompido.')) return;
-  const b = document.getElementById('pararTudo');
-  b.disabled = true;
-  avisar('Fechando...');
-  try { const r = await api('/api/parar-tudo', {}); avisar(r.ok ? 'Tudo fechado; a placa de vídeo está livre.' : 'Algo não fechou. Use a opção 11 do menu para ver.'); }
-  catch (erro) { avisar(`Não deu para fechar: ${erro.message}`); }
-  b.disabled = false;
-  verificar();
+// ---------- Energia ----------
+const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+async function carregarEnergia() {
+  let r;
+  try { r = await api('/api/energia'); } catch (erro) { $('#porTarefa').replaceChildren(el('p', { class: 'vazio', texto: `Não deu para ler o gasto: ${erro.message}` })); return; }
+  $('#tarifaDetalhe').textContent = r.tarifa_detalhe || '';
+  const totalMes = r.por_tarefa.reduce((s, t) => s + t.wh, 0);
+  $('#energiaNumeros').replaceChildren(
+    el('div', { class: 'numero' }, el('span', { texto: 'Cofre neste mês' }), el('b', { texto: textoReais(totalMes) }), el('span', { texto: textoWh(totalMes) })),
+    el('div', { class: 'numero' }, el('span', { texto: 'PC parado ligado 24 horas' }), el('b', { texto: r.pc_parado_dia.split('≈')[1].trim() }), el('span', { texto: `${r.pc_parado_w} W sem fazer nada` })),
+    el('div', { class: 'numero' }, el('span', { texto: 'PC parado ligado o mês todo' }), el('b', { texto: r.pc_parado_mes.split('≈')[1].trim() }), el('span', { texto: 'é isso que a vigia e o suspender evitam' })));
+  if (!r.por_tarefa.length) $('#porTarefa').replaceChildren(el('p', { class: 'vazio', texto: 'Nenhuma tarefa registrada neste mês. Cada pergunta, conselho ou sincronização anota aqui o que gastou.' }));
+  else {
+    const maior = Math.max(...r.por_tarefa.map(t => t.wh)) || 1;
+    $('#porTarefa').replaceChildren(el('ul', { class: 'barras' }, r.por_tarefa.map(t => el('li', {},
+      el('span', {}, t.nome, el('small', { texto: ` ${t.vezes}×` })),
+      el('span', { class: 'trilha' }, el('i', { style: `width:${Math.max(1, t.wh / maior * 100)}%` })),
+      el('small', { texto: t.custo })))));
+  }
+  const maiorMes = Math.max(...r.meses.map(m => m.wh)) || 1;
+  const atual = r.meses[r.meses.length - 1].mes;
+  $('#meses').replaceChildren(
+    el('div', { class: 'meses', role: 'img', 'aria-label': 'Gasto do cofre nos últimos 6 meses: ' + r.meses.map(m => `${MESES[+m.mes.slice(5) - 1]} ${textoWh(m.wh)}`).join(', ') },
+      r.meses.map(m => el('div', { class: 'mes' + (m.mes === atual ? ' atual' : '') }, m.wh ? textoWh(m.wh) : '', el('i', { style: `height:${m.wh ? Math.max(2, m.wh / maiorMes * 130) : 2}px` })))),
+    el('div', { class: 'meses-rotulos', 'aria-hidden': 'true' }, r.meses.map(m => el('span', { texto: MESES[+m.mes.slice(5) - 1] + (m.mes.slice(5) === '01' ? ' ' + m.mes.slice(0, 4) : '') }))));
 }
 
+// ---------- Historico ----------
+let esperaHistorico = null;
+async function carregarHistorico() {
+  const lista = $('#historico');
+  let r;
+  try { r = await api('/api/historico?limite=100&busca=' + encodeURIComponent($('#histBusca').value.trim())); }
+  catch (erro) { lista.replaceChildren(el('li', { class: 'vazio', texto: `Não deu para ler o histórico: ${erro.message}` })); return; }
+  lista.replaceChildren();
+  if (!r.itens.length) {
+    lista.append(el('li', { class: 'vazio', texto: $('#histBusca').value.trim() ? 'Nada no histórico com essas palavras.' : 'Ainda não há perguntas guardadas. Cada resposta rápida ou com fonte fica aqui.' }));
+    return;
+  }
+  for (const item of r.itens) {
+    const detalhe = el('div', { class: 'hist-detalhe', hidden: true });
+    const botao = el('button', { class: 'hist-item', type: 'button', 'aria-expanded': 'false', onclick: () => abrirItem(item, botao, detalhe) },
+      el('b', { texto: item.pergunta }),
+      el('span', { class: 'trecho', texto: item.trecho }),
+      el('span', { class: 'lado' }, el('span', { texto: item.quando_br }), el('span', { class: 'selo claro', texto: (NOME_MODO[item.modo] || item.modo) + (item.interrompida ? ', cortada' : '') }), textoWh(item.wh)));
+    lista.append(el('li', {}, botao, detalhe));
+  }
+}
+async function abrirItem(item, botao, detalhe) {
+  const aberto = botao.getAttribute('aria-expanded') === 'true';
+  botao.setAttribute('aria-expanded', String(!aberto));
+  detalhe.hidden = aberto;
+  if (aberto || detalhe.childElementCount) return;
+  try {
+    const completo = await api('/api/historico?id=' + encodeURIComponent(item.id));
+    const cartao = cartaoResposta({ ...completo, gasto: `${textoWh(completo.wh)} quando foi respondida; abrir agora: 0 Wh` }, completo.pergunta);
+    cartao.querySelector('.acoes').append(el('button', { class: 'botao perigo pequeno', type: 'button', texto: 'Esquecer esta resposta', onclick: async () => {
+      if (!confirm('Esquecer esta resposta? Ela sai do histórico deste PC.')) return;
+      try { await api('/api/esquecer', { id: item.id }); avisar('Resposta esquecida.'); carregarHistorico(); } catch (erro) { avisar(`Não deu para esquecer: ${erro.message}`); }
+    } }));
+    detalhe.append(cartao);
+  } catch (erro) { detalhe.append(el('p', { class: 'falha', texto: `Não deu para abrir: ${erro.message}` })); }
+}
+
+// ---------- Paleta de acoes (Ctrl+K) ----------
+let paletaItens = [], paletaSel = 0, focoAntes = null;
+function acoesPaleta(q) {
+  const lista = [];
+  VISTAS.forEach((v, i) => lista.push({ titulo: `Ir para ${v.nome}`, dica: `tecla ${i + 1}`, icone: v.icone, fazer: () => irPara(v.id) }));
+  for (const s of SERVICOS) {
+    lista.push({ titulo: `Abrir ${s.nome}`, dica: E && E.servicos[s.id] ? 'ligado' : 'liga se precisar', icone: s.icone, chaves: s.curto, fazer: () => abrirServico(s.id) });
+    if (CENTRAL && !(E && E.servicos[s.id])) lista.push({ titulo: `Ligar ${s.nome}`, dica: `menu, opção ${s.menu}`, icone: s.icone, chaves: s.curto, fazer: () => ligar(s.id) });
+  }
+  lista.push({ titulo: 'Abrir o mapa offline', icone: 'mapa', chaves: 'goiania brasil ruas hospital', fazer: abrirMapa });
+  if (CENTRAL) {
+    lista.push({ titulo: 'Fechar tudo e liberar a placa de vídeo', icone: 'energia', chaves: 'parar desligar', fazer: pararTudo });
+    if (E && E.modo_jogo) lista.push({ titulo: 'Sair do modo jogo', icone: 'energia', chaves: 'jogo jogar', fazer: sairModoJogo });
+    else lista.push({ titulo: 'Modo jogo: desligar todas as IAs', icone: 'energia', chaves: 'jogo jogar game', fazer: entrarModoJogo });
+    lista.push({ titulo: 'Copiar a chave do chat', icone: 'copiar', chaves: 'api senha acesso', fazer: copiarChave });
+  }
+  lista.push({ titulo: 'Mudar o tema (claro, escuro, automático)', icone: 'tema', chaves: 'cor noite escuro claro', fazer: trocarTema });
+  for (const a of ATALHOS) lista.push({ titulo: `Emergência: ${a.pt}`, dica: 'abre os artigos', icone: 'cruz', chaves: a.en, fazer: () => abrirEmergencia(a) });
+  const termos = semAcento(q).split(/\s+/).filter(Boolean);
+  const achados = lista.filter(a => termos.every(t => semAcento(`${a.titulo} ${a.chaves || ''}`).includes(t)));
+  if (q.trim()) {
+    const texto = q.trim();
+    achados.push({ titulo: `Perguntar com fonte: “${texto}”`, dica: gastoModo('fonte'), icone: 'perguntar', fazer: () => irPerguntar(texto, 'fonte') });
+    achados.push({ titulo: `Só buscar: “${texto}”`, dica: 'sem IA', icone: 'procurar', fazer: () => irPerguntar(texto, 'buscar') });
+    achados.push({ titulo: `O que usar para “${texto}”`, dica: 'sugestão no Início', icone: 'inicio', fazer: () => { irPara('inicio'); $('#pedido').value = texto; buscarSugestao(); } });
+  }
+  return achados;
+}
+function abrirPaleta() {
+  focoAntes = document.activeElement;
+  $('#paleta').hidden = false;
+  $('#paletaBusca').value = '';
+  desenharPaleta();
+  $('#paletaBusca').focus();
+}
+function fecharPaleta() { $('#paleta').hidden = true; if (focoAntes && focoAntes.focus) focoAntes.focus(); }
+function desenharPaleta() {
+  paletaItens = acoesPaleta($('#paletaBusca').value);
+  paletaSel = Math.min(paletaSel, Math.max(0, paletaItens.length - 1));
+  if (!$('#paletaBusca').value) paletaSel = 0;
+  const ul = $('#paletaLista');
+  ul.replaceChildren();
+  paletaItens.forEach((a, i) => ul.append(el('li', { role: 'option', id: 'acao-' + i, 'aria-selected': String(i === paletaSel),
+    onmousemove: () => { if (paletaSel !== i) { paletaSel = i; marcarPaleta(); } }, onclick: () => fazerPaleta(i) },
+    icone(a.icone || 'procurar'), el('span', { texto: a.titulo }), a.dica ? el('small', { texto: a.dica }) : null)));
+  marcarPaleta();
+}
+function marcarPaleta() {
+  [...$('#paletaLista').children].forEach((li, i) => li.setAttribute('aria-selected', String(i === paletaSel)));
+  $('#paletaBusca').setAttribute('aria-activedescendant', 'acao-' + paletaSel);
+  const atual = $('#acao-' + paletaSel);
+  if (atual) atual.scrollIntoView({ block: 'nearest' });
+}
+function fazerPaleta(i) { const a = paletaItens[i]; if (!a) return; $('#paleta').hidden = true; a.fazer(); }
+
+// ---------- Tema ----------
+const TEMAS = ['auto', 'claro', 'escuro'];
+const NOME_TEMA = { auto: 'Tema automático', claro: 'Tema claro', escuro: 'Tema escuro' };
+function aplicarTema(t) {
+  if (t === 'auto') delete document.documentElement.dataset.tema; else document.documentElement.dataset.tema = t;
+  $('#temaNome').textContent = NOME_TEMA[t];
+}
+function trocarTema() {
+  const t = TEMAS[(TEMAS.indexOf(lerPref('tema', 'auto')) + 1) % TEMAS.length];
+  salvarPref('tema', t);
+  aplicarTema(t);
+}
+
+// ---------- Ligacoes ----------
+aplicarTema(lerPref('tema', 'auto'));
 montar();
+mostrarVista(false);
+window.addEventListener('hashchange', () => mostrarVista(true));
+$('#abrirPaleta').addEventListener('click', abrirPaleta);
+$('#tema').addEventListener('click', trocarTema);
+$('#paleta').addEventListener('click', ev => { if (ev.target === $('#paleta')) fecharPaleta(); });
+$('#paletaBusca').addEventListener('input', () => { paletaSel = 0; desenharPaleta(); });
+$('#paletaBusca').addEventListener('keydown', ev => {
+  if (ev.key === 'ArrowDown') { ev.preventDefault(); paletaSel = Math.min(paletaItens.length - 1, paletaSel + 1); marcarPaleta(); }
+  else if (ev.key === 'ArrowUp') { ev.preventDefault(); paletaSel = Math.max(0, paletaSel - 1); marcarPaleta(); }
+  else if (ev.key === 'Enter') { ev.preventDefault(); fazerPaleta(paletaSel); }
+  else if (ev.key === 'Escape') { ev.preventDefault(); fecharPaleta(); }
+  else if (ev.key === 'Tab') ev.preventDefault();
+});
+document.addEventListener('keydown', ev => {
+  if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'k') { ev.preventDefault(); if ($('#paleta').hidden) abrirPaleta(); else fecharPaleta(); return; }
+  if (!$('#paleta').hidden || digitando(ev.target) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+  if (ev.key === '/') { ev.preventDefault(); irPara('inicio'); $('#pedido').focus(); }
+  else if (/^[1-7]$/.test(ev.key)) irPara(VISTAS[+ev.key - 1].id);
+  else if (ev.key === '?') irPara('ajuda');
+});
+
+$('#pedido').addEventListener('input', pedirSugestao);
+$('#pedidoForm').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const texto = $('#pedido').value.trim();
+  if (!texto) { $('#pedido').focus(); return; }
+  if (!CENTRAL) { window.open(`${KIWIX}/search?pattern=${encodeURIComponent(texto)}&books.filter.lang=${lerPref('idioma', 'por')}`, '_blank', 'noopener'); return; }
+  clearTimeout(esperaSugestao);
+  const r = sugestaoAtual && sugestaoAtual.texto === texto ? sugestaoAtual : await buscarSugestao();
+  if (r && r.guardada) verGuardada(r.guardada.id);
+  else if (r && r.sugestoes.length) executar(r.sugestoes[0], texto);
+});
+$('#buscaForm').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const termo = $('#buscaTermo').value.trim(), idioma = $('#buscaIdioma').value;
+  salvarPref('idioma', idioma); montarIdioma();
+  abrirServico('biblioteca', `${KIWIX}/search?pattern=${encodeURIComponent(termo)}&books.filter.lang=${idioma}`, `A biblioteca ligou: a busca por “${termo}” está pronta.`);
+});
+$('#buscaIdioma').addEventListener('change', () => { salvarPref('idioma', $('#buscaIdioma').value); montarIdioma(); });
+$('#mapaBotao').addEventListener('click', abrirMapa);
+$('#acervoFiltro').addEventListener('input', mostrarAcervo);
+$('#histBusca').addEventListener('input', () => { clearTimeout(esperaHistorico); esperaHistorico = setTimeout(carregarHistorico, 200); });
+$('#perguntarBotao').addEventListener('click', () => perguntar(false));
+$('#agoraBotao').addEventListener('click', responderAgora);
+$('#pergunta').addEventListener('keydown', ev => { if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) perguntar(false); });
+$('#pararTudo').addEventListener('click', pararTudo);
+$('#entrarJogo').addEventListener('click', entrarModoJogo);
+$('#sairJogo').addEventListener('click', sairModoJogo);
+$('#copiarChave').addEventListener('click', copiarChave);
+
 if (CENTRAL) {
-  document.getElementById('maquina').hidden = false;
-  document.getElementById('perguntar').hidden = false;
-  const copiar = document.getElementById('copiarChave');
-  copiar.hidden = false;
-  copiar.addEventListener('click', async () => {
-    const original = 'Copiar a chave do chat';
-    try {
-      const { chave } = await api('/api/chave');
-      copiar.textContent = chave ? 'Copiada: no chat, "Enter API Key", Ctrl+V e "Save & Retry"' : 'Ainda não há chave: ligue o chat uma vez';
-      if (chave) await navigator.clipboard.writeText(chave);
-    } catch (erro) { copiar.textContent = 'Não deu para copiar: abra A:\\catalogo\\chave-api.txt'; }
-    setTimeout(() => { copiar.textContent = original; }, 8000);
-  });
-  document.getElementById('perguntarBotao').addEventListener('click', perguntar);
-  document.getElementById('agoraBotao').addEventListener('click', responderAgora);
-  document.getElementById('pergunta').addEventListener('keydown', ev => { if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) perguntar(); });
-  document.getElementById('atualizar').hidden = false;
-  document.getElementById('atualizar').addEventListener('click', verificar);
-  document.getElementById('pararTudo').addEventListener('click', pararTudo);
-  document.getElementById('entrarJogo').addEventListener('click', entrarModoJogo);
-  document.getElementById('sairJogo').addEventListener('click', sairModoJogo);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) verificar(); else clearTimeout(relogio); });
   verificar();
 } else {
-  document.getElementById('avisoDisco').hidden = false;
+  $('#avisoDisco').hidden = false;
+  $('#medidor').hidden = true;
+  $('#copiarChave').hidden = true;
+  for (const s of SERVICOS) s.estado.hidden = true;
+  $('#acervo').replaceChildren(el('p', { class: 'vazio', texto: 'O acervo aparece aqui com a Central aberta.' }));
+  $('#historico').replaceChildren(el('li', { class: 'vazio', texto: 'O histórico aparece aqui com a Central aberta.' }));
+  $('#porTarefa').replaceChildren(el('p', { class: 'vazio', texto: 'O gasto aparece aqui com a Central aberta.' }));
 }
 </script>
 </body>

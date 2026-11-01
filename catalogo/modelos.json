@@ -37,6 +37,8 @@
       "chat":         { "wh": 1.4, "watts": 160, "unidade": "por pergunta", "origem": "medido (Gemma 4 26B)" },
       "biblioteca":   { "wh": 0, "unidade": "", "texto": "quase nada além do PC ligado" },
       "perguntar":    { "wh": 5, "watts": 170, "unidade": "por pergunta", "origem": "estimado (~1,5 min)" },
+      "buscar":       { "wh": 0, "unidade": "", "texto": "quase nada: só a biblioteca, sem IA" },
+      "rapida":       { "wh": 1, "watts": 179, "unidade": "por pergunta", "origem": "estimado (Gemma 4 12B, ~20 s; medido 179 W gerando)" },
       "conselho":     { "wh": 11.5, "watts": 183, "unidade": "por pergunta (rodada única)", "origem": "medido; debate ~25 Wh, profundo 50 Wh" },
       "comfyui":      { "wh": 2.5, "watts": 340, "unidade": "por imagem (vídeo: ~50 Wh)", "origem": "estimado; vídeo de 2 s ~50 Wh, 3D ~13 Wh" },
       "gerar":        { "wh": 2.5, "watts": 340, "unidade": "por imagem (vídeo: ~50 Wh)", "origem": "estimado" },
@@ -53,6 +55,7 @@
       "integridade":  { "wh": 190, "watts": 125, "unidade": "por conferência (~1,5 h)", "origem": "estimado" },
       "catalogo":     { "wh": 0, "unidade": "", "texto": "quase nada" },
       "testar":       { "wh": 0.7, "unidade": "", "origem": "estimado (~20 s)" },
+      "vigia":        { "wh": 0, "unidade": "", "texto": "economiza: desliga o PC esquecido ligado" },
       "gigante":      { "wh": 23, "watts": 170, "unidade": "por pergunta a um modelo do HD (gpt-oss-120b, Nemotron)", "origem": "estimado (~8 min com o carregamento)" }
     }
   },

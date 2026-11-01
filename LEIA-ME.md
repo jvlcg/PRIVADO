@@ -10,9 +10,12 @@ e as ferramentas para usar tudo isso. Montado em 25/10/2026.
 2. Opcao 2: chat com os modelos, no navegador (http://127.0.0.1:8080). Na primeira vez o chat pede a
    chave de acesso: ela ja vai copiada, e so colar com Ctrl+V (fica em catalogo\chave-api.txt).
 3. Opcao 3: biblioteca offline - Wikipedia, enciclopedia medica, manuais de conserto (http://127.0.0.1:8081).
-4. Opcao 4: pergunte algo; o modelo responde citando a Wikipedia e as outras bibliotecas.
-5. Mais facil ainda: dois cliques em `Painel.cmd`. Abre a Central do Cofre no navegador (http://127.0.0.1:8070),
-   que mostra o que esta ligado e liga ou desliga cada servico com um clique.
+4. Opcao 4: pergunte algo e escolha o jeito: so buscar na biblioteca (sem IA), resposta rapida
+   ou com fonte (o modelo cita a Wikipedia e as outras bibliotecas). Pergunta repetida sai guardada, sem gastar.
+5. Mais facil ainda: dois cliques em `Painel.cmd`. Abre a Central do Cofre no navegador (http://127.0.0.1:8070):
+   escreva do que precisa e ela mostra o jeito que resolve gastando menos energia. Tambem liga e desliga
+   cada servico, mostra o consumo do PC em reais e guarda o historico das respostas. Ctrl+K procura qualquer acao.
+6. O menu aceita palavras: escreva "mapa", "jogo" ou ja a sua pergunta. Opcao 19: desliga o PC parado sozinho.
 
 Precisa de Windows 10/11. Com placa NVIDIA fica rapido; sem ela, funciona mais devagar.
 Os scripts estao em `scripts\` e todos tem ajuda: `Get-Help .\scripts\<nome>.ps1 -Examples`

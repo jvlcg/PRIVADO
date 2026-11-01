@@ -36,6 +36,7 @@ import struct
 import sys
 import threading
 import time
+import unicodedata
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -99,6 +100,44 @@ def gasto_mes() -> dict:
     except (OSError, ValueError):
         pass
     return {"tarefas": n, "wh": wh}
+
+
+def _linhas_gasto():
+    """(mes 'AAAA-MM', tarefa, wh) de cada tarefa registrada."""
+    try:
+        linhas = ARQUIVO_GASTOS.read_text(encoding="utf-8-sig").splitlines()[1:]
+    except OSError:
+        return
+    for linha in linhas:
+        partes = linha.split(";")
+        try:
+            yield partes[0][:7], partes[1], float(partes[4])
+        except (IndexError, ValueError):
+            continue
+
+
+def gasto_por_tarefa(mes: str | None = None) -> list[dict]:
+    """Gasto do mes por tarefa, da que mais gastou para a que menos: [{tarefa, vezes, wh}]."""
+    mes, soma = mes or time.strftime("%Y-%m"), {}
+    for m, tarefa, wh in _linhas_gasto():
+        if m == mes:
+            vezes, total = soma.get(tarefa, (0, 0.0))
+            soma[tarefa] = (vezes + 1, total + wh)
+    return [{"tarefa": t, "vezes": v, "wh": round(w, 3)} for t, (v, w) in sorted(soma.items(), key=lambda x: -x[1][1])]
+
+
+def gasto_meses(quantos: int = 6) -> list[dict]:
+    """Total dos ultimos meses, do mais antigo ao atual (meses sem tarefa entram com zero): [{mes, wh}]."""
+    ano, mes = map(int, time.strftime("%Y-%m").split("-"))
+    meses = []
+    for _ in range(quantos):
+        meses.insert(0, f"{ano:04d}-{mes:02d}")
+        ano, mes = (ano - 1, 12) if mes == 1 else (ano, mes - 1)
+    soma = dict.fromkeys(meses, 0.0)
+    for m, _, wh in _linhas_gasto():
+        if m in soma:
+            soma[m] += wh
+    return [{"mes": m, "wh": round(w, 3)} for m, w in soma.items()]
 
 
 def chave_api() -> str:
@@ -248,6 +287,28 @@ def fatiar(texto: str, tamanho: int = 1200, sobra: int = 200) -> list[str]:
     return trechos
 
 
+def sem_acento(texto: str) -> str:
+    return "".join(c for c in unicodedata.normalize("NFKD", texto) if not unicodedata.combining(c))
+
+
+# Palavras que so atrapalham a busca por termos do Kiwix (ele procura as palavras da pergunta no indice).
+PALAVRAS_VAZIAS = set("""
+a o as os um uma uns umas de do da dos das em no na nos nas num numa por pelo pela pelos pelas para pra pro
+com sem sobre entre ate e ou mas se que qual quais quem como quando onde porque quanto quanta quantos quantas
+ser estar ter fazer faz fazem fiz posso pode podem devo deve devem consigo existe existem ha tem tenho
+eu voce voces ele ela eles elas meu minha meus minhas seu sua seus suas isso isto esse essa este esta aquele aquela
+me te lhe nos vos ja nao sim mais menos muito muita bem tipo coisa coisas algum alguma melhor jeito forma maneira
+the an of to in on for with how what why when where which who is are do does can should my me it
+""".split())
+
+
+def palavras_da_pergunta(pergunta: str, maximo: int = 6) -> list[str]:
+    """As palavras que importam, na ordem: "Como purificar a agua da chuva?" -> purificar, agua, chuva."""
+    palavras = re.findall(r"[^\W_]+(?:-[^\W_]+)*", pergunta.lower())
+    uteis = [p for p in palavras if len(p) > 1 and sem_acento(p) not in PALAVRAS_VAZIAS]
+    return list(dict.fromkeys(uteis))[:maximo] or palavras[:maximo]
+
+
 # ---------- Modelos (llama-server) ----------
 
 def embeddings(textos: list[str]) -> list[list[float]]:
@@ -347,15 +408,22 @@ def livros_kiwix() -> list[tuple[str, str]]:
     return livros
 
 
-def _itens_busca(params: list[tuple[str, str]]) -> list[tuple[str, str]]:
+def _itens_busca_detalhes(params: list[tuple[str, str]]) -> list[dict]:
+    """Resultados da busca do Kiwix com o trecho onde as palavras aparecem e o nome da biblioteca."""
     raiz = ET.fromstring(http_texto(f"{KIWIX}/search?{urllib.parse.urlencode(params)}"))
     itens = []
     for i in raiz.iter("item"):
         titulo, link = (i.findtext("title") or "").strip(), (i.findtext("link") or "").strip()
         # Paginas de indice do Stack Exchange ("Highest Voted ... Questions") nao tem texto para citar.
         if link and "/questions/tagged/" not in link and not titulo.startswith("Highest Voted"):
-            itens.append((titulo, link))
+            trecho = html.unescape(re.sub(r"<[^>]+>", "", i.findtext("description") or "")).strip()
+            itens.append({"titulo": titulo, "link": link, "trecho": re.sub(r"\s+", " ", trecho),
+                          "livro": (i.findtext("book/title") or "").strip()})
     return itens
+
+
+def _itens_busca(params: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    return [(i["titulo"], i["link"]) for i in _itens_busca_detalhes(params)]
 
 
 # Fora da busca padrao: mapas (paginas de lugares) e o Stack Overflow, que so traz programacao e
@@ -397,14 +465,46 @@ def buscar_kiwix(termos: dict[str, str], livros: list[tuple[str, str]], por_livr
     return escolhidos[:maximo]
 
 
-def responder_direto(pergunta: str, modelo: str) -> str:
-    """Sem fontes e sem raciocinio: para quando pedem "Responder agora" antes de a busca terminar."""
+def buscar_sem_ia(pergunta: str, maximo: int = 10) -> dict:
+    """"So buscar": artigos das bibliotecas com as palavras da propria pergunta, sem ligar nenhum modelo
+    (gasto quase zero). O indice do Kiwix quer todas as palavras no artigo: sem resultado, a busca tira
+    a ultima palavra e tenta de novo. Primeiro em portugues; se vier pouco, tambem em ingles."""
+    livros = livros_kiwix()
+    if not livros:
+        raise RuntimeError("A biblioteca nao esta respondendo. Ligue a biblioteca (menu, opcao 3).")
+    palavras = palavras_da_pergunta(pergunta)
+    artigos, usadas, vistos = [], "", set()
+    for idioma in ("pt", "en"):
+        nomes = [n for n, i in livros if i == idioma and not n.startswith(FORA_DA_BUSCA)]
+        if not nomes or len(artigos) >= 3:
+            continue
+        for n in range(len(palavras), 0, -1):
+            termos = " ".join(palavras[:n])
+            try:
+                achados = _itens_busca_detalhes([("pattern", termos), ("format", "xml"), ("pageLength", str(maximo))]
+                                                + [("books.name", nome) for nome in nomes])
+            except Exception:
+                achados = []
+            if achados:
+                usadas = usadas or termos
+                for a in achados:
+                    if a["link"] not in vistos:
+                        vistos.add(a["link"])
+                        artigos.append({**a, "link": KIWIX + a["link"]})
+                break
+    return {"artigos": artigos[:maximo], "termos": usadas or " ".join(palavras)}
+
+
+def responder_direto(pergunta: str, modelo: str, parar: threading.Event | None = None) -> str:
+    """Sem fontes e sem raciocinio: a "Resposta rapida" e o que sai quando pedem "Responder agora" antes
+    de a busca terminar. `parar` corta a geracao e fica o texto que ja veio."""
     r = chat_em_fluxo({"model": modelo, "max_tokens": 1500,
                        "chat_template_kwargs": {"enable_thinking": False, "reasoning_effort": "low"},
                        "messages": [{"role": "system", "content": "Responda em portugues do Brasil, de forma curta e pratica. "
                                      "Em temas de saude ou seguranca, inclua sinais de alerta e quando procurar ajuda."},
-                                    {"role": "user", "content": pergunta}]})
-    return "_(Resposta rapida, sem consultar a biblioteca: confira antes de seguir.)_\n\n" + r["texto"]
+                                    {"role": "user", "content": pergunta}]}, parar)
+    texto = r["texto"] + ("\n\n(resposta interrompida a pedido)" if r["interrompido"] else "")
+    return "_(Resposta rapida, sem consultar a biblioteca: confira antes de seguir.)_\n\n" + texto
 
 
 def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int = 3, maximo: int = 12, n_trechos: int = 6,
@@ -481,16 +581,48 @@ def cmd_perguntar(args) -> None:
         parar.set()
         print("\n(Respondendo agora com o que ja foi encontrado. Ctrl+C de novo para sair.)", file=sys.stderr, flush=True)
 
+    import tarefas  # aqui dentro: tarefas.py tambem importa este arquivo
+
+    historico = tarefas.Historico()
+    if args.modo == "buscar":
+        try:
+            r = buscar_sem_ia(args.pergunta)
+        except RuntimeError as erro:
+            sys.exit(str(erro))
+        print(f"\nArtigos com \"{r['termos']}\" (sem IA):\n")
+        for i, a in enumerate(r["artigos"], 1):
+            print(f"  [{i}] {a['titulo']} ({a['livro']})\n      {a['trecho'][:200]}\n      {a['link']}")
+        if not r["artigos"]:
+            print("  Nada encontrado. Tente outras palavras.")
+        return
+    if not args.de_novo and (guardada := historico.procurar(args.pergunta, args.modo)):
+        print(f"\n(Resposta guardada de {tarefas.quando_br(guardada['quando'])}: 0 Wh, nada foi ligado. "
+              "Para perguntar de novo: -DeNovo)\n", file=sys.stderr)
+        print(guardada["resposta"] + "\n")
+        for i, f in enumerate(guardada["fontes"], 1):
+            print(("Fontes:\n" if i == 1 else "") + f"  [{i}] {f['titulo']} - {f['link']}")
+        sys.exit(10)  # o perguntar.ps1 entende: resposta guardada, sem gasto a anotar
     signal.signal(signal.SIGINT, ao_ctrl_c)
     print("(Dica: Ctrl+C responde agora com o que ja foi encontrado.)", file=sys.stderr, flush=True)
+    inicio = time.time()
     try:
-        r = perguntar_com_fonte(args.pergunta, args.modelo, args.artigos, args.maximo, args.trechos, args.livros, parar=parar)
+        if args.modo == "rapida":
+            modelo = args.modelo if args.modelo != MODELO_CHAT else tarefas.MODELO_RAPIDO
+            r = {"resposta": responder_direto(args.pergunta, modelo, parar), "fontes": []}
+        else:
+            modelo = args.modelo
+            r = perguntar_com_fonte(args.pergunta, modelo, args.artigos, args.maximo, args.trechos, args.livros, parar=parar)
     except RuntimeError as erro:
         sys.exit(str(erro))
     except KeyboardInterrupt:
         sys.exit("Pergunta cancelada.")
+    segundos = time.time() - inicio
+    watts = 179 if args.modo == "rapida" else 170
+    historico.guardar(args.pergunta, args.modo, r["resposta"], r["fontes"], watts * segundos / 3600, segundos, modelo,
+                      parar.is_set() or "(resposta interrompida a pedido)" in r["resposta"])
     print("\n" + r["resposta"] + "\n")
-    print("Fontes:")
+    if r["fontes"]:
+        print("Fontes:")
     for i, f in enumerate(r["fontes"], 1):
         print(f"  [{i}] {f['titulo']} - {f['link']}")
 
@@ -564,6 +696,9 @@ def main() -> None:
     a.add_argument("--maximo", type=int, default=12, help="total de artigos lidos")
     a.add_argument("--trechos", type=int, default=6)
     a.add_argument("--modelo", default=MODELO_CHAT)
+    a.add_argument("--modo", choices=("buscar", "rapida", "fonte"), default="fonte",
+                   help="buscar: so a biblioteca, sem IA; rapida: IA pequena sem fontes; fonte: IA citando as bibliotecas")
+    a.add_argument("--de-novo", action="store_true", help="pergunta de novo mesmo com resposta guardada")
     a.set_defaults(f=cmd_perguntar)
     b = sub.add_parser("indexar")
     b.add_argument("pasta")

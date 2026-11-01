@@ -29,6 +29,7 @@
 /dev/midia-gerada/
 /dev/comfyui/
 /dev/conselho/
+/dev/historico/
 /dev/lora/*/
 /linux/*
 !/linux/configurar-ubuntu.sh

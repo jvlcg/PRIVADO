@@ -129,18 +129,30 @@ Modelos no HD carregam mais devagar (~150 MB/s contra ~3 GB/s do SSD), mas funci
 
 Tudo começa com dois cliques em **`A:\IA.cmd`**, que abre o menu. Nada foi instalado no Windows: os programas rodam de dentro do SSD.
 
-Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofre** no navegador (http://127.0.0.1:8070). No topo há a caixa **Perguntar com fonte**: um modelo só (o Gemma 4 26B) responde citando a Wikipédia e as outras bibliotecas, com cada [1], [2] virando link para a página de onde veio; se o chat e a biblioteca estiverem desligados, ela os liga sozinha. Gasta bem menos que o conselho. A Central também mostra o que está ligado, liga cada serviço com um clique, mostra o consumo da placa de vídeo, a RAM livre e os modelos na memória (com botão para descarregar), busca na biblioteca e fecha tudo no fim. A Central só atende este PC e recusa pedidos vindos de outros sites.
+Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofre** no navegador (http://127.0.0.1:8070). Ela tem três colunas: as seções à esquerda, o conteúdo no meio e, à direita, o **medidor**, como um relógio de luz: quanto o PC gasta agora (watts e reais por hora), a placa de vídeo, a RAM livre, o gasto do cofre no mês e o que está ligado. No celular ou numa janela estreita, as seções viram ícones no topo e o medidor, uma faixa. As seções:
+
+| Seção | Para quê |
+| --- | --- |
+| Início | **"Do que você precisa?"**: escreva com suas palavras e a Central mostra o jeito que resolve gastando menos energia (veja "Escada de esforço" abaixo). Também traz os atalhos de emergência e os botões para abrir cada ferramenta. |
+| Perguntar | Escolha na escada quanto esforço a resposta merece. Respostas citam as fontes com links e têm o botão **Responder agora**. |
+| Serviços | Liga e abre o chat, a biblioteca, o conselho e o ComfyUI, como um quadro de disjuntores. Mostra os modelos na memória (com botão para descarregar) e copia a chave do chat. |
+| Biblioteca e mapa | Busca nas bibliotecas, emergência, mapa offline e o acervo inteiro (46 bibliotecas), com filtro, onde cada uma está e o link para abrir. |
+| Energia | Gasto do mês por tarefa, os últimos 6 meses e quanto custa o PC parado ligado. |
+| Histórico | As perguntas já respondidas, com busca. Abrir uma resposta guardada não gasta nada; dá para esquecer as que não quiser. |
+| Ajuda | Qual IA usar, os atalhos de teclado e onde está o resto. |
+
+Atalhos: **Ctrl+K** procura qualquer ação (ligar, abrir, emergência, modo jogo, perguntar o que você digitou); **/** vai para a caixa do Início; as teclas **1 a 7** trocam de seção. O botão no pé do menu lateral troca o tema (claro, escuro ou automático). Abrir um serviço desligado o liga e avisa com o link quando estiver pronto. A Central só atende este PC e recusa pedidos vindos de outros sites. O painel funciona sem internet: não carrega nada de fora, nem fontes de letra.
 
 Para imprimir e guardar junto do PC: **`A:\docs\cartao-emergencia.html`** (abra e use Ctrl+P). Numa folha A4: como ligar tudo, os endereços, onde achar cada assunto de emergência, quanto tempo o PC aguenta numa bateria e o que fazer se este PC quebrar.
 
-O menu agrupa as opções em Usar, Criar, Energia e Manter e mostra ao lado de cada uma o gasto estimado na tarifa da Equatorial Goiás (R$ 1,25/kWh, seção "Custo de energia"). Antes de rodar, ele repete a estimativa; os scripts mais longos mostram no fim quanto gastaram de fato.
+O menu agrupa as opções em Usar, Criar, Energia e Manter e mostra ao lado de cada uma o gasto estimado na tarifa da Equatorial Goiás (R$ 1,25/kWh, seção "Custo de energia"). Antes de rodar, ele repete a estimativa; os scripts mais longos mostram no fim quanto gastaram de fato. Além do número, ele aceita uma palavra (`mapa`, `jogo`, `energia`, `desligar`...): com uma opção só, ela roda; com várias, ele as lista. Três palavras ou mais que não sejam de nenhuma opção viram pergunta.
 
 | Opção | O que faz | Onde abre | Gasto estimado |
 | --- | --- | --- | --- |
 | 1. Central do Cofre | pergunta com fonte, liga e desliga tudo, consumo ao vivo (o mesmo que `Painel.cmd`) | http://127.0.0.1:8070 | quase nada além do PC ligado |
 | 2. Chat com todos os modelos | um servidor só; escolha o modelo no topo do chat (na primeira vez, cole a chave de acesso) | http://127.0.0.1:8080 | ~1,4 Wh ≈ R$ 0,002 por pergunta |
 | 3. Biblioteca offline | Wikipédia, WikiMed, iFixit, o mapa e as outras bibliotecas, com busca | http://127.0.0.1:8081 | quase nada |
-| 4. Perguntar com fonte | busca na biblioteca e o modelo responde citando [1], [2] | no terminal | ~5 Wh ≈ R$ 0,006 por pergunta |
+| 4. Perguntar | pergunta, depois o jeito: só buscar (sem IA), rápida (sem fontes) ou com fonte (citando [1], [2]) | no terminal | quase nada; ~1 Wh; ~5 Wh ≈ R$ 0,006 |
 | 5. Conselho de IAs | várias IAs respondem e um relator decide a resposta final | http://127.0.0.1:8090 | ~12 Wh ≈ R$ 0,014 (rodada única) |
 | 6. Imagem, vídeo, música e 3D | ComfyUI (Workflow > Browse Templates) | http://127.0.0.1:8188 | ~2,5 Wh por imagem; ~50 Wh ≈ R$ 0,06 por vídeo de 2 s |
 | 7. Gerar pelo terminal | `gerar.ps1`, com o ComfyUI aberto | no terminal | igual à opção 6 |
@@ -155,8 +167,31 @@ O menu agrupa as opções em Usar, Criar, Energia e Manter e mostra ao lado de c
 | 16. Integridade completa | relê tudo e confere o SHA256 | no terminal | ~190 Wh ≈ R$ 0,24 |
 | 17. Catálogo | lista os modelos e as bibliotecas | no terminal | quase nada |
 | 18. Testar o projeto | scripts, catálogo, arquivos baixados e segredos no que vai para o GitHub | no terminal | ~0,7 Wh |
+| 19. Vigia de desligar | desliga o PC parado depois que o Claude termina (veja "Para gastar menos") | janela própria | economiza |
 
 **Responder agora.** Toda ferramenta que pensa por muito tempo tem como parar e receber a resposta com o que já foi encontrado. No conselho e na Central é o botão **Responder agora**, que aparece enquanto a IA trabalha; no terminal (opções 4 e 5), o primeiro Ctrl+C faz o mesmo e o segundo cancela. A IA que estiver falando para na hora (a placa deixa de gastar), o relator escreve sem raciocinar com o que as outras já disseram e a resposta avisa quantas IAs tinham respondido. Se nada tiver sido achado ainda, vem uma resposta rápida, sem fontes, marcada como tal.
+
+**Escada de esforço.** Antes de gastar uma IA grande, a Central (e a opção 4 do menu) oferece o jeito mais barato que resolve, do que gasta menos ao que gasta mais:
+
+| Degrau | O que faz | Gasto |
+| --- | --- | --- |
+| Só buscar na biblioteca | lista os artigos que falam do assunto, com o trecho onde aparece, sem ligar IA | quase nada |
+| Resposta rápida | o Gemma 4 12B, que cabe inteiro na placa, responde em segundos, sem fontes | ~1 Wh ≈ R$ 0,001 |
+| Com fonte | a IA lê a biblioteca e cita de onde tirou cada coisa | ~5 Wh ≈ R$ 0,006 |
+| Conselho de IAs | várias IAs respondem e um relator decide; abre o conselho com a pergunta pronta | ~12 Wh ≈ R$ 0,014 |
+
+Na Central, cada degrau é desenhado com a altura do gasto. A recomendação sai de regras simples, sem IA nenhuma (`dev\ferramentas\tarefas.py`):
+
+- emergência (sangramento, queimadura, desmaio...): abre primeiros socorros na hora, com o aviso de ligar 192 ou 193;
+- lugar: abre o mapa;
+- imagem ou vídeo: abre o ComfyUI;
+- tradução, código, contas ou foto de documento: abre o chat dizendo qual modelo escolher, com o pedido já copiado;
+- saúde: com fonte, citando a WikiMed, e o aviso de que não substitui um médico;
+- decisão ("devo...", "vale a pena..."): conselho;
+- termo solto ("torniquete"): só buscar;
+- pergunta: com fonte.
+
+**Respostas guardadas.** Cada resposta rápida ou com fonte fica no Histórico (`A:\dev\historico`, só neste PC; não vai para o GitHub). Repetir a pergunta, mesmo com outras palavras vazias ("Como purificar a água?" e "purificar água"), mostra a resposta guardada na hora: 0 Wh e nada é ligado. Isso vale até no modo jogo. Uma resposta com fonte serve para quem pediu a rápida; o contrário, não. Respostas cortadas pelo "Responder agora" não contam. Para perguntar de novo: o botão "Perguntar de novo" na Central, ou `perguntar.ps1 "..." -DeNovo` no terminal. Ao digitar, o Início também avisa das perguntas parecidas que você já fez.
 
 **Modo jogo.** Antes de jogar, use a opção 12 do menu ou o botão **Modo jogo** na Central ou no painel do conselho: fecha o chat, a biblioteca, o conselho, o ComfyUI, o Ollama e a própria Central, e libera a placa de vídeo, a memória e o disco. Enquanto ele estiver ligado, nada das IAs abre (nem a verificação semanal nem a sincronização) e o menu só deixa usar as opções leves. Para sair: a opção 12 de novo, ou `Painel.cmd` e "Sair do modo jogo".
 
@@ -187,6 +222,10 @@ Testado neste PC de 25/10 a 01/11/2026:
 | Mapa do Brasil (01/11) | abriu na biblioteca; Goiânia com ruas, Praça Cívica, Lago dos Buritis e pontos de ônibus, escala de 200 m | na hora |
 | Responder agora, com modelo real (01/11) | Gemma 4 12B escrevendo a 179 W; cortado aos 3 s, guardou o texto já escrito e a placa voltou a 30 W em 3 s (o servidor parou de gerar) | 3 s; ~0,7 Wh |
 | Modo jogo (01/11) | fechou o servidor de modelos e a biblioteca; o chat se recusou a abrir enquanto ele estava ligado | na hora |
+| Escolha da ferramenta, sem IA (01/11) | 14 pedidos de exemplo foram para a ferramenta certa (emergência, mapa, imagem, tradução, código, contas, saúde, decisão, transcrição, termo solto e pergunta) | na hora |
+| Respostas guardadas (01/11) | pergunta repetida voltou na hora, sem ligar nada, inclusive no modo jogo; pergunta nova no modo jogo foi recusada com a explicação | na hora |
+| Central nova (01/11) | testada no navegador em três larguras (tela grande, janela estreita, celular) e nos temas claro e escuro; 37 testes automáticos passando | na hora |
+| Vigia de desligar (01/11) | leu os três sinais (conversa do Claude, teclado e mouse, uso da placa) e ficou vigiando | a cada minuto |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 7). Exemplos em `A:\dev\midia-gerada`.
 
@@ -233,7 +272,7 @@ Este PC não tem sensor de consumo total. O script `medir-energia.ps1` (menu, op
 
 Os valores usam a tarifa da **Equatorial Goiás**: **R$ 1,25 por kWh** com impostos. A conta: a residencial B1 custa R$ 0,954/kWh sem impostos desde 22/10/2026 (TUSD R$ 0,617 + TE R$ 0,337, depois do reajuste de 7,36% aprovado pela [ANEEL](https://www.gov.br/aneel/pt-br/assuntos/noticias/2026/novas-tarifas-da-equatorial-goias-sao-aprovadas-pela-aneel)); somando ICMS de 19% (17% + 2% do Protege) e PIS/COFINS de uns 5%, cobrados "por dentro", fica 0,954 ÷ (1 − 0,24) ≈ R$ 1,25, na bandeira verde. A tarifa muda todo 22 de outubro, e as bandeiras amarela e vermelha somam uns centavos por kWh. Para usar o valor exato da sua conta (total a pagar ÷ kWh consumidos), mude `tarifa_kwh` na seção `energia` de `A:\catalogo\modelos.json`: o menu, a Central e os scripts passam a usá-lo. Lá também ficam as estimativas de cada tarefa.
 
-**Gasto do mês.** Cada tarefa que termina (pergunta, conselho, imagem, transcrição, sincronização, testes) anota o tempo e a potência em `A:\logs\gasto-tarefas.csv`, que fica só neste PC. O menu, o status (opção 13) e a Central mostram o total do mês, como "12 tarefa(s), ~85 Wh ≈ R$ 0,11". O PC ligado sem tarefa não entra nessa conta: ele é a maior parte da fatura (veja os perfis abaixo).
+**Gasto do mês.** Cada tarefa que termina (pergunta, conselho, imagem, transcrição, sincronização, testes) anota o tempo e a potência em `A:\logs\gasto-tarefas.csv`, que fica só neste PC. O menu, o status (opção 13) e o medidor da Central mostram o total do mês, como "12 tarefa(s), ~85 Wh ≈ R$ 0,11"; a seção **Energia** da Central separa por tarefa e mostra os últimos 6 meses. O PC ligado sem tarefa não entra nessa conta: ele é a maior parte da fatura (veja os perfis abaixo).
 
 **Medido** (26 a 29/10/2026):
 
@@ -295,6 +334,8 @@ Para gastar menos:
 4. **Use o chat para perguntas do dia a dia** e o conselho quando quiser uma segunda opinião. O modo profundo gasta umas 4 vezes mais que a rodada única.
 5. **Se tiver tarifa branca**, rode a sincronização fora do horário de ponta. A verificação semanal (segunda, 10h) já está fora da ponta.
 6. **Feche tudo ao terminar**: opção 11 do menu (`parar-tudo.ps1`); para jogar, a opção 12 (modo jogo). Mesmo sem isso, o servidor de modelos tira da memória o modelo parado há 15 minutos e o recarrega na próxima pergunta (`iniciar-servidor.ps1 -DormirMinutos 30` muda o tempo; `0` desliga). A opção 13 (status) mostra o que do cofre ainda está aberto.
+7. **Comece pelo degrau mais baixo da escada.** Só buscar não liga IA e muitas vezes já resolve; pergunta repetida sai do Histórico sem gastar nada.
+8. **Deixe a vigia ligada** quando for sair ou deixar o Claude trabalhando sozinho: opção 19 do menu, ou `desligar-ao-terminar.ps1`. A cada minuto ela confere três coisas: se a conversa do Claude parou há 20 min (por exemplo, quando acabam os créditos), se teclado e mouse estão parados há 15 min e se a placa de vídeo está folgada (um jogo aberto segura). Com as três, o Windows avisa e desliga em 5 min; mexer no mouse cancela, e `shutdown /a` também. Ela não muda nenhuma configuração do Windows: vale enquanto a janela dela estiver aberta. `-Status` mostra os sinais e `-Parar` desliga a vigia; o que ela fez fica em `A:\logs\vigia-desligar.log`.
 
 ## Catálogo e atualização constante
 

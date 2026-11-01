@@ -5,7 +5,9 @@
 """
 Central do Cofre: painel no navegador (http://127.0.0.1:8070) que mostra o que esta ligado, liga
 cada servico com um clique, mostra os modelos na memoria e o consumo da placa de video, fecha tudo
-e responde perguntas citando as bibliotecas (o mesmo do sabio.py, com um modelo so).
+e responde perguntas do jeito mais barato que resolve: so buscar na biblioteca (sem IA), resposta
+rapida (IA pequena) ou com fonte (o mesmo do sabio.py). Sugere a ferramenta certa para cada pedido
+sem ligar IA (tarefas.py) e guarda as respostas: repetir uma pergunta custa 0 Wh.
 So atende este PC (127.0.0.1) e recusa pedidos vindos de outros sites.
 
 Uso (pelo wrapper A:\\scripts\\central.ps1: menu, opcao 1, ou dois cliques em A:\\Painel.cmd):
@@ -17,16 +19,19 @@ import argparse
 import ctypes
 import json
 import os
+import re
 import subprocess
 import sys
 import threading
 import time
+import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import sabio  # noqa: E402  (HTTP com a chave de acesso e a checagem de origem)
+import tarefas  # noqa: E402  (que ferramenta usar e o historico de respostas)
 
 RAIZ = Path(__file__).resolve().parents[2]
 SCRIPTS = RAIZ / "scripts"
@@ -47,6 +52,15 @@ LIGANDO: dict[str, float] = {}  # servico -> quando foi pedido; evita abrir duas
 ESPERA_LIGAR = 300  # depois disso o painel avisa que o servico nao ligou
 _placa = {"quando": 0.0, "dados": None}
 _mapa = {"quando": 0.0, "url": None}
+HISTORICO = tarefas.Historico()
+# Nome de cada tarefa do registro de gasto, para o painel de energia.
+NOMES_TAREFA = {
+    "perguntar": "Perguntar com fonte", "rapida": "Resposta rápida", "buscar": "Só buscar", "conselho": "Conselho de IAs",
+    "chat": "Chat", "comfyui": "ComfyUI", "gerar": "Gerar imagem ou vídeo", "transcrever": "Transcrever áudio",
+    "falar": "Falar em voz alta", "medir": "Medir o consumo", "sincronizar": "Sincronizar o cofre",
+    "integridade": "Conferir a integridade", "status": "Status do acervo", "verificar": "Verificar novidades",
+    "testar": "Testar o projeto", "biblioteca": "Biblioteca", "gigante": "Modelo gigante do HD",
+}
 
 
 def endereco_mapa() -> str | None:
@@ -179,11 +193,71 @@ def estado() -> dict:
         "mapa": endereco_mapa() if ligados["biblioteca"] else None,
         "modo_jogo": MODO_JOGO.exists(),
         "gasto_mes": texto_gasto_mes(),
+        "gasto_mes_wh": round(sabio.gasto_mes()["wh"], 3),
         "pc_w": pc_w,
         "pc_custo_hora": texto_custo(pc_w) + " por hora" if pc_w else None,
         "energia": {"distribuidora": e.get("distribuidora", ""), "tarifa": f"R$ {float(e.get('tarifa_kwh') or 0):.2f}/kWh".replace(".", ","),
-                    "estimativas": {t: estimativa(t) for t in ("chat", "biblioteca", "perguntar", "conselho", "comfyui", "pc-ligado")}},
+                    "tarifa_kwh": float(e.get("tarifa_kwh") or 0),
+                    "estimativas": {t: estimativa(t) for t in ("chat", "biblioteca", "perguntar", "conselho", "comfyui", "pc-ligado",
+                                                               "buscar", "rapida")},
+                    # Gasto de cada modo de responder, em numero: a altura de cada degrau da "escada" do painel.
+                    "wh_modos": {m: float(((e.get("tarefas") or {}).get(v["tarefa"]) or {}).get("wh") or 0)
+                                 for m, v in tarefas.MODOS.items()}},
     }
+
+
+def sugestoes(texto: str) -> dict:
+    """O que usar para este pedido (sem IA), com o gasto de cada opcao, e se ja ha resposta guardada."""
+    r = tarefas.sugerir(texto)
+    gastos = energia().get("tarefas") or {}
+    for s in r["sugestoes"]:
+        s["gasto"] = estimativa(s["tarefa"])
+        s["wh"] = float((gastos.get(s["tarefa"]) or {}).get("wh") or 0)
+    guardada = HISTORICO.procurar(texto, "rapida") if texto.strip() else None
+    r["guardada"] = tarefas.resumo(guardada) | {"quando_br": tarefas.quando_br(guardada["quando"])} if guardada else None
+    r["parecidas"] = [p | {"quando_br": tarefas.quando_br(p["quando"])} for p in HISTORICO.parecidas(texto)] if texto.strip() else []
+    return r
+
+
+def pastas_conhecimento() -> list[Path]:
+    pastas = [RAIZ / "conhecimento"]
+    try:
+        raiz_cofre = json.loads(CATALOGO.read_text(encoding="utf-8-sig")).get("cofre", {}).get("raiz")
+        if raiz_cofre:
+            pastas.append(Path(raiz_cofre) / "conhecimento")
+    except Exception:
+        pass
+    return [p for p in pastas if p.is_dir()]
+
+
+def acervo() -> dict:
+    """Bibliotecas do catalogo: o que cada uma tem, onde esta (SSD ou HD) e o link quando a biblioteca esta ligada."""
+    try:
+        itens = json.loads(CATALOGO.read_text(encoding="utf-8-sig")).get("conhecimento") or []
+    except Exception:
+        itens = []
+    arquivos = sorted(z.name for pasta in pastas_conhecimento() for z in pasta.glob("*.zim"))
+    ligada = sabio.servidor_ok(f"{sabio.KIWIX}/")
+    saida = []
+    for i in itens:
+        padrao = re.compile(re.escape(i.get("prefixo", "")) + r"_\d{4}-\d{2}[a-z]?\.zim$")
+        achados = [a for a in arquivos if padrao.match(a)]
+        livro = achados[-1][:-4] if achados else None
+        saida.append({"id": i.get("id"), "nome": i.get("nome"), "uso": i.get("uso", ""), "tamanho_gb": i.get("tamanho_gb"),
+                      "local": i.get("local"), "observar": i.get("status") == "observar", "baixada": bool(livro),
+                      "versao": livro.rsplit("_", 1)[-1] if livro else None,
+                      "link": f"{sabio.KIWIX}/content/{livro}" if livro and ligada else None})
+    return {"ligada": ligada, "bibliotecas": saida}
+
+
+def painel_energia() -> dict:
+    """Gasto do mes por tarefa e dos ultimos 6 meses, para o painel de energia."""
+    por_tarefa = [t | {"nome": NOMES_TAREFA.get(t["tarefa"], t["tarefa"]), "custo": texto_custo(t["wh"])} for t in sabio.gasto_por_tarefa()]
+    meses = [m | {"custo": texto_custo(m["wh"])} for m in sabio.gasto_meses()]
+    e = energia()
+    pc_parado = float(e.get("pc_parado_w") or 114)
+    return {"por_tarefa": por_tarefa, "meses": meses, "tarifa_detalhe": e.get("tarifa_detalhe", ""),
+            "pc_parado_w": pc_parado, "pc_parado_dia": texto_custo(pc_parado * 24), "pc_parado_mes": texto_custo(pc_parado * 24 * 30)}
 
 
 def ligar(nome: str) -> dict:
@@ -267,17 +341,33 @@ class Central(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self._local_ok():
             return self._json(403, {"erro": "pedido de outro site bloqueado"})
-        if self.path in ("/", "/index.html"):
+        rota, _, consulta = self.path.partition("?")
+        params = {k: v[-1] for k, v in urllib.parse.parse_qs(consulta).items()}
+        if rota in ("/", "/index.html"):
             self._enviar(200, "text/html; charset=utf-8", PAINEL.read_bytes())
-        elif self.path == "/api/estado":
+        elif rota == "/api/estado":
             self._json(200, estado())
-        elif self.path == "/api/chave":
+        elif rota == "/api/sugerir":
+            self._json(200, sugestoes(params.get("texto", "")[:2000]))
+        elif rota == "/api/historico":
+            if params.get("id"):
+                item = HISTORICO.pegar(params["id"])
+                if not item:
+                    return self._json(404, {"erro": "nao encontrado"})
+                return self._json(200, item | {"quando_br": tarefas.quando_br(item["quando"])})
+            lista = HISTORICO.listar(params.get("busca", ""), int(params.get("limite") or 100))
+            self._json(200, {"itens": [i | {"quando_br": tarefas.quando_br(i["quando"])} for i in lista]})
+        elif rota == "/api/acervo":
+            self._json(200, acervo())
+        elif rota == "/api/energia":
+            self._json(200, painel_energia())
+        elif rota == "/api/chave":
             # So esta pagina le a resposta: a Central nao libera CORS, barra nomes de dominio (DNS rebinding)
             # e recusa o que o navegador marca como vindo de outro site, mesmo sem Origin.
             if self.headers.get("Sec-Fetch-Site") == "cross-site":
                 return self._json(403, {"erro": "pedido de outro site bloqueado"})
             self._json(200, {"chave": sabio.chave_api()})
-        elif self.path == "/health":
+        elif rota == "/health":
             self._json(200, {"status": "ok"})
         else:
             self._json(404, {"erro": "nao encontrado"})
@@ -299,7 +389,10 @@ class Central(BaseHTTPRequestHandler):
             elif self.path == "/api/descarregar" and corpo.get("modelo"):
                 self._json(200, descarregar(str(corpo["modelo"])))
             elif self.path == "/api/perguntar" and str(corpo.get("pergunta") or "").strip():
-                self._perguntar(str(corpo["pergunta"]).strip())
+                modo = corpo.get("modo") if corpo.get("modo") in ("buscar", "rapida", "fonte") else "fonte"
+                self._perguntar(str(corpo["pergunta"]).strip()[:4000], modo, bool(corpo.get("de_novo")))
+            elif self.path == "/api/esquecer" and corpo.get("id"):
+                self._json(200, {"ok": HISTORICO.esquecer(str(corpo["id"]))})
             elif self.path == "/api/agora":
                 AGORA.set()
                 self._json(200, {"ok": True})
@@ -314,8 +407,10 @@ class Central(BaseHTTPRequestHandler):
         except Exception as erro:
             self._json(500, {"erro": str(erro)})
 
-    def _perguntar(self, pergunta: str) -> None:
-        """Perguntar com fonte (o mesmo do menu, opcao 4), com o andamento em tempo real (SSE)."""
+    def _perguntar(self, pergunta: str, modo: str = "fonte", de_novo: bool = False) -> None:
+        """Responde do jeito pedido, com o andamento em tempo real (SSE): "buscar" (so a biblioteca, sem IA),
+        "rapida" (IA pequena, sem fontes) ou "fonte" (o mesmo do menu, opcao 4). Pergunta repetida mostra a
+        resposta guardada, sem ligar nada, a menos que pecam de novo."""
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream; charset=utf-8")
         self.send_header("Cache-Control", "no-cache")
@@ -334,20 +429,49 @@ class Central(BaseHTTPRequestHandler):
         def avisar(texto: str) -> None:
             evento({"tipo": "etapa", "texto": texto})
 
+        # A resposta guardada vem antes do modo jogo: mostra-la nao liga nada.
+        if modo != "buscar" and not de_novo:
+            guardada = HISTORICO.procurar(pergunta, modo)
+            if guardada:
+                return evento({"tipo": "final", "modo": guardada["modo"], "resposta": guardada["resposta"], "fontes": guardada["fontes"],
+                               "id": guardada["id"], "guardada": {"quando_br": tarefas.quando_br(guardada["quando"])},
+                               "gasto": "0 Wh: resposta guardada, nada foi ligado"})
+        if MODO_JOGO.exists():
+            return evento({"tipo": "falha", "texto": "Modo jogo ligado: as IAs e a biblioteca estão desligadas. Saia do modo jogo para perguntar."})
+        if modo == "buscar":
+            # Sem placa de video: nao precisa esperar a vez de outra pergunta.
+            try:
+                garantir_ligados(["biblioteca"], avisar)
+                avisar("Buscando nas bibliotecas, sem IA")
+                evento({"tipo": "final", "modo": "buscar", **sabio.buscar_sem_ia(pergunta), "gasto": estimativa("buscar")})
+            except Exception as erro:
+                evento({"tipo": "falha", "texto": str(erro)})
+            return
         if not TRAVA_PERGUNTA.acquire(blocking=False):
-            avisar("Outra pergunta esta sendo respondida; aguardando a vez...")
+            avisar("Outra pergunta está sendo respondida; aguardando a vez...")
             TRAVA_PERGUNTA.acquire()
         try:
-            if MODO_JOGO.exists():
-                raise RuntimeError("Modo jogo ligado: as IAs estao desligadas. Saia do modo jogo para perguntar.")
             AGORA.clear()
-            garantir_ligados(["chat", "biblioteca"], avisar)
-            inicio = time.time()
-            r = sabio.perguntar_com_fonte(pergunta, avisar=avisar, parar=AGORA)
+            tarefa = "rapida" if modo == "rapida" else "perguntar"
+            watts = float(((energia().get("tarefas") or {}).get(tarefa) or {}).get("watts") or 170)
+            evento({"tipo": "inicio", "watts": watts})
+            if modo == "rapida":
+                garantir_ligados(["chat"], avisar)
+                inicio = time.time()
+                avisar(f"Respondendo com {tarefas.MODELO_RAPIDO}, sem consultar a biblioteca")
+                r = {"resposta": sabio.responder_direto(pergunta, tarefas.MODELO_RAPIDO, parar=AGORA), "fontes": [],
+                     "modelo": tarefas.MODELO_RAPIDO}
+            else:
+                garantir_ligados(["chat", "biblioteca"], avisar)
+                inicio = time.time()
+                r = sabio.perguntar_com_fonte(pergunta, avisar=avisar, parar=AGORA) | {"modelo": sabio.MODELO_CHAT}
             segundos = time.time() - inicio
-            watts = float(((energia().get("tarefas") or {}).get("perguntar") or {}).get("watts") or 170)
-            sabio.registrar_gasto("perguntar", segundos, watts)
-            evento({"tipo": "final", **r, "gasto": f"{segundos:.0f} s com o PC em ~{watts:.0f} W: {texto_custo(watts * segundos / 3600)}"})
+            wh = watts * segundos / 3600
+            sabio.registrar_gasto(tarefa, segundos, watts)
+            interrompida = AGORA.is_set() or "(resposta interrompida a pedido)" in r["resposta"]
+            item = HISTORICO.guardar(pergunta, modo, r["resposta"], r.get("fontes"), wh, segundos, r["modelo"], interrompida)
+            evento({"tipo": "final", "modo": modo, **r, "id": item["id"],
+                    "gasto": f"{segundos:.0f} s com o PC em ~{watts:.0f} W: {texto_custo(wh)}"})
         except Exception as erro:
             evento({"tipo": "falha", "texto": str(erro)})
         finally:
