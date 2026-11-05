@@ -37,8 +37,31 @@ public static double Segundos() {
     if (!GetLastInputInfo(ref u)) return 0;
     return unchecked((uint)Environment.TickCount - u.dwTime) / 1000.0;
 }
+// Controle (XInput): o numero do pacote muda a cada botao ou alavanca mexida. Devolve a soma dos 4 controles.
+[StructLayout(LayoutKind.Sequential)] public struct XESTADO { public uint pacote; public ushort botoes; public byte lt, rt; public short lx, ly, rx, ry; }
+[DllImport("xinput1_4.dll", EntryPoint = "XInputGetState")] static extern uint XInputGetState(uint i, out XESTADO e);
+public static long Controles() {
+    long soma = 0;
+    try { for (uint i = 0; i < 4; i++) { XESTADO e; if (XInputGetState(i, out e) == 0) soma += e.pacote + 1; } } catch { }
+    return soma;
+}
 '@
 }
+
+# Jogos e tarefas longas seguram o desligamento, mesmo com teclado, mouse e placa parados
+# (um jogo leve com controle deixa os tres sinais parados; um download nao usa a placa).
+$PastasDeJogo = '\steamapps\common\', '\Epic Games\', '\GOG Galaxy\Games\', '\XboxGames\', '\Riot Games\'
+$TarefasLongas = 'sincronizar-cofre', 'baixar-modelo', 'baixar-conhecimento', 'verificar-integridade', 'copiar-backup', 'gerar.ps1', 'instalar-motores'
+function Ocupado {
+    $jogo = Get-Process -ErrorAction SilentlyContinue | Where-Object { $p = $_.Path; $p -and @($PastasDeJogo | Where-Object { $p -like "*$_*" }).Count } | Select-Object -First 1
+    if ($jogo) { return "jogo aberto ($($jogo.ProcessName))" }
+    $tarefa = Get-CimInstance Win32_Process -Filter "Name = 'powershell.exe'" -ErrorAction SilentlyContinue |
+        Where-Object { $c = $_.CommandLine; $c -and @($TarefasLongas | Where-Object { $c -like "*$_*" }).Count } | Select-Object -First 1
+    if ($tarefa) { return 'tarefa longa do cofre rodando' }
+    return $null
+}
+$script:ultimoControle = [SsdIa.Ocioso]::Controles()
+$script:quandoControle = Get-Date
 
 function Anotar($texto) {
     $linha = "$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))  $texto"
@@ -48,9 +71,11 @@ function Anotar($texto) {
 
 function Vigia-Aberta {
     if (-not (Test-Path -LiteralPath $arquivoPid)) { return $null }
-    $id = [int](Get-Content -LiteralPath $arquivoPid -TotalCount 1)
-    $p = Get-Process -Id $id -ErrorAction SilentlyContinue
-    if ($p -and $id -ne $PID) { return $p }
+    $id = 0
+    if (-not [int]::TryParse(((Get-Content -LiteralPath $arquivoPid -TotalCount 1) -as [string]).Trim(), [ref]$id) -or $id -eq $PID) { return $null }
+    # So conta se o processo e mesmo esta vigia: um PID velho pode ter sido reaproveitado por outro programa.
+    $p = Get-CimInstance Win32_Process -Filter "ProcessId = $id" -ErrorAction SilentlyContinue
+    if ($p -and $p.CommandLine -like '*desligar-ao-terminar*') { return Get-Process -Id $id -ErrorAction SilentlyContinue }
     return $null
 }
 
@@ -60,16 +85,21 @@ function Sinais {
     $semClaude = if ($ultima) { ((Get-Date) - $ultima.LastWriteTime).TotalMinutes } else { [double]::MaxValue }
     $gpu = $null
     try { $gpu = [int]((& nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits 2>$null | Select-Object -First 1).Trim()) } catch {}
+    $controle = [SsdIa.Ocioso]::Controles()
+    if ($controle -ne $script:ultimoControle) { $script:ultimoControle = $controle; $script:quandoControle = Get-Date }
+    $teclado = [SsdIa.Ocioso]::Segundos() / 60
     return [pscustomobject]@{
         SemClaude = $semClaude
-        Parado    = [SsdIa.Ocioso]::Segundos() / 60
+        Parado    = [math]::Min($teclado, ((Get-Date) - $script:quandoControle).TotalMinutes)
         Gpu       = $gpu
+        Ocupado   = Ocupado
     }
 }
 
 function Texto-Sinais($s) {
     $gpu = if ($null -eq $s.Gpu) { 'sem leitura' } else { "$($s.Gpu) %" }
-    return ('Claude parado ha {0:N0} min, teclado/mouse parados ha {1:N0} min, placa a {2}' -f [math]::Min($s.SemClaude, 99999), $s.Parado, $gpu)
+    $extra = if ($s.Ocupado) { ", $($s.Ocupado)" } else { '' }
+    return ('Claude parado ha {0:N0} min, teclado/mouse/controle parados ha {1:N0} min, placa a {2}{3}' -f [math]::Min($s.SemClaude, 99999), $s.Parado, $gpu, $extra)
 }
 
 if ($Parar) {
@@ -92,7 +122,8 @@ if ($Status) {
 if (Vigia-Aberta) { Ok 'A vigia ja esta ligada. Para ver: -Status. Para parar: -Parar.'; return }
 Set-Content -LiteralPath $arquivoPid -Value $PID
 Titulo 'Desligar o PC quando o Claude terminar'
-Info "Desliga quando: Claude parado ha $MinutosSemClaude min + teclado/mouse parados ha $MinutosParado min + placa abaixo de $GpuOcupada %."
+Info "Desliga quando: Claude parado ha $MinutosSemClaude min + teclado/mouse/controle parados ha $MinutosParado min + placa abaixo de $GpuOcupada %."
+Info 'Nunca desliga com jogo aberto (Steam, Epic, GOG, Xbox) nem com download, sincronizacao ou conferencia do cofre rodando.'
 Info "Antes, $([math]::Round($Aviso / 60)) min de aviso na tela; mexer no PC cancela. Para parar a vigia: .\desligar-ao-terminar.ps1 -Parar"
 Mostrar-Estimativa 'vigia'
 Anotar "vigia ligada ($(Texto-Sinais (Sinais)))"
@@ -103,12 +134,13 @@ try {
         $s = Sinais
         $usando = $s.Parado -lt 1
         if ($agendado) {
-            if ($usando -or $s.SemClaude -lt 1) {
+            if ($usando -or $s.SemClaude -lt 1 -or $s.Ocupado) {
                 & shutdown.exe /a 2>$null | Out-Null
                 $agendado = $false
-                Anotar "desligamento cancelado: $(if ($usando) { 'voce voltou a usar o PC' } else { 'o Claude voltou a trabalhar' })"
+                $motivo = if ($usando) { 'voce voltou a usar o PC' } elseif ($s.Ocupado) { $s.Ocupado } else { 'o Claude voltou a trabalhar' }
+                Anotar "desligamento cancelado: $motivo"
             }
-        } elseif ($s.SemClaude -ge $MinutosSemClaude -and $s.Parado -ge $MinutosParado -and ($null -eq $s.Gpu -or $s.Gpu -lt $GpuOcupada)) {
+        } elseif (-not $s.Ocupado -and $s.SemClaude -ge $MinutosSemClaude -and $s.Parado -ge $MinutosParado -and ($null -eq $s.Gpu -or $s.Gpu -lt $GpuOcupada)) {
             $msg = "Cofre de IAs: o Claude terminou e o PC esta parado. Desligando em $([math]::Round($Aviso / 60)) min. Mexa no mouse para cancelar (ou Win+R: shutdown /a)."
             & shutdown.exe /s /t $Aviso /c $msg 2>$null | Out-Null
             if ($LASTEXITCODE -eq 0) {
@@ -122,5 +154,7 @@ try {
         Start-Sleep -Seconds 60
     }
 } finally {
+    # Parada com Ctrl+C durante o aviso: o desligamento ja agendado nao pode ficar valendo sem a vigia.
+    if ($agendado) { & shutdown.exe /a 2>$null | Out-Null; Anotar 'vigia parada durante o aviso: desligamento cancelado' }
     Remove-Item -LiteralPath $arquivoPid -ErrorAction SilentlyContinue
 }

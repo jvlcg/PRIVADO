@@ -48,6 +48,9 @@ SERVICOS = {
 }
 TRAVA_PERGUNTA = threading.Lock()  # uma pergunta por vez: a placa de video e uma so
 AGORA = threading.Event()  # "Responder agora": a pergunta em andamento responde com o que ja achou
+# Lembra que o botao foi apertado: o sabio.responder() apaga o AGORA quando refaz a resposta sem raciocinar,
+# e uma resposta cortada nao pode ficar guardada como completa.
+PEDIU_AGORA = threading.Event()
 LIGANDO: dict[str, float] = {}  # servico -> quando foi pedido; evita abrir duas janelas do mesmo
 ESPERA_LIGAR = 300  # depois disso o painel avisa que o servico nao ligou
 _placa = {"quando": 0.0, "dados": None}
@@ -316,22 +319,31 @@ def modo_jogo(ligar_modo: bool) -> dict:
 PID_VIGIA = RAIZ / "logs" / "vigia-desligar.pid"  # escrito pelo desligar-ao-terminar.ps1 enquanto vigia
 
 
-def processo_vivo(pid: int) -> bool:
-    """Pergunta ao Windows se o processo existe (os.kill no Windows mataria o processo em vez de testar)."""
+def processo_vivo(pid: int, programa: str | None = None) -> bool:
+    """Pergunta ao Windows se o processo existe (os.kill no Windows mataria o processo em vez de testar) e,
+    com `programa`, se ele e esse executavel: um PID velho pode ter sido reaproveitado por outro programa."""
     k = ctypes.windll.kernel32
     h = k.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
     if not h:
         return False
     try:
         codigo = ctypes.c_ulong()
-        return bool(k.GetExitCodeProcess(h, ctypes.byref(codigo))) and codigo.value == 259  # STILL_ACTIVE
+        if not (k.GetExitCodeProcess(h, ctypes.byref(codigo)) and codigo.value == 259):  # STILL_ACTIVE
+            return False
+        if programa:
+            nome = ctypes.create_unicode_buffer(1024)
+            tamanho = ctypes.c_ulong(1024)
+            if not k.QueryFullProcessImageNameW(h, 0, nome, ctypes.byref(tamanho)):
+                return False
+            return Path(nome.value).name.lower() == programa.lower()
+        return True
     finally:
         k.CloseHandle(h)
 
 
 def vigia_ligada() -> bool:
     try:
-        return processo_vivo(int(PID_VIGIA.read_text(encoding="utf-8-sig").split()[0]))
+        return processo_vivo(int(PID_VIGIA.read_text(encoding="utf-8-sig").split()[0]), "powershell.exe")
     except (OSError, ValueError, IndexError):
         return False
 
@@ -373,6 +385,10 @@ class Central(BaseHTTPRequestHandler):
         self.send_header("Content-Type", tipo)
         self.send_header("Content-Length", str(len(dados)))
         self.send_header("Cache-Control", "no-store")
+        # Nenhum outro site pode abrir a Central dentro de uma moldura e induzir cliques nela.
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Content-Security-Policy", "frame-ancestors 'none'")
+        self.send_header("X-Content-Type-Options", "nosniff")
         self.end_headers()
         self.wfile.write(dados)
 
@@ -441,6 +457,7 @@ class Central(BaseHTTPRequestHandler):
                 self._json(200, {"ok": HISTORICO.esquecer(str(corpo["id"]))})
             elif self.path == "/api/agora":
                 AGORA.set()
+                PEDIU_AGORA.set()
                 self._json(200, {"ok": True})
             elif self.path == "/api/modo-jogo":
                 r = modo_jogo(bool(corpo.get("ligar")))
@@ -496,25 +513,35 @@ class Central(BaseHTTPRequestHandler):
         if not TRAVA_PERGUNTA.acquire(blocking=False):
             avisar("Outra pergunta está sendo respondida; aguardando a vez...")
             TRAVA_PERGUNTA.acquire()
+            # Esperou a vez: se era a mesma pergunta, a resposta dela acabou de ser guardada.
+            guardada = None if de_novo else HISTORICO.procurar(pergunta, modo)
+            if guardada:
+                TRAVA_PERGUNTA.release()
+                return evento({"tipo": "final", "modo": guardada["modo"], "resposta": guardada["resposta"], "fontes": guardada["fontes"],
+                               "id": guardada["id"], "guardada": {"quando_br": tarefas.quando_br(guardada["quando"])},
+                               "gasto": "0 Wh: a mesma pergunta acabou de ser respondida"})
         try:
             AGORA.clear()
+            PEDIU_AGORA.clear()
             tarefa = "rapida" if modo == "rapida" else "perguntar"
             watts = float(((energia().get("tarefas") or {}).get(tarefa) or {}).get("watts") or 170)
-            evento({"tipo": "inicio", "watts": watts})
             if modo == "rapida":
                 garantir_ligados(["chat"], avisar)
+                # O botao "Responder agora" so aparece quando ja ha o que responder: o modelo esta ligado.
+                evento({"tipo": "inicio", "watts": watts})
                 inicio = time.time()
                 avisar(f"Respondendo com {tarefas.MODELO_RAPIDO}, sem consultar a biblioteca")
                 r = {"resposta": sabio.responder_direto(pergunta, tarefas.MODELO_RAPIDO, parar=AGORA), "fontes": [],
                      "modelo": tarefas.MODELO_RAPIDO}
             else:
+                evento({"tipo": "inicio", "watts": watts})
                 garantir_ligados(["chat", "biblioteca"], avisar)
                 inicio = time.time()
                 r = sabio.perguntar_com_fonte(pergunta, avisar=avisar, parar=AGORA) | {"modelo": sabio.MODELO_CHAT}
             segundos = time.time() - inicio
             wh = watts * segundos / 3600
             sabio.registrar_gasto(tarefa, segundos, watts)
-            interrompida = AGORA.is_set() or "(resposta interrompida a pedido)" in r["resposta"]
+            interrompida = PEDIU_AGORA.is_set() or "(resposta interrompida a pedido)" in r["resposta"]
             item = HISTORICO.guardar(pergunta, modo, r["resposta"], r.get("fontes"), wh, segundos, r["modelo"], interrompida)
             evento({"tipo": "final", "modo": modo, **r, "id": item["id"],
                     "gasto": f"{segundos:.0f} s com o PC em ~{watts:.0f} W: {texto_custo(wh)}"})

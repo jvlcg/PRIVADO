@@ -323,6 +323,10 @@ class Vigia(unittest.TestCase):
         self.assertTrue(central.processo_vivo(os.getpid()))
         self.assertFalse(central.processo_vivo(0))
 
+    def test_pid_reaproveitado_por_outro_programa_nao_conta(self):
+        self.assertTrue(central.processo_vivo(os.getpid(), Path(sys.executable).name))
+        self.assertFalse(central.processo_vivo(os.getpid(), "powershell.exe"))
+
     def test_sem_arquivo_a_vigia_esta_desligada(self):
         import tempfile
         with tempfile.TemporaryDirectory() as pasta:
@@ -331,7 +335,10 @@ class Vigia(unittest.TestCase):
             arquivo = Path(pasta) / "vigia.pid"
             arquivo.write_text(f"{os.getpid()}\n", encoding="utf-8")
             with mock.patch.object(central, "PID_VIGIA", arquivo):
-                self.assertTrue(central.vigia_ligada())
+                # O PID existe, mas e deste Python, nao do PowerShell da vigia: arquivo velho, vigia desligada.
+                self.assertFalse(central.vigia_ligada())
+                with mock.patch.object(central, "processo_vivo", side_effect=lambda pid, programa=None: pid == os.getpid()):
+                    self.assertTrue(central.vigia_ligada())
 
 
 class QualFerramenta(unittest.TestCase):
@@ -369,6 +376,22 @@ class QualFerramenta(unittest.TestCase):
         self.assertIn("médico", tarefas.sugerir("qual a dose de dipirona para criança")["aviso"])
         self.assertIsNone(tarefas.sugerir("como fazer pão caseiro")["aviso"])
 
+    def test_casos_que_a_revisao_achou(self):
+        casos = {
+            "ele não consegue respirar": "emergencia",
+            "meu pai está com dor no peito e falta de ar": "emergencia",
+            "fui picado por um escorpião": "emergencia",
+            "dor de cabeça logo depois de comer, o que pode ser?": "saude",
+            "qual a função do fígado?": "saude",
+            "bebê com febre de 38-39 graus, o que fazer?": "saude",
+            "transcrever o vídeo de uma aula": "transcrever",
+            "traduzir a letra da música para o português": "traduzir",
+            "crie um logo para minha padaria": "criar",
+        }
+        for texto, tipo in casos.items():
+            with self.subTest(texto=texto):
+                self.assertEqual(tarefas.sugerir(texto)["tipo"], tipo)
+
     def test_vazio(self):
         self.assertEqual(tarefas.sugerir("   ")["sugestoes"], [])
 
@@ -388,6 +411,15 @@ class RespostasGuardadas(unittest.TestCase):
 
     def test_mesma_pergunta_com_outras_palavras_vazias(self):
         self.assertEqual(tarefas.chave("Como purificar a água da chuva?"), tarefas.chave("purificar agua chuva"))
+
+    def test_perguntas_diferentes_tem_chaves_diferentes(self):
+        # Uma resposta guardada nunca pode aparecer para a pergunta errada (ainda mais em saude).
+        pares = [("O que é hepatite B?", "O que é hepatite C?"), ("diabetes tipo 1", "diabetes tipo 2"),
+                 ("Posso tomar dipirona com álcool?", "Posso tomar dipirona sem álcool?"),
+                 ("Quanto é 3+5?", "Quanto é 3*5?"), ("Para que serve a vitamina C?", "Para que serve a vitamina D?")]
+        for a, b in pares:
+            with self.subTest(a=a, b=b):
+                self.assertNotEqual(tarefas.chave(a), tarefas.chave(b))
 
     def test_resposta_com_fonte_serve_para_rapida_mas_nao_o_contrario(self):
         self.h.guardar("Como purificar a água?", "rapida", "Ferva.")
@@ -443,6 +475,70 @@ class SoBuscar(unittest.TestCase):
         with mock.patch.object(sabio, "livros_kiwix", return_value=[]):
             with self.assertRaises(RuntimeError):
                 sabio.buscar_sem_ia("agua")
+
+
+class CentralSemModoJogo(unittest.TestCase):
+    """Central de verdade (porta livre), com o modo jogo desligado e o modelo trocado por um falso."""
+
+    def setUp(self):
+        import tempfile
+        self.pasta = tempfile.TemporaryDirectory()
+        self.historico = tarefas.Historico(Path(self.pasta.name) / "perguntas.jsonl")
+        self.trocas = [mock.patch.object(central, "HISTORICO", self.historico),
+                       mock.patch.object(central, "MODO_JOGO", Path(self.pasta.name) / "sem-modo-jogo.txt"),
+                       mock.patch.object(central, "garantir_ligados", lambda nomes, avisar: None),
+                       mock.patch.object(sabio, "registrar_gasto", lambda *a: None)]
+        for t in self.trocas:
+            t.start()
+        self.servidor = ThreadingHTTPServer(("127.0.0.1", 0), central.Central)
+        threading.Thread(target=self.servidor.serve_forever, daemon=True).start()
+        self.base = f"http://127.0.0.1:{self.servidor.server_address[1]}"
+
+    def tearDown(self):
+        self.servidor.shutdown()
+        self.servidor.server_close()
+        for t in self.trocas:
+            t.stop()
+        self.pasta.cleanup()
+
+    def test_responder_agora_nao_guarda_como_completa(self):
+        import urllib.request
+
+        def resposta_cortada(pergunta, avisar=None, parar=None):
+            central.PEDIU_AGORA.set()   # a pessoa apertou "Responder agora"...
+            parar.clear()               # ...e o sabio.responder() apaga o sinal ao refazer sem raciocinar
+            return {"resposta": "Ferva a agua [1].", "termos": {}, "fontes": [{"titulo": "Agua", "link": "x"}]}
+
+        with mock.patch.object(sabio, "perguntar_com_fonte", side_effect=resposta_cortada):
+            corpo = json.dumps({"pergunta": "como purificar agua", "modo": "fonte"}).encode()
+            req = urllib.request.Request(self.base + "/api/perguntar", corpo, {"Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=10) as r:
+                r.read()
+        self.assertTrue(self.historico.listar()[0]["interrompida"])
+        self.assertIsNone(self.historico.procurar("como purificar agua", "fonte"))  # e por isso nao serve de cache
+
+    def test_pagina_nao_abre_dentro_de_outro_site(self):
+        import urllib.request
+        with urllib.request.urlopen(self.base + "/", timeout=10) as r:
+            self.assertEqual(r.headers["X-Frame-Options"], "DENY")
+            self.assertIn("frame-ancestors 'none'", r.headers["Content-Security-Policy"])
+
+
+class ConselhoComPergunta(unittest.TestCase):
+    def test_pergunta_no_endereco_abre_a_pagina(self):
+        import urllib.request
+        import conselho
+        servidor = ThreadingHTTPServer(("127.0.0.1", 0), conselho.Painel)
+        threading.Thread(target=servidor.serve_forever, daemon=True).start()
+        try:
+            url = f"http://127.0.0.1:{servidor.server_address[1]}/?pergunta=" + urllib.parse.quote("devo comprar um gerador?")
+            with urllib.request.urlopen(url, timeout=10) as r:
+                self.assertEqual(r.status, 200)
+                self.assertTrue(r.headers["Content-Type"].startswith("text/html"))
+                self.assertEqual(r.headers["X-Frame-Options"], "DENY")
+        finally:
+            servidor.shutdown()
+            servidor.server_close()
 
 
 class CentralRespostaGuardada(unittest.TestCase):

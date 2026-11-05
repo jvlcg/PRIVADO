@@ -601,6 +601,10 @@ class Painel(BaseHTTPRequestHandler):
         self.send_response(codigo)
         self.send_header("Content-Type", tipo)
         self.send_header("Content-Length", str(len(dados)))
+        # Nenhum outro site pode abrir o conselho dentro de uma moldura e induzir cliques nele.
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Content-Security-Policy", "frame-ancestors 'none'")
+        self.send_header("X-Content-Type-Options", "nosniff")
         self.end_headers()
         self.wfile.write(dados)
 
@@ -632,7 +636,8 @@ class Painel(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self._origem_ok():
             return self._json(403, {"erro": "pedido de outro site bloqueado"})
-        if self.path in ("/", "/index.html"):
+        # A pagina vem com ?pergunta=... quando a Central manda a pergunta pronta: compara so a rota.
+        if self.path.partition("?")[0] in ("/", "/index.html"):
             self._enviar(200, "text/html; charset=utf-8", PAGINA.encode("utf-8"))
         elif self.path in ("/v1/models", "/models"):
             self._json(200, {"object": "list", "data": [

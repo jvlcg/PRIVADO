@@ -57,12 +57,23 @@ def _escada(pergunta_curta: bool) -> list[dict]:
 # A primeira regra que casar vale; nenhuma casando, vale a escada padrao.
 _REGRAS: list[tuple[str, str, list[dict], str | None]] = [
     ("emergencia",
-     r"\b(sangr\w*|hemorrag\w*|queimad\w*|engasg\w*|desmai\w*|convuls\w*|infarto|avc|parada cardiaca|nao (esta )?respira\w*"
-     r"|afog\w*|envenen\w*|intoxica\w*|picad\w* de (cobra|escorpiao|aranha|abelha)|mordid\w* de|fratur\w*|choque eletrico"
-     r"|overdose|inconscient\w*|corte (fundo|profundo)|reanima\w*|primeiros socorros)\b",
+     r"\b(sangr\w*|hemorrag\w*|queimad\w*|engasg\w*|desmai\w*|convuls\w*|infarto|avc|parada cardiaca"
+     r"|nao (esta |consegue |consigo )?respira\w*|falta de ar|sem ar|dor (forte |muito forte )?no peito"
+     r"|afog\w*|envenen\w*|intoxica\w*|picad\w* (de|por)|picou|mordid\w* (de|por)|fratur\w*|choque eletrico|engoliu"
+     r"|bebeu (agua sanitaria|veneno|soda|querosene|gasolina)|overdose|inconscient\w*|corte (fundo|profundo)|reanima\w*"
+     r"|primeiros socorros)\b",
      [_s("buscar", "Abrir primeiros socorros na biblioteca", "O artigo na hora, sem esperar IA nenhuma.", "buscar"),
       _s("fonte", "Perguntar com fonte (WikiMed)", "A IA explica o passo a passo citando a WikiMed.", "perguntar")],
      AVISO_EMERGENCIA),
+    # Saude logo depois da emergencia: "funcao do figado" ou "febre de 38-39" nao podem cair em codigo ou contas.
+    ("saude",
+     r"\b(dor(es)?|febre|remedio\w*|medicament\w*|dose|dosagem|sintoma\w*|doenca\w*|infec\w*|ferid\w*|gravid\w*|bebe|diarreia|vomit\w*"
+     r"|tosse|alergi\w*|pressao (alta|baixa)|diabet\w*|antibiotic\w*|machucad\w*|inflama\w*|virus|bacteria|hepatite|figado|rim|rins"
+     r"|renal|exame|vacina\w*|paciente|ferimento|curativo|pomada)\b",
+     [_s("fonte", "Perguntar com fonte (WikiMed)", "A IA responde citando a WikiMed e a Wikipédia.", "perguntar"),
+      _s("buscar", "Ler direto na biblioteca", "Os artigos da Wikipédia e das outras bibliotecas sobre o assunto, sem IA.", "buscar"),
+      _s("chat", "Chat com o medgemma-27b", "Modelo de saúde, para conversar sobre o caso.", "chat", modelo="medgemma-27b")],
+     AVISO_SAUDE),
     ("mapa",
      r"\b(mapa|onde fica|como chego|como chegar|endereco|bairro|rota|caminho (para|ate)|mais proxim\w*|perto daqui|localiza\w*)\b",
      [_s("mapa", "Abrir o mapa offline", "Ruas, estradas, hospitais e postos, sem internet.", "biblioteca"),
@@ -72,11 +83,8 @@ _REGRAS: list[tuple[str, str, list[dict], str | None]] = [
      r"\b(ler (uma |a |esta |essa )?(foto|imagem|documento)|extrai\w*|digitaliz\w*|ocr|texto d[aeo] (foto|imagem|documento)|escanead\w*|nota fiscal)\b",
      [_s("chat", "Chat com o glm-ocr", "Lê fotos e PDFs escaneados, inclusive tabelas: anexe a imagem no chat.", "chat", modelo="glm-ocr")],
      None),
-    ("criar",
-     r"\b(desenh\w*|ilustra\w*|logo|logotipo|(gera|gere|gerar|cria|crie|criar|faca|fazer) (uma |um )?(imagem|foto|figura|video|musica|cancao|logo|modelo 3d|desenho)"
-     r"|imagem de|foto de|video de|musica (de|sobre|para)|modelo 3d|em 3d)\b",
-     [_s("comfyui", "Criar no ComfyUI", "Imagem, vídeo, música e 3D com modelos prontos (Browse Templates).", "comfyui")],
-     None),
+    # Transcrever e traduzir antes de criar: "transcrever o video de uma aula" e "traduzir a letra da musica para o
+    # portugues" falam de video e musica sem querer criar nada.
     ("transcrever",
      r"\b(transcrev\w*|transcricao|legenda\w*|(o que|oque) (diz|fala) (o|esse|este) (audio|video)|gravacao|audio (para|em) texto)\b",
      [_s("menu", "Transcrever áudio (Whisper)", "Pelo menu do terminal: opção 8, com o caminho do arquivo WAV.", "transcrever", menu=8)],
@@ -90,25 +98,25 @@ _REGRAS: list[tuple[str, str, list[dict], str | None]] = [
      [_s("chat", "Chat com o translategemma-12b", "Tradutor de 55 idiomas, inclusive texto em fotos.", "chat", modelo="translategemma-12b"),
       _s("rapida", MODOS["rapida"]["titulo"], "Para uma frase curta, a IA pequena resolve.", "rapida")],
      None),
+    # Criar so com verbo de criacao ou nome de obra: "logo" sozinho e o adverbio ("logo depois de comer").
+    ("criar",
+     r"\b(desenh\w*|ilustra\w*|logotipo|(gera|gere|gerar|cria|crie|criar|faca|faz|fazer|monte|montar|componha|compor)"
+     r" (uma |um |o |a )?(imagem|foto|figura|video|musica|cancao|logo|modelo 3d|desenho|animacao|wallpaper|papel de parede)"
+     r"|modelo 3d|em 3d)\b",
+     [_s("comfyui", "Criar no ComfyUI", "Imagem, vídeo, música e 3D com modelos prontos (Browse Templates).", "comfyui")],
+     None),
     ("codigo",
-     r"\b(codigo|programa(r|cao)|python|javascript|typescript|java|c\+\+|rust|golang|script|funcao|bug|compila\w*|sql|html|css"
-     r"|powershell|bash|linux|terminal|stack ?trace|exception|regex|api|git)\b",
+     r"\b(codigo|programa(r|cao)|python|javascript|typescript|java|c\+\+|rust|golang|script|bug|compila\w*|sql|html|css"
+     r"|powershell|bash|linux|stack ?trace|exception|regex|api|git|funcao (em|no|do|de) (python|javascript|codigo|programa|excel))\b",
      [_s("chat", "Chat com o qwen3-coder-next", "O modelo de programação do cofre.", "chat", modelo="qwen3-coder-next"),
       _s("conselho", MODOS["conselho"]["titulo"], "Para um problema difícil: inclui o Stack Overflow nas fontes.", "conselho")],
      None),
     ("contas",
      r"(\b(calcul\w*|quanto (e|da|fica|custa)|porcentagem|percentual|equacao|juros|converte\w*|conversao|regra de tres|media de|raiz quadrada)\b"
-     r"|\d+\s*[-+*/x^%]\s*\d+)",
+     r"|\d+\s*[+*/x^%]\s*\d+)",  # sem o "-": "38-39 graus" e datas nao sao conta
      [_s("chat", "Chat com o gpt-oss-20b", "Raciocínio e contas: o mais veloz do cofre.", "chat", modelo="gpt-oss-20b"),
       _s("rapida", MODOS["rapida"]["titulo"], "Para uma conta simples, a IA pequena resolve.", "rapida")],
      None),
-    ("saude",
-     r"\b(dor(es)?|febre|remedio\w*|medicament\w*|dose|dosagem|sintoma\w*|doenca\w*|infec\w*|ferid\w*|gravid\w*|bebe|diarreia|vomit\w*"
-     r"|tosse|alergi\w*|pressao (alta|baixa)|diabet\w*|antibiotic\w*|machucad\w*|inflama\w*|virus|bacteria)\b",
-     [_s("fonte", "Perguntar com fonte (WikiMed)", "A IA responde citando a WikiMed e a Wikipédia.", "perguntar"),
-      _s("buscar", "Ler direto na biblioteca", "Os artigos da WikiMed sobre o assunto, sem IA.", "buscar"),
-      _s("chat", "Chat com o medgemma-27b", "Modelo de saúde, para conversar sobre o caso.", "chat", modelo="medgemma-27b")],
-     AVISO_SAUDE),
     ("decisao",
      r"\b(devo|deveria|vale a pena|qual (e )?(o |a )?melhor|o que e melhor|compar\w*|pros e contras|vantagens e desvantagens"
      r"|decidir|escolher entre|recomenda\w*|ou (nao|melhor))\b",
@@ -143,10 +151,17 @@ def sugerir(texto: str) -> dict:
 
 # ---------- Historico (respostas guardadas) ----------
 
+# Na chave so saem artigos, preposicoes e palavras de pergunta. Letras, numeros, operadores e palavras que
+# mudam o sentido ficam: "hepatite B" e "hepatite C", "com" e "sem alcool", "3+5" e "3*5" sao perguntas diferentes.
+_FORA_DA_CHAVE = set("""o a os as um uma uns umas de do da dos das em no na nos nas num numa por pelo pela pelos pelas
+para pra pro ao aos que qual quais quem como quando onde e eh ser esta isso isto me voce the of to in how what is""".split())
+
+
 def chave(pergunta: str) -> str:
-    """Mesma pergunta, mesma chave: sem acento, sem pontuacao e sem palavras vazias ("Como purificar a agua?"
-    e "purificar agua" sao a mesma)."""
-    return " ".join(sem_acento(p) for p in palavras_da_pergunta(pergunta, maximo=40))
+    """Mesma pergunta, mesma chave: sem acento, sem pontuacao e sem artigos ou palavras de pergunta ("Como
+    purificar a agua?" e "purificar agua" sao a mesma; "hepatite B" e "hepatite C", nao)."""
+    pedacos = re.findall(r"[a-z0-9]+|[+*/^%=<>-]", sem_acento(pergunta.lower()))
+    return " ".join(p for p in pedacos if p not in _FORA_DA_CHAVE)
 
 
 def _radical(palavra: str) -> str:

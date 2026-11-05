@@ -498,11 +498,15 @@ def buscar_sem_ia(pergunta: str, maximo: int = 10) -> dict:
 def responder_direto(pergunta: str, modelo: str, parar: threading.Event | None = None) -> str:
     """Sem fontes e sem raciocinio: a "Resposta rapida" e o que sai quando pedem "Responder agora" antes
     de a busca terminar. `parar` corta a geracao e fica o texto que ja veio."""
-    r = chat_em_fluxo({"model": modelo, "max_tokens": 1500,
-                       "chat_template_kwargs": {"enable_thinking": False, "reasoning_effort": "low"},
-                       "messages": [{"role": "system", "content": "Responda em portugues do Brasil, de forma curta e pratica. "
-                                     "Em temas de saude ou seguranca, inclua sinais de alerta e quando procurar ajuda."},
-                                    {"role": "user", "content": pergunta}]}, parar)
+    corpo = {"model": modelo, "max_tokens": 1500,
+             "chat_template_kwargs": {"enable_thinking": False, "reasoning_effort": "low"},
+             "messages": [{"role": "system", "content": "Responda em portugues do Brasil, de forma curta e pratica. "
+                           "Em temas de saude ou seguranca, inclua sinais de alerta e quando procurar ajuda."},
+                          {"role": "user", "content": pergunta}]}
+    r = chat_em_fluxo(corpo, parar)
+    if r["interrompido"] and len(r["texto"]) < 80:
+        # Pediram "Responder agora" antes de sair quase nada: uma resposta bem curta, sem esperar mais.
+        r = chat_em_fluxo({**corpo, "max_tokens": 300}) | {"interrompido": True}
     texto = r["texto"] + ("\n\n(resposta interrompida a pedido)" if r["interrompido"] else "")
     return "_(Resposta rapida, sem consultar a biblioteca: confira antes de seguir.)_\n\n" + texto
 
@@ -608,6 +612,8 @@ def cmd_perguntar(args) -> None:
     try:
         if args.modo == "rapida":
             modelo = args.modelo if args.modelo != MODELO_CHAT else tarefas.MODELO_RAPIDO
+            if not servidor_ok(f"{LLM}/health"):
+                raise RuntimeError(f"O servidor de modelos (iniciar-servidor.ps1) nao esta respondendo em {LLM}.")
             r = {"resposta": responder_direto(args.pergunta, modelo, parar), "fontes": []}
         else:
             modelo = args.modelo
@@ -619,7 +625,7 @@ def cmd_perguntar(args) -> None:
     segundos = time.time() - inicio
     watts = 179 if args.modo == "rapida" else 170
     historico.guardar(args.pergunta, args.modo, r["resposta"], r["fontes"], watts * segundos / 3600, segundos, modelo,
-                      parar.is_set() or "(resposta interrompida a pedido)" in r["resposta"])
+                      apertos[0] > 0 or "(resposta interrompida a pedido)" in r["resposta"])  # responder() apaga o parar
     print("\n" + r["resposta"] + "\n")
     if r["fontes"]:
         print("Fontes:")
