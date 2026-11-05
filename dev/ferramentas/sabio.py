@@ -567,7 +567,9 @@ def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int =
         melhores = list(range(min(n_trechos, len(trechos))))  # sem esperar o reordenador
     else:
         avisar("Escolhendo os melhores trechos")
-        melhores = reordenar(pergunta, trechos, n_trechos)
+        # O titulo do artigo na frente de cada trecho da ao reordenador o contexto que o trecho sozinho perde
+        # ("Ferva por 1 minuto" so faz sentido sabendo que o artigo e "Tratamento de agua"). Custa zero.
+        melhores = reordenar(pergunta, [f"{origem[i][0]}\n{t}" for i, t in enumerate(trechos)], n_trechos)
     fontes = [(origem[i][0], origem[i][1], trechos[i]) for i in melhores]
     avisar(f"Escrevendo a resposta com {modelo}" + (" (direto, sem raciocinar)" if parar.is_set() else ""))
     return {"resposta": responder(pergunta, fontes, modelo, parar), "termos": termos,

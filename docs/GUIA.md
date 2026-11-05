@@ -87,6 +87,41 @@ São 46 no catálogo e 44 já baixadas e conferidas pelo SHA256: as 17 de antes 
 
 As duas marcadas "em observação" são gigantes e não baixam sozinhas: `baixar-conhecimento.ps1 -Id mapa-mundo` ou `-Id survivor-library`. O mapa do Brasil foi testado em 01/11: abre na biblioteca (e pelo botão da Central), com zoom até o nível da rua. Em Goiânia aparecem as ruas, a Praça Cívica, o Lago dos Buritis, a Avenida Anhanguera e os pontos de ônibus.
 
+### Novidades de novembro de 2026 e o plano para este PC
+
+Pesquisa feita na internet em 05/11/2026, com fontes primárias sempre que possível (cartão do modelo, release no GitHub). Neste PC quase toda IA de texto esbarra na **velocidade da memória**, não na força de cálculo: 504 GB/s na placa de vídeo contra uns 96 GB/s na DDR5. Por isso os maiores ganhos vêm de caber mais coisa na placa e de usar modelos MoE, que só leem uma parte dos pesos a cada palavra.
+
+O que mudou de mais importante:
+
+- **O llama.cpp ganhou versões numeradas e virou "host de agente".** A v0.9.0 é de 04/11/2026, e o cofre está na b9990, de julho. Ela traz MoE fundido no CUDA, um cache de especialistas MoE na placa (`--moe-cache-mib`, +15% a +50% estimados nos MoE grandes), especulação sem modelo extra (`ngram-mod`) e servidores MCP com ferramentas (`--mcp-servers-config`). Tem três quebras: `--mmap` e `--mlock` viraram `--load-mode`, a porta padrão mudou de 8080 para 9931 e o formato de sessão mudou. Fontes: [v0.9.0](https://github.com/ggml-org/llama.cpp/releases/tag/v0.9.0), [MCP no servidor](https://github.com/ggml-org/llama.cpp/pull/26062), [cache de especialistas](https://github.com/ggml-org/llama.cpp/pull/29887).
+- **As bibliotecas viram ferramenta de agente.** O [openzim-mcp 3.4.0](https://pypi.org/project/openzim-mcp/) (25/10/2026, MIT) lê os ZIMs direto e entrega busca e leitura para qualquer agente. Um teste de outubro mostrou o erro mais comum dos agentes locais: eles buscam, recebem só o título e desistem sem ler a página ([teste](https://larsensoren.com/writing/local-agent-bench/)). O "perguntar com fonte", que já devolve trechos lidos e reordenados, resolve exatamente isso.
+- **Agentes de código locais:** [opencode 2.2.5](https://github.com/anomalyco/opencode/releases) e Qwen Code 0.26.8 estão ativos, e o Aider parou em 2025. Para eles, o [Ornith 1.5 35B-A3B](https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B) (MIT) acertou 100% das chamadas de ferramenta no ggufbench, no mesmo formato do qwen3.6-35b-a3b que já roda aqui.
+- **O Qwen3.8 27B pode caber inteiro na placa.** Hoje ele é o gargalo do conselho (~7 tok/s, metade na RAM). Uma versão em ~3 bits tem 9,4 GiB e cabe nos ~10 GB livres. Os números de velocidade são de blogs e precisam ser medidos aqui ([guia](https://openclawdc.com/blog/best-local-llm-12gb-vram/)).
+- **Gemma 4 QAT:** versões treinadas para 4 bits, com MTP, dos mesmos modelos do catálogo (26B-A4B e 12B): mais qualidade no mesmo tamanho ([unsloth](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-qat-GGUF)).
+- **Imagem, vídeo e voz:**
+  - o FLUX 3 klein saiu (15/10) com arquivos int8 que rodam na 4070;
+  - o ComfyUI v0.44 traz atenção rápida embutida (~37% menos tempo por imagem) e modo `--offline`;
+  - o LTX-2.5 faz vídeo com áudio, viável com offload na RAM;
+  - em voz, o VoxCPM2 clona voz em português e o Granite Speech 5.0 2B transcreve português pelo próprio llama.cpp.
+- **Busca com fonte:** o embedding Harrier OSS v1 marca 69,0 contra ~64,3 do atual no MTEB multilíngue. O ganho mais barato, porém, é pôr o título do artigo em cada trecho antes do reordenador, o que agora o cofre já faz, e medir com um conjunto-ouro de perguntas antes de reindexar.
+
+O plano, do que rende mais para o que custa menos:
+
+| # | Ação | Ganho | Custo | Precisa de você |
+| --- | --- | --- | --- | --- |
+| 1 | Ligar o monitor na saída de vídeo da placa-mãe (iGPU do 7900X) | +1,7 GB na placa para as IAs (14% a mais) | nada | sim: cabo e BIOS |
+| 2 | Limitar a placa a 150 W para texto (`nvidia-smi -pl 150`, como administrador; 200 W para jogo e vídeo) | ~16% menos energia por palavra, ~1% mais lento | nada | sim: administrador |
+| 3 | Atualizar o llama.cpp para a v0.9.0, numa pasta nova, com a atual de reserva | MoE mais rápido, agentes, cache de especialistas | ~0,5 GB | aprovar o download |
+| 4 | No conselho, trocar o membro qwen3.8-27b pelo qwen3.6-35b-a3b (MoE) | 5 a 10 vezes menos tempo e energia por resposta desse membro | nada (já baixado) | aprovar a troca |
+| 5 | Agente do Cofre: o "perguntar com fonte" e as bibliotecas como ferramentas MCP, para o llama.cpp novo, o opencode e outros agentes | IA que pesquisa sozinha no acervo offline, citando | ~0,1 GB | aprovar |
+| 6 | Qwen3.8 27B em ~3 bits | o melhor modelo do cofre inteiro na placa | 9,4 GB | aprovar o download |
+| 7 | Gemma 4 QAT (26B-A4B e 12B) no lugar dos atuais | mais qualidade no mesmo tamanho | ~24 GB (substitui) | aprovar o download |
+| 8 | Ornith 1.5 35B-A3B + opencode | agente de código melhor e menor que o qwen3-coder-next | ~21 GB (HD) | aprovar o download |
+| 9 | ComfyUI v0.44 + FLUX 3 klein | imagens ~37% mais rápidas e o FLUX 3 | ~19 GB | login no Hugging Face |
+| 10 | Bibliotecas de out/2026 e novas de saúde e emergência | fontes mais novas | ~19 GB | aprovar o download |
+
+Ficam em observação no catálogo, sem baixar: Ornith 1.5 9B, Harrier (embeddings), Granite Speech 5.0, VoxCPM2 e LTX-2.5. Não valem para esta placa, porque exigem placas mais novas (Blackwell) ou bem maiores: arquivos NVFP4, Nemotron 3.5 Transcribe, MiniMax H3 e Wan 2.7/3.0.
+
 ## Seu hardware e o sistema
 
 O PC roda bem modelos de até cerca de 45 GB: a placa de vídeo segura 12 GB e o resto fica nos 64 GB de RAM. O Nemotron 74B (48 GB) ainda funciona bem; o gpt-oss-120b (59 GB) funciona, mas ocupa toda a RAM: feche os outros programas antes de usá-lo.
@@ -376,6 +411,14 @@ O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é u
 - MedGemma erra: use junto com a WikiMed e procure um profissional sempre que puder.
 
 ## Fontes
+
+Pesquisa de novembro de 2026 (seção "Novidades de novembro de 2026"):
+
+- [llama.cpp v0.9.0](https://github.com/ggml-org/llama.cpp/releases/tag/v0.9.0), [MCP no llama-server](https://github.com/ggml-org/llama.cpp/pull/26062) e [cache de especialistas MoE](https://github.com/ggml-org/llama.cpp/pull/29887)
+- [openzim-mcp](https://pypi.org/project/openzim-mcp/), [teste de agentes locais](https://larsensoren.com/writing/local-agent-bench/) e [ggufbench](https://github.com/jordimarsal/ggufbench)
+- [Ornith 1.5](https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B), [opencode](https://github.com/anomalyco/opencode/releases), [Gemma 4 QAT](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-qat-GGUF), [Qwen3.8](https://github.com/QwenLM/Qwen3.8) e [Qwen3.8 27B em 12 GB](https://openclawdc.com/blog/best-local-llm-12gb-vram/)
+- [ComfyUI](https://github.com/Comfy-Org/ComfyUI/releases), [FLUX 3 klein para ComfyUI](https://huggingface.co/black-forest-labs/flux-3-image-klein-comfy), [LTX-2.5](https://huggingface.co/Lightricks/LTX-2.5), [VoxCPM](https://github.com/OpenBMB/VoxCPM) e [Granite Speech 5.0](https://huggingface.co/ibm-granite/granite-speech-5.0-2b)
+- [Harrier OSS v1](https://huggingface.co/microsoft/harrier-oss-v1-0.6b) e [limite de potência e eficiência por watt](https://inventivehq.com/blog/gpu-power-limit-tokens-per-watt)
 
 - Ranking: auditoria de 19/10/2026 da Artificial Analysis e do BenchLM (dev.to)
 - Modelos: API do Hugging Face, consultada em 25/10/2026

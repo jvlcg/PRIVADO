@@ -73,9 +73,11 @@ function Vigia-Aberta {
     if (-not (Test-Path -LiteralPath $arquivoPid)) { return $null }
     $id = 0
     if (-not [int]::TryParse(((Get-Content -LiteralPath $arquivoPid -TotalCount 1) -as [string]).Trim(), [ref]$id) -or $id -eq $PID) { return $null }
-    # So conta se o processo e mesmo esta vigia: um PID velho pode ter sido reaproveitado por outro programa.
-    $p = Get-CimInstance Win32_Process -Filter "ProcessId = $id" -ErrorAction SilentlyContinue
-    if ($p -and $p.CommandLine -like '*desligar-ao-terminar*') { return Get-Process -Id $id -ErrorAction SilentlyContinue }
+    # So conta se o processo e mesmo esta vigia: um PID velho (o PC desligou sem apagar o arquivo) pode ter sido
+    # reaproveitado por outro programa, que entao nasceu DEPOIS de o arquivo ser gravado.
+    $p = Get-Process -Id $id -ErrorAction SilentlyContinue
+    $gravado = (Get-Item -LiteralPath $arquivoPid).LastWriteTime
+    if ($p -and $p.ProcessName -match '^(powershell|pwsh)$' -and $p.StartTime -le $gravado.AddSeconds(5)) { return $p }
     return $null
 }
 
