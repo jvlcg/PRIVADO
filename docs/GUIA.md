@@ -9,7 +9,7 @@ O SSD **A:** (ADATA LEGEND 710, NVMe, 256 GB, rótulo PRIVADO) é uma biblioteca
 O projeto tem cinco partes:
 
 - **Modelos**: 31 modelos abertos, do assistente geral aos especialistas em código, medicina, tradução, documentos, voz, imagem, vídeo, música e 3D, mais os gigantes de fronteira para hardware futuro.
-- **Conhecimento**: 46 bibliotecas offline no catálogo (Wikipédia em português e inglês, enciclopédia médica, manuais de conserto, sobrevivência, livros universitários, fóruns práticos e o mapa do Brasil), para o modelo responder citando fonte em vez de inventar.
+- **Conhecimento**: 68 bibliotecas offline, só em português e inglês (Wikipédia em português e inglês, enciclopédia médica, manuais de conserto, sobrevivência, livros universitários e fóruns práticos), para o modelo responder citando fonte em vez de inventar.
 - **Motores**: os programas que rodam tudo (llama.cpp, whisper.cpp, ComfyUI, Kiwix, Python), portáteis, mais instaladores para Linux, Mac, Raspberry Pi e Android.
 - **Catálogo**: uma base de dados (`catalogo\modelos.json`) com cada item, tamanho, licença, hash e versão, e scripts que checam novidades toda semana.
 - **Desenvolvimento próprio**: seus códigos, datasets, busca nos seus documentos (RAG) e treino de modelos (LoRA).
@@ -36,30 +36,23 @@ Os modelos abertos mais fortes hoje têm de 321 bilhões a 2,8 trilhões de par�
 
 | Área | Modelo | Para quê | Onde | GB | Licença |
 | --- | --- | --- | --- | --- | --- |
-| Geral | Gemma 4 26B-A4B | assistente rápido, entende imagens | SSD | 16,9 | Apache 2.0 |
-| Geral | Gemma 4 12B QAT | o mais rápido, cabe inteiro na placa | SSD | 6,7 | Apache 2.0 |
-| Geral | Qwen3.8 27B | melhor qualidade densa, lento aqui | SSD | 17,2 | Apache 2.0 |
-| Geral | Qwen3.6 35B-A3B | alternativa MoE rápida | cofre | 21,7 | Apache 2.0 |
+| Geral | Gemma 4 12B QAT | o mais rápido (109 palavras/s), inteiro na placa; também imagem e áudio | SSD | 6,9 | Apache 2.0 |
+| Geral | Gemma 4 26B-A4B QAT | o do dia a dia (75 palavras/s), entende imagens | SSD | 14,8 | Apache 2.0 |
+| Geral | Qwen3.8 27B (~3 bits) | a melhor resposta do cofre (10 palavras/s; inteiro na placa com o monitor na placa-mãe) | SSD | 10,6 | Apache 2.0 |
 | Geral | Nemotron 3.5 Bolt 74B-A9B | o maior que roda com folga aqui (5 a 7 tokens/s) | cofre | 48,4 | NVIDIA Open |
 | Raciocínio | gpt-oss-20b | raciocínio e ferramentas, o mais veloz | SSD | 11,3 | Apache 2.0 |
 | Raciocínio | gpt-oss-120b | roda no limite: ocupa toda a RAM, ~3 tokens/s | cofre | 59,0 | Apache 2.0 |
-| Raciocínio | MiMo-V2.6 Distill 9B | raciocínio leve | cofre | 5,4 | MIT |
-| Código | Qwen3-Coder-Next | agente de programação (80 bi, 3 bi ativos) | SSD | 35,8 | Apache 2.0 |
-| Código | Devstral Small 2 | segundo agente de código | cofre | 13,5 | Apache 2.0 |
+| Código | Ornith 1.5 35B-A3B | agente de programação: acertou 100% das chamadas de ferramenta (58 palavras/s) | SSD | 21,1 | MIT |
 | Medicina | MedGemma 27B | sintomas, remédios, primeiros socorros | SSD | 15,7 | HAI-DEF (Google) |
 | Tradução | TranslateGemma 12B | 55 idiomas, inclusive texto em fotos | SSD | 7,4 | Gemma |
 | Documentos | GLM-OCR | ler fotos e PDFs escaneados, tabelas | SSD | 1,3 | MIT |
 | Leves | Gemma 4 E4B QAT | notebook sem placa de vídeo | SSD | 5,7 | Apache 2.0 |
-| Leves | Qwen3.5 2B | celular e Raspberry Pi | SSD | 1,9 | Apache 2.0 |
-| Leves | LFM2.5 1.2B | rápido em CPU antiga | SSD | 0,7 | LFM 1.0 |
-| Leves | Qwen3.5 0.8B | o menor que ainda é útil | SSD | 0,5 | Apache 2.0 |
+| Leves | Qwen3.5 0.8B | celular, Raspberry Pi, o menor que ainda é útil | SSD | 0,5 | Apache 2.0 |
 | Busca | Qwen3-Embedding 0.6B | vetores para buscar nos documentos | SSD | 0,6 | Apache 2.0 |
-| Busca | Qwen3-Reranker 0.6B | ordena resultados por relevância | SSD | 0,6 | Apache 2.0 |
-| Busca | EmbeddingGemma 2 | vetores leves e multilíngues | SSD | 0,3 | Apache 2.0 |
+| Busca | Qwen3-Reranker 0.6B | ordena os trechos por relevância | SSD | 0,6 | Apache 2.0 |
 | Voz | Whisper large-v3-turbo | voz para texto, 99 idiomas | SSD | 0,8 | MIT |
 | Voz | Piper pt-BR (faber e cadu) | texto para voz só com CPU (`falar.ps1`) | SSD | 0,1 | dados CC0, motor GPL |
-| Voz | Kokoro 82M | vozes mais naturais; precisa do espeak-ng instalado | SSD | 0,3 | Apache 2.0 |
-| Imagem | Z-Image-Turbo | gerar imagens a partir de texto | SSD | 17,0 | Apache 2.0 |
+| Imagem | Z-Image-Turbo | gerar imagens a partir de texto (12 s por imagem) | SSD | 17,0 | Apache 2.0 |
 | Vídeo | Wan 2.2 TI2V 5B | vídeos curtos em 720p | cofre | 16,9 | Apache 2.0 |
 | Vídeo | Wan Animate 2 14B | anima a pessoa de uma foto com os movimentos de um vídeo | cofre | 23,9 | Apache 2.0 |
 | Música | ACE-Step 1.5 Turbo | músicas com letra e voz | cofre | 9,3 | Apache 2.0 |
@@ -68,24 +61,23 @@ Os modelos abertos mais fortes hoje têm de 321 bilhões a 2,8 trilhões de par�
 | Fronteira | DeepSeek V4.1 Flash | 2º entre os abertos, em Q2 | cofre | 312,7 | MIT |
 | Fronteira | MiMo-V2.6 Flash | versão Flash do líder do ranking | cofre | 157,3 | MIT |
 
-São 141 GB no SSD e 821 GB no cofre. Os três gigantes de fronteira não rodam bem neste PC (precisam de 200 a 400 GB de memória), mas ficam guardados para um computador melhor no futuro. Ficam só em observação: Kimi K3 (2,8 trilhões, licença própria), FLUX 3 klein (exige login no Hugging Face) e Qwen-Image 2.1 (só uso não comercial).
+**Só a nata (06/11/2026):** um modelo, o melhor, para cada tarefa. Saíram as versões antigas que estavam de reserva (Gemma 4 sem QAT, Qwen3.8 em 4 bits) e o que ficou repetido: Qwen3-Coder-Next e Devstral (o Ornith faz o mesmo e acerta mais), Qwen3.6 35B e MiMo 9B (os Gemma QAT e o Qwen3.8 cobrem), Qwen3.5 2B e LFM2.5 (ficaram o Gemma E4B e o Qwen3.5 0.8B), EmbeddingGemma e Kokoro (não eram usados). Os bons continuam no catálogo como "observar", com o motivo, e podem ser baixados de novo a qualquer hora. Os três gigantes de fronteira não rodam bem neste PC (precisam de 200 a 400 GB de memória), mas ficam guardados para um computador melhor no futuro. Também só em observação: Kimi K3 (2,8 trilhões, licença própria), FLUX 3 klein (exige login no Hugging Face) e Qwen-Image 2.1 (só uso não comercial).
 
 ### Bibliotecas offline
 
-São 73 no catálogo e 71 baixadas e conferidas pelo SHA256: as 17 do começo, 27 de 29/10/2026 (marcadas com *) e 27 de 05/11/2026 (marcadas com †; 3,9 GB no SSD e 12,5 GB no cofre). As 2 gigantes ficam em observação. Tudo abre na biblioteca (menu, opção 3), inclusive o mapa, e a busca da Central procura em todas de uma vez. Os fóruns de computação (Stack Overflow em inglês e em português, Ask Ubuntu, Unix, Super User e Segurança) ficam fora da busca padrão, para não misturar programação nas perguntas práticas. Eles entram quando o conselho trata de código.
+São 68 no cofre, só em português e inglês, todas conferidas pelo SHA256: as 17 do começo, as de 29/10/2026 (marcadas com *) e as de 05/11/2026 (marcadas com †). Em 06/11/2026 saíram os mapas, a Low-tech Magazine (11 idiomas) e o Projeto Gutenberg em inglês (206 GB de literatura sem busca por texto; segue em observação). Tudo abre na biblioteca (menu, opção 3), e a busca da Central procura em todas de uma vez. Os fóruns de computação (Stack Overflow em inglês e em português, Ask Ubuntu, Unix, Super User e Segurança) ficam fora da busca padrão, para não misturar programação nas perguntas práticas; eles entram quando o conselho trata de código.
 
 | Área | O que tem | GB |
 | --- | --- | --- |
 | Enciclopédias | Wikipédia em português e em inglês, Wikcionário, Wikivoyage | 138 |
-| Mapas | Brasil* (ruas, estradas, hospitais e postos, com busca de cidades); mundo inteiro* (em observação) | 2,9 + 72 |
 | Saúde | WikiMed, fórum de Ciências Médicas, medicina de campo*, medicina militar*, guias de medicina em vídeo*, LibreTexts Medicina*, WikiVet* (animais), medicamentos do NHS† (para que serve cada remédio, dose e efeitos), saúde do viajante do CDC†, LibrePathology† | 4,3 |
-| Sobrevivência | pós-desastre*, tratamento de água*, preparo de alimentos*, nós*, True Prepper*, Ready.gov† (guia oficial dos EUA para emergências e desastres), Low-tech Magazine† (tecnologia de pouca energia); Survivor Library* (em observação) | 4,8 + 220 |
+| Sobrevivência | pós-desastre*, tratamento de água*, preparo de alimentos*, nós*, True Prepper*, Ready.gov† (guia oficial dos EUA para emergências e desastres); Survivor Library* (em observação) | 4,8 + 220 |
 | Técnica e reconstrução | iFixit, fóruns Faça Você Mesmo e Eletrônica, Restarters*, WikiCiv*, Appropedia*, Energypedia*, CD3WD*, LibreTexts Engenharia e Ofícios*, fóruns de Mecânica de veículos†, Bicicletas†, Marcenaria†, Rádio amador† (comunicação sem celular), Engenharia†, Raspberry Pi†, Arduino†, Artesanato† e Truques do dia a dia† | 14 |
 | Agricultura e cozinha | fóruns de Jardinagem e Culinária, Gardenology*, fóruns de Fermentação caseira†, Sustentabilidade† e Animais de estimação† | 1,4 |
 | Ensino | Wikilivros, Wikiversidade*, simulações PhET em português*, LibreTexts Física, Matemática, Química, Biologia e Escola*, fóruns de Química†, Biologia†, Física†, Ciências da Terra† e Criação de filhos† | 15 |
-| Livros e computação | Projeto Gutenberg em português e inglês, Stack Overflow, Stack Overflow em português†, Ask Ubuntu† (Linux para iniciantes), Unix e Linux†, Super User† (Windows e PC) e Segurança† | 323 |
+| Livros e computação | Projeto Gutenberg em português, Stack Overflow, Stack Overflow em português†, Ask Ubuntu† (Linux para iniciantes), Unix e Linux†, Super User† (Windows e PC) e Segurança† | 117 |
 
-As duas marcadas "em observação" são gigantes e não baixam sozinhas: `baixar-conhecimento.ps1 -Id mapa-mundo` ou `-Id survivor-library`. O mapa do Brasil foi testado em 01/11: abre na biblioteca (e pelo botão da Central), com zoom até o nível da rua. Em Goiânia aparecem as ruas, a Praça Cívica, o Lago dos Buritis, a Avenida Anhanguera e os pontos de ônibus.
+A Survivor Library (220 GB, livros antigos de ofícios) fica em observação: não baixa sozinha (`baixar-conhecimento.ps1 -Id survivor-library`).
 
 ### Novidades de novembro de 2026 e o plano para este PC
 
@@ -111,13 +103,13 @@ O plano, do que rende mais para o que custa menos:
 | --- | --- | --- | --- | --- |
 | 1 | Ligar o monitor na saída de vídeo da placa-mãe (iGPU do 7900X) | +1,7 GB na placa para as IAs (14% a mais) | nada | sim: cabo e BIOS |
 | 2 | Limitar a placa a 150 W para texto (`nvidia-smi -pl 150`, como administrador; 200 W para jogo e vídeo) | ~16% menos energia por palavra, ~1% mais lento | nada | sim: administrador |
-| 3 | **Feito em 05/11:** llama.cpp b12138 (a b11901 ficou de reserva), com atenção rápida, memória da conversa em 8 bits, cache de prompt de 16 GB na RAM e folga de memória no roteador | MoE mais rápido, agentes, cache de especialistas | 0,5 GB | |
-| 4 | **Feito em 05/11, de outro jeito:** no conselho entrou o qwen3.8-27b-iq3 (e os Gemma QAT), mais rápidos sem perder o modelo mais forte; o qwen3.6-35b-a3b segue como alternativa | mais rápido por resposta | nada | |
+| 3 | **Feito em 05/11:** llama.cpp b12138 (sem versão de reserva desde 06/11), com atenção rápida, memória da conversa em 8 bits, cache de prompt de 16 GB na RAM e folga de memória no roteador | MoE mais rápido, agentes, cache de especialistas | 0,5 GB | |
+| 4 | **Feito em 05/11, de outro jeito:** no conselho entrou o qwen3.8-27b-iq3 (e os Gemma QAT), mais rápidos sem perder o modelo mais forte; o qwen3.6-35b-a3b saiu na limpeza de 06/11 | mais rápido por resposta | nada | |
 | 5 | **Feito em 05/11:** Agente do Cofre, com 5 ferramentas MCP no próprio servidor (veja "Agente do Cofre" em Como usar) | IA que pesquisa sozinha no acervo offline, citando | 0 GB | |
 | 6 | **Feito em 05/11:** Qwen3.8 27B em ~3 bits (`qwen3.8-27b-iq3`), agora no conselho | medido 10 contra 6,5 palavras/s; inteiro na placa só com o monitor na placa-mãe (item 1) | 9,7 GB | |
 | 7 | **Feito em 05/11:** Gemma 4 QAT 26B-A4B e 12B como padrão; os antigos foram para o HD | medido: 12B de 54 para 109 palavras/s, 26B de 57 para 75 | 23 GB (substituem 24 GB) | |
 | 8 | **Feito em 05/11:** Ornith 1.5 35B-A3B no HD (o opencode ainda falta) | medido 58 palavras/s; carrega em 2,5 min do HD | 21 GB (HD) | instalar o opencode |
-| 9 | **ComfyUI feito em 05/11:** v0.44.0 (a v0.42.1 ficou de reserva), sem internet (`--offline`) e sem os nós pagos; falta o FLUX 3 klein | o FLUX 3 | ~18 GB | login no Hugging Face (FLUX 3) |
+| 9 | **ComfyUI feito em 05/11:** v0.44.0, sem internet (`--offline`) e sem os nós pagos; falta o FLUX 3 klein | o FLUX 3 | ~18 GB | login no Hugging Face (FLUX 3) |
 | 10 | **Feito em 05/11:** 27 bibliotecas novas (saúde, emergência, conserto, rádio amador, ciência, Linux) e 2 atualizadas | fontes mais novas e mais assuntos | 16 GB | |
 
 Ficam em observação no catálogo, sem baixar: Ornith 1.5 9B, Harrier (embeddings), Granite Speech 5.0, VoxCPM2 e LTX-2.5. Não valem para esta placa, porque exigem placas mais novas (Blackwell) ou bem maiores: arquivos NVFP4, Nemotron 3.5 Transcribe, MiniMax H3 e Wan 2.7/3.0.
@@ -129,7 +121,7 @@ O PC roda bem modelos de até cerca de 45 GB: a placa de vídeo segura 12 GB e o
 | Peça | O que você tem | O que isso permite |
 | --- | --- | --- |
 | Placa de vídeo | NVIDIA RTX 4070, 12 GB | modelos de até ~10 GB rodam inteiros na GPU, os mais rápidos |
-| Memória RAM | 64 GB DDR5-5600 | modelos MoE grandes, como o Qwen3-Coder-Next (36 GB) |
+| Memória RAM | 64 GB DDR5-5600 | modelos MoE grandes, como o gpt-oss-120b (59 GB) |
 | Processador | AMD Ryzen 9 7900X, 12 núcleos | processa a parte do modelo que fica na RAM |
 | SSD A: | ADATA LEGEND 710, NVMe, 256 GB | 238 GB úteis; carrega um modelo de 17 GB em segundos |
 
@@ -171,7 +163,7 @@ Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofr
 | Início | **"Do que você precisa?"**: escreva com suas palavras e a Central mostra o jeito que resolve gastando menos energia (veja "Escada de esforço" abaixo). Também traz os atalhos de emergência e os botões para abrir cada ferramenta. |
 | Perguntar | Escolha na escada quanto esforço a resposta merece. Respostas citam as fontes com links e têm o botão **Responder agora**. |
 | Serviços | Liga e abre o chat, a biblioteca, o conselho e o ComfyUI, como um quadro de disjuntores. Mostra os modelos na memória (com botão para descarregar) e copia a chave do chat. |
-| Biblioteca e mapa | Busca nas bibliotecas, emergência, mapa offline e o acervo inteiro (46 bibliotecas), com filtro, onde cada uma está e o link para abrir. |
+| Biblioteca | Busca nas bibliotecas, emergência e o acervo inteiro (68 bibliotecas), com filtro, onde cada uma está e o link para abrir. |
 | Energia | Gasto do mês por tarefa, os últimos 6 meses e quanto custa o PC parado ligado. |
 | Histórico | As perguntas já respondidas, com busca. Abrir uma resposta guardada não gasta nada; dá para esquecer as que não quiser. |
 | Ajuda | Qual IA usar, os atalhos de teclado e onde está o resto. |
@@ -180,13 +172,13 @@ Atalhos: **Ctrl+K** procura qualquer ação (ligar, abrir, emergência, modo jog
 
 Para imprimir e guardar junto do PC: **`A:\docs\cartao-emergencia.html`** (abra e use Ctrl+P). Numa folha A4: como ligar tudo, os endereços, onde achar cada assunto de emergência, quanto tempo o PC aguenta numa bateria e o que fazer se este PC quebrar.
 
-O menu agrupa as opções em Usar, Criar, Energia e Manter e mostra ao lado de cada uma o gasto estimado na tarifa da Equatorial Goiás (R$ 1,25/kWh, seção "Custo de energia"). Antes de rodar, ele repete a estimativa; os scripts mais longos mostram no fim quanto gastaram de fato. Além do número, ele aceita uma palavra (`mapa`, `jogo`, `energia`, `desligar`...): com uma opção só, ela roda; com várias, ele as lista. Três palavras ou mais que não sejam de nenhuma opção viram pergunta.
+O menu agrupa as opções em Usar, Criar, Energia e Manter e mostra ao lado de cada uma o gasto estimado na tarifa da Equatorial Goiás (R$ 1,25/kWh, seção "Custo de energia"). Antes de rodar, ele repete a estimativa; os scripts mais longos mostram no fim quanto gastaram de fato. Além do número, ele aceita uma palavra (`biblioteca`, `jogo`, `energia`, `desligar`...): com uma opção só, ela roda; com várias, ele as lista. Três palavras ou mais que não sejam de nenhuma opção viram pergunta.
 
 | Opção | O que faz | Onde abre | Gasto estimado |
 | --- | --- | --- | --- |
 | 1. Central do Cofre | pergunta com fonte, liga e desliga tudo, consumo ao vivo (o mesmo que `Painel.cmd`) | http://127.0.0.1:8070 | quase nada além do PC ligado |
 | 2. Chat com todos os modelos | um servidor só; escolha o modelo no topo do chat (na primeira vez, cole a chave de acesso) | http://127.0.0.1:8080 | ~1,4 Wh ≈ R$ 0,002 por pergunta |
-| 3. Biblioteca offline | Wikipédia, WikiMed, iFixit, o mapa e as outras bibliotecas, com busca | http://127.0.0.1:8081 | quase nada |
+| 3. Biblioteca offline | Wikipédia, WikiMed, iFixit e as outras bibliotecas, com busca | http://127.0.0.1:8081 | quase nada |
 | 4. Perguntar | pergunta, depois o jeito: só buscar (sem IA), rápida (sem fontes) ou com fonte (citando [1], [2]) | no terminal | quase nada; ~1 Wh; ~5 Wh ≈ R$ 0,006 |
 | 5. Conselho de IAs | várias IAs respondem e um relator decide a resposta final | http://127.0.0.1:8090 | ~12 Wh ≈ R$ 0,014 (rodada única) |
 | 6. Imagem, vídeo, música e 3D | ComfyUI (Workflow > Browse Templates) | http://127.0.0.1:8188 | ~2,5 Wh por imagem; ~50 Wh ≈ R$ 0,06 por vídeo de 2 s |
@@ -218,7 +210,7 @@ O menu agrupa as opções em Usar, Criar, Energia e Manter e mostra ao lado de c
 Na Central, cada degrau é desenhado com a altura do gasto. A recomendação sai de regras simples, sem IA nenhuma (`dev\ferramentas\tarefas.py`):
 
 - emergência (sangramento, queimadura, desmaio...): abre primeiros socorros na hora, com o aviso de ligar 192 ou 193;
-- lugar: abre o mapa;
+- lugar: busca na Wikivoyage e na Wikipédia;
 - imagem ou vídeo: abre o ComfyUI;
 - tradução, código, contas ou foto de documento: abre o chat dizendo qual modelo escolher, com o pedido já copiado;
 - saúde: com fonte, citando a WikiMed, e o aviso de que não substitui um médico;
@@ -266,10 +258,9 @@ Testado neste PC de 25/10 a 01/11/2026:
 | Perguntar com fonte pela Central (29/10) | "Como purificar água da chuva para beber?": ligou chat e biblioteca sozinha, citou Stack Exchange, Wikipédia e Wikibooks com links | ~2 min, contando ligar tudo |
 | Teste do projeto (29/10) | achou um acento que o PowerShell 5.1 lia errado no `instalar-wsl.ps1` (corrigido) e um token falso plantado de propósito | ~20 s |
 | Busca na biblioteca por idioma (29/10) | "purificar água" achou Wikipédia e Wikcionário; "water purification", Wikipédia, WikiMed e Stack Exchange | na hora |
-| Mapa do Brasil (01/11) | abriu na biblioteca; Goiânia com ruas, Praça Cívica, Lago dos Buritis e pontos de ônibus, escala de 200 m | na hora |
 | Responder agora, com modelo real (01/11) | Gemma 4 12B escrevendo a 179 W; cortado aos 3 s, guardou o texto já escrito e a placa voltou a 30 W em 3 s (o servidor parou de gerar) | 3 s; ~0,7 Wh |
 | Modo jogo (01/11) | fechou o servidor de modelos e a biblioteca; o chat se recusou a abrir enquanto ele estava ligado | na hora |
-| Escolha da ferramenta, sem IA (01/11) | 14 pedidos de exemplo foram para a ferramenta certa (emergência, mapa, imagem, tradução, código, contas, saúde, decisão, transcrição, termo solto e pergunta) | na hora |
+| Escolha da ferramenta, sem IA (01/11) | 14 pedidos de exemplo foram para a ferramenta certa (emergência, lugar, imagem, tradução, código, contas, saúde, decisão, transcrição, termo solto e pergunta) | na hora |
 | Respostas guardadas (01/11) | pergunta repetida voltou na hora, sem ligar nada, inclusive no modo jogo; pergunta nova no modo jogo foi recusada com a explicação | na hora |
 | Central nova (01/11) | testada no navegador em três larguras (tela grande, janela estreita, celular) e nos temas claro e escuro; 39 testes automáticos passando | na hora |
 | Vigia de desligar (01/11) | leu os três sinais (conversa do Claude, teclado e mouse, uso da placa) e ficou vigiando | a cada minuto |
@@ -296,7 +287,7 @@ Várias IAs do acervo respondem à mesma pergunta sem ver umas às outras. Depoi
 
 Como uma pergunta passa pelo conselho:
 
-1. **Triagem.** O Gemma 4 26B identifica o assunto e chama o especialista: código → Qwen3-Coder-Next, saúde → MedGemma 27B, tradução → TranslateGemma.
+1. **Triagem.** O Gemma 4 26B identifica o assunto e chama o especialista: código → Ornith 1.5, saúde → MedGemma 27B, tradução → TranslateGemma.
 2. **Fontes** (opcional). Trechos da biblioteca offline, como no "Perguntar com fonte", lidos por todos.
 3. **Imagem** (opcional). Um modelo que enxerga descreve a foto para os membros que só leem texto.
 4. **Rodada 1.** Cada membro responde sozinho.
@@ -421,11 +412,10 @@ O cérebro do cofre (scripts, catálogo, guia e ferramentas, cerca de 3 MB) é u
 ## Boas práticas de backup
 
 - Cada arquivo foi conferido pelo SHA256 da fonte. A cada três meses: `verificar-integridade.ps1` (sem `-Rapido`). Em Linux: `sha256sum -c SHA256SUMS.txt`.
-- Regra 3-2-1: SSD (1), espelho no HD D: (2), e falta um HD externo desligado e guardado em outro lugar (3): `copiar-backup.ps1 -Destino E:\COFRE-IA -Tudo`.
+- Cópia de segurança: desde 06/11/2026 o cofre não guarda mais espelho do SSD no HD nem versões de reserva (decisão do usuário, para liberar espaço). Tudo o que foi baixado pode ser baixado de novo pelo catálogo, conferido pelo SHA256. O que sai do cofre vai para `A:\_para-apagar` e `D:\COFRE-IA\_para-apagar` (no mesmo disco, sem apagar); o espaço volta quando essas pastas forem apagadas.
 - O HD D: (Seagate ST4000DM004) é SMR: trava com duas gravações grandes ao mesmo tempo, por isso o cofre baixa uma coisa de cada vez. Para a terceira cópia, prefira um HD CMR (linhas NAS, como WD Red Plus ou Seagate IronWolf) ou um SSD.
 - Não suspenda o PC durante a sincronização: em 26/10 ele ficou 12 horas suspenso e os downloads pararam.
-- Licenças com termos próprios (uso pessoal permitido): MedGemma, TranslateGemma, Nemotron, Hunyuan3D (não vale na UE, Reino Unido e Coreia do Sul), LFM2.5.
-- Mapas: dados © colaboradores do OpenStreetMap, licença ODbL; ao mostrar ou repassar um mapa, mantenha essa atribuição (o próprio mapa já a mostra no canto).
+- Licenças com termos próprios (uso pessoal permitido): MedGemma, TranslateGemma, Nemotron, Hunyuan3D (não vale na UE, Reino Unido e Coreia do Sul).
 - MedGemma erra: use junto com a WikiMed e procure um profissional sempre que puder.
 
 ## Fontes
@@ -440,6 +430,6 @@ Pesquisa de novembro de 2026 (seção "Novidades de novembro de 2026"):
 
 - Ranking: auditoria de 19/10/2026 da Artificial Analysis e do BenchLM (dev.to)
 - Modelos: API do Hugging Face, consultada em 25/10/2026
-- Bibliotecas: download.kiwix.org (catálogo e descrições em library.kiwix.org); mapas em download.kiwix.org/zim/maps, feitos com o openzim/maps a partir do OpenStreetMap
+- Bibliotecas: download.kiwix.org (catálogo e descrições em library.kiwix.org).
 - Motores: GitHub de ggml-org/llama.cpp, ggml-org/whisper.cpp, comfyanonymous/ComfyUI, ollama/ollama, astral-sh/uv; download.kiwix.org/release
 - Energia: consumo medido neste PC em 26/10/2026 com `medir-energia.ps1`; tarifa: projeção da Aneel de alta média de 8,6% em 2026 (Poder360) e bandeira de outubro de 2026 (Jornal do Brasil). Confira a sua na conta de luz.

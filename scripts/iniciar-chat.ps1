@@ -5,7 +5,7 @@
     - API compativel com OpenAI em http://127.0.0.1:8080/v1 (VS Code, Continue, Cline, Open WebUI...)
 .EXAMPLE
   .\iniciar-chat.ps1                                   # Gemma 4 12B
-  .\iniciar-chat.ps1 -Id qwen3-coder-next -Contexto 65536
+  .\iniciar-chat.ps1 -Id ornith-1.5-35b-a3b -Contexto 65536
   .\iniciar-chat.ps1 -Id gemma-4-26b-a4b -Rede         # libera para outros aparelhos da sua rede
   .\iniciar-chat.ps1 -Id qwen3.8-27b -Extra '--temp 0.6'
 .NOTES

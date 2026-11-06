@@ -117,7 +117,7 @@ FERRAMENTAS = {
     "respostas_guardadas": (respostas_guardadas, "Perguntas que o cofre ja respondeu, com a resposta inteira. Consultar nao gasta energia.",
                             {"busca": {"type": "string", "description": "palavras para filtrar (vazio = as mais recentes)", "default": ""},
                              "quantas": {"type": "integer", "default": 5}}, []),
-    "qual_ferramenta": (qual_ferramenta, "Diz o jeito mais barato de resolver um pedido no cofre (so buscar, resposta rapida, com fonte, conselho, chat com um modelo especifico, mapa, ComfyUI), com o gasto estimado e avisos de emergencia ou saude.",
+    "qual_ferramenta": (qual_ferramenta, "Diz o jeito mais barato de resolver um pedido no cofre (so buscar, resposta rapida, com fonte, conselho, chat com um modelo especifico, ComfyUI), com o gasto estimado e avisos de emergencia ou saude.",
                         {"pedido": {"type": "string"}}, ["pedido"]),
 }
 

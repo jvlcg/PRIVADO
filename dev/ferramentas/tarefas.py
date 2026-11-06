@@ -74,10 +74,10 @@ _REGRAS: list[tuple[str, str, list[dict], str | None]] = [
       _s("buscar", "Ler direto na biblioteca", "Os artigos da Wikipédia e das outras bibliotecas sobre o assunto, sem IA.", "buscar"),
       _s("chat", "Chat com o medgemma-27b", "Modelo de saúde, para conversar sobre o caso.", "chat", modelo="medgemma-27b")],
      AVISO_SAUDE),
-    ("mapa",
+    ("lugar",
      r"\b(mapa|onde fica|como chego|como chegar|endereco|bairro|rota|caminho (para|ate)|mais proxim\w*|perto daqui|localiza\w*)\b",
-     [_s("mapa", "Abrir o mapa offline", "Ruas, estradas, hospitais e postos, sem internet.", "biblioteca"),
-      _s("buscar", "Buscar o lugar na biblioteca", "Artigos da Wikipédia sobre o lugar.", "buscar")],
+     [_s("buscar", "Buscar o lugar na biblioteca", "Wikivoyage e Wikipédia: cidades, rotas, o que há em cada lugar.", "buscar"),
+      _s("fonte", MODOS["fonte"]["titulo"], "A IA junta o que as bibliotecas dizem sobre o lugar.", "perguntar")],
      None),
     ("ler",
      r"\b(ler (uma |a |esta |essa )?(foto|imagem|documento)|extrai\w*|digitaliz\w*|ocr|texto d[aeo] (foto|imagem|documento)|escanead\w*|nota fiscal)\b",
@@ -108,7 +108,7 @@ _REGRAS: list[tuple[str, str, list[dict], str | None]] = [
     ("codigo",
      r"\b(codigo|programa(r|cao)|python|javascript|typescript|java|c\+\+|rust|golang|script|bug|compila\w*|sql|html|css"
      r"|powershell|bash|linux|stack ?trace|exception|regex|api|git|funcao (em|no|do|de) (python|javascript|codigo|programa|excel))\b",
-     [_s("chat", "Chat com o qwen3-coder-next", "O modelo de programação do cofre.", "chat", modelo="qwen3-coder-next"),
+     [_s("chat", "Chat com o ornith-1.5-35b-a3b", "O agente de código do cofre: o que mais acerta ferramentas.", "chat", modelo="ornith-1.5-35b-a3b"),
       _s("conselho", MODOS["conselho"]["titulo"], "Para um problema difícil: inclui o Stack Overflow nas fontes.", "conselho")],
      None),
     ("contas",
@@ -131,7 +131,7 @@ _PERGUNTA = re.compile(r"\?|\b(como|por que|porque|qual|quais|quando|onde|quanto
 def sugerir(texto: str) -> dict:
     """{tipo, aviso, sugestoes: [{acao, titulo, porque, tarefa, modelo?, menu?}]}, a recomendada primeiro.
     acao: buscar | rapida | fonte | conselho (os modos de responder), chat (abrir o chat com `modelo`),
-    mapa, comfyui ou menu (opcao `menu` do terminal)."""
+    comfyui ou menu (opcao `menu` do terminal)."""
     t = sem_acento(texto.lower()).strip()
     if not t:
         return {"tipo": "vazio", "aviso": None, "sugestoes": []}

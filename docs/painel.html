@@ -228,9 +228,6 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
 .busca { display: flex; flex-wrap: wrap; gap: 8px; }
 .busca input { flex: 1 1 260px; }
 .busca select { padding: 10px; border-radius: 10px; border: 1px solid var(--linha-forte); background: var(--folha); }
-.mapa { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 16px; border: 1px solid var(--linha); border-radius: 12px; background: var(--folha); }
-.mapa .ic { width: 34px; height: 34px; color: var(--pinho); stroke-width: 1.5; }
-.mapa p { margin: 0; }
 .acervo-grupo { margin: 20px 0 6px; font-size: 15px; color: var(--suave); font-family: var(--texto); font-weight: 600; }
 .acervo { list-style: none; padding: 0; margin: 0; border: 1px solid var(--linha); border-radius: 12px; background: var(--folha); }
 .acervo li { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 14px; border-bottom: 1px solid var(--linha); align-items: center; }
@@ -356,7 +353,6 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
   <symbol id="i-procurar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
   <symbol id="i-tema" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11h-6l-4 4v-4H4z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
-  <symbol id="i-mapa" viewBox="0 0 24 24"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20z"/><path d="M9 4v13.5M15 6.5V20"/></symbol>
   <symbol id="i-conselho" viewBox="0 0 24 24"><circle cx="7" cy="8" r="2.5"/><circle cx="17" cy="8" r="2.5"/><circle cx="12" cy="6" r="2.5"/><path d="M3 18c0-3 2-5 4-5s4 2 4 5M13 18c0-3 2-5 4-5s4 2 4 5M8.5 15c.8-2 2-3 3.5-3s2.7 1 3.5 3"/></symbol>
   <symbol id="i-criar" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5.5-5 3.5 3 3-2.5 4.5 4"/></symbol>
   <symbol id="i-copiar" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
@@ -432,7 +428,7 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
     </section>
 
     <section class="vista" data-vista="biblioteca" aria-labelledby="t-biblioteca" hidden>
-      <h1 id="t-biblioteca" tabindex="-1">Biblioteca e mapa</h1>
+      <h1 id="t-biblioteca" tabindex="-1">Biblioteca</h1>
       <p class="suave">Wikipédia, WikiMed, iFixit, livros, manuais e fóruns práticos, sem internet.</p>
       <form class="busca" id="buscaForm" role="search">
         <input class="campo" type="search" id="buscaTermo" placeholder="Ex.: purificar água, torniquete, painel solar" required aria-label="O que procurar">
@@ -441,12 +437,6 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
       </form>
       <h2>Emergência</h2>
       <div class="emergencia" id="emergenciaBiblioteca" role="group" aria-label="Atalhos de emergência"></div>
-      <h2>Mapa offline</h2>
-      <div class="mapa">
-        <svg class="ic"><use href="#i-mapa"/></svg>
-        <p id="mapaTexto">Ruas, estradas, hospitais, postos e escolas do Brasil.</p>
-        <button class="botao" id="mapaBotao" type="button">Abrir o mapa</button>
-      </div>
       <div class="titulo-linha">
         <h2>O acervo</h2>
         <input class="campo" type="search" id="acervoFiltro" placeholder="Filtrar: medicina, solar, livros..." aria-label="Filtrar as bibliotecas" style="width:min(280px,100%);padding:7px 12px">
@@ -487,7 +477,7 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
           <tr><td>Conversar rápido</td><td><code>gemma-4-12b-qat</code></td><td>inteiro na placa: ~109 palavras por segundo</td></tr>
           <tr><td>Melhor resposta geral</td><td><code>gemma-4-26b-a4b-qat</code></td><td>~75 palavras/s; <code>qwen3.8-27b-iq3</code> é melhor, porém ~10 palavras/s</td></tr>
           <tr><td>Raciocínio e contas</td><td><code>gpt-oss-20b</code></td><td>o mais veloz</td></tr>
-          <tr><td>Programar</td><td><code>qwen3-coder-next</code></td><td>ou <code>ornith-1.5-35b-a3b</code>, o agente de código que mais acerta ferramentas (fica no HD)</td></tr>
+          <tr><td>Programar</td><td><code>ornith-1.5-35b-a3b</code></td><td>o agente de código que mais acerta ferramentas</td></tr>
           <tr><td>Saúde</td><td><code>medgemma-27b</code></td><td>junto com a WikiMed; não substitui um médico</td></tr>
           <tr><td>Traduzir</td><td><code>translategemma-12b</code></td><td>55 idiomas, inclusive texto em fotos</td></tr>
           <tr><td>Ler foto ou documento</td><td><code>glm-ocr</code></td><td>tabelas e PDFs escaneados</td></tr>
@@ -507,7 +497,7 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
       <ul class="dicas">
         <li>Guia completo: <code>A:\docs\GUIA.md</code> (offline) e a <a href="https://claude.ai/artifact/XuMQNn1aZENjqeAZKDqruw">versão online</a>.</li>
         <li>Imprima o <strong>cartão de emergência</strong> (<code>A:\docs\cartao-emergencia.html</code>, Ctrl+P) e guarde junto do PC.</li>
-        <li>O menu do terminal (<code>A:\IA.cmd</code>) aceita palavras: escreva “mapa”, “jogo” ou já a sua pergunta.</li>
+        <li>O menu do terminal (<code>A:\IA.cmd</code>) aceita palavras: escreva “biblioteca”, “jogo” ou já a sua pergunta.</li>
         <li>Para usar no celular, abra o servidor com <code>iniciar-servidor.ps1 -Rede</code> e acesse o IP deste PC na porta 8080.</li>
       </ul>
     </section>
@@ -531,7 +521,7 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
 
 <div class="paleta" id="paleta" hidden>
   <div class="paleta-caixa" role="dialog" aria-modal="true" aria-label="Procurar ação">
-    <input id="paletaBusca" type="text" autocomplete="off" placeholder="Ligar o chat, mapa, hemorragia, modo jogo..." aria-label="Procurar ação" aria-controls="paletaLista" role="combobox" aria-expanded="true">
+    <input id="paletaBusca" type="text" autocomplete="off" placeholder="Ligar o chat, biblioteca, hemorragia, modo jogo..." aria-label="Procurar ação" aria-controls="paletaLista" role="combobox" aria-expanded="true">
     <ul id="paletaLista" role="listbox"></ul>
     <p class="paleta-dica">Setas para escolher, Enter para fazer, Esc para fechar.</p>
   </div>
@@ -548,14 +538,14 @@ const VISTAS = [
   { id: 'inicio', nome: 'Início', icone: 'inicio' },
   { id: 'perguntar', nome: 'Perguntar', icone: 'perguntar' },
   { id: 'servicos', nome: 'Serviços', icone: 'servicos' },
-  { id: 'biblioteca', nome: 'Biblioteca e mapa', icone: 'biblioteca' },
+  { id: 'biblioteca', nome: 'Biblioteca', icone: 'biblioteca' },
   { id: 'energia', nome: 'Energia', icone: 'energia' },
   { id: 'historico', nome: 'Histórico', icone: 'historico' },
   { id: 'ajuda', nome: 'Ajuda', icone: 'ajuda' },
 ];
 const SERVICOS = [
   { id: 'chat', nome: 'Chat com os modelos', curto: 'Chat', faz: 'Todas as IAs de texto; escolha o modelo no topo.', abrir: 'http://127.0.0.1:8080', menu: 2, icone: 'chat' },
-  { id: 'biblioteca', nome: 'Biblioteca offline', curto: 'Biblioteca', faz: 'Wikipédia, WikiMed, iFixit, livros e o mapa.', abrir: KIWIX, menu: 3, icone: 'biblioteca' },
+  { id: 'biblioteca', nome: 'Biblioteca offline', curto: 'Biblioteca', faz: 'Wikipédia, WikiMed, iFixit, manuais e fóruns.', abrir: KIWIX, menu: 3, icone: 'biblioteca' },
   { id: 'conselho', nome: 'Conselho de IAs', curto: 'Conselho', faz: 'Várias IAs respondem e um relator decide.', abrir: 'http://127.0.0.1:8090', menu: 5, icone: 'conselho' },
   { id: 'comfyui', nome: 'Imagem, vídeo, música e 3D', curto: 'ComfyUI', faz: 'ComfyUI, com modelos prontos em Browse Templates.', abrir: 'http://127.0.0.1:8188', menu: 6, icone: 'criar' },
 ];
@@ -580,7 +570,7 @@ const ATALHOS = [
   { pt: 'abrigo', en: 'emergency shelter' },
   { pt: 'energia solar', en: 'solar power' },
 ];
-const EXEMPLOS = ['Como purificar água da chuva?', 'Mapa de Goiânia', 'Febre alta em criança', 'Traduzir “bom dia” para o inglês', 'Devo comprar painel solar ou gerador?', 'torniquete'];
+const EXEMPLOS = ['Como purificar água da chuva?', 'Onde fica a Chapada dos Veadeiros?', 'Febre alta em criança', 'Traduzir “bom dia” para o inglês', 'Devo comprar painel solar ou gerador?', 'torniquete'];
 
 let E = null;                 // ultimo estado da Central
 let relogio = null;           // proxima verificacao do estado
@@ -686,8 +676,6 @@ function montar() {
   const ferramentas = $('#ferramentas');
   ferramentas.append(el('button', { type: 'button', class: 'ferramenta', onclick: () => irPara('perguntar') },
     icone('perguntar'), el('span', {}, 'Perguntar', el('small', { texto: 'buscar, rápida ou com fonte' }))));
-  ferramentas.append(el('button', { type: 'button', class: 'ferramenta', onclick: abrirMapa },
-    icone('mapa'), el('span', {}, 'Mapa offline', el('small', { texto: 'ruas, hospitais, postos' }))));
   for (const s of SERVICOS) {
     s.lampadaFerramenta = el('i', { class: 'lampada' });
     ferramentas.append(el('button', { type: 'button', class: 'ferramenta', onclick: () => abrirServico(s.id) },
@@ -776,7 +764,7 @@ function mostrar(e) {
     const p = pendentes.get(s.id);
     if (ok && p) {
       pendentes.delete(s.id);
-      const url = p.url === 'mapa' ? e.mapa : p.url;
+      const url = p.url;
       if (url) avisar(p.texto || `${s.nome} ligou.`, { href: url, texto: 'Abrir' });
     }
   }
@@ -802,10 +790,6 @@ function mostrar(e) {
   mostrarVisor(e.gasto_mes_wh || 0);
   $('#gastoMes').textContent = e.gasto_mes;
 
-  $('#mapaBotao').disabled = e.modo_jogo;
-  $('#mapaTexto').textContent = e.mapa ? 'Ruas, estradas, hospitais, postos e escolas do Brasil, sem internet.'
-    : e.servicos.biblioteca ? 'O mapa do Brasil ainda não foi baixado: menu, opção 15 (sincronizar).'
-    : 'Ruas, estradas, hospitais, postos e escolas do Brasil. Abrir liga a biblioteca.';
 
   const lista = $('#modelos');
   lista.replaceChildren();
@@ -855,12 +839,6 @@ function abrirServico(id, url, texto) {
   if (E && E.modo_jogo) { avisar('Modo jogo ligado: saia dele para abrir as IAs e a biblioteca.'); return; }
   pendentes.set(id, { url: url || s.abrir, texto: texto || `${s.nome} ligou.` });
   ligar(id);
-}
-
-function abrirMapa() {
-  if (E && E.mapa) { window.open(E.mapa, '_blank', 'noopener'); return; }
-  if (E && E.servicos.biblioteca) { avisar('O mapa do Brasil ainda não foi baixado: menu, opção 15 (sincronizar).'); return; }
-  abrirServico('biblioteca', 'mapa', 'A biblioteca ligou: o mapa está pronto.');
 }
 
 function abrirEmergencia(a) {
@@ -998,7 +976,7 @@ function mostrarSugestao(r) {
 }
 
 function textoBotao(s) {
-  return { chat: 'Abrir o chat', mapa: 'Abrir o mapa', comfyui: 'Abrir o ComfyUI', menu: 'Como fazer', buscar: 'Buscar' }[s.acao] || 'Fazer';
+  return { chat: 'Abrir o chat', comfyui: 'Abrir o ComfyUI', menu: 'Como fazer', buscar: 'Buscar' }[s.acao] || 'Fazer';
 }
 
 async function executar(s, texto) {
@@ -1006,7 +984,6 @@ async function executar(s, texto) {
   // abrir um servico no modo jogo e barrado em abrirServico.
   if (['buscar', 'rapida', 'fonte'].includes(s.acao)) { irPerguntar(texto, s.acao); return; }
   if (s.acao === 'conselho') { abrirConselho(texto); return; }
-  if (s.acao === 'mapa') { abrirMapa(); return; }
   if (s.acao === 'menu') { avisar(`Isso é pelo menu do terminal: abra A:\\IA.cmd e escolha a opção ${s.menu}.`); return; }
   if (E && E.modo_jogo) { avisar('Modo jogo ligado: saia dele para abrir as IAs.'); return; }
   const copiou = await copiar(texto);
@@ -1274,7 +1251,6 @@ function acoesPaleta(q) {
     lista.push({ titulo: `Abrir ${s.nome}`, dica: E && E.servicos[s.id] ? 'ligado' : 'liga se precisar', icone: s.icone, chaves: s.curto, fazer: () => abrirServico(s.id) });
     if (CENTRAL && !(E && E.servicos[s.id])) lista.push({ titulo: `Ligar ${s.nome}`, dica: `menu, opção ${s.menu}`, icone: s.icone, chaves: s.curto, fazer: () => ligar(s.id) });
   }
-  lista.push({ titulo: 'Abrir o mapa offline', icone: 'mapa', chaves: 'goiania brasil ruas hospital', fazer: abrirMapa });
   if (CENTRAL) {
     lista.push({ titulo: 'Fechar tudo e liberar a placa de vídeo', icone: 'energia', chaves: 'parar desligar', fazer: pararTudo });
     if (E && E.modo_jogo) lista.push({ titulo: 'Sair do modo jogo', icone: 'energia', chaves: 'jogo jogar', fazer: sairModoJogo });
@@ -1376,7 +1352,6 @@ $('#buscaForm').addEventListener('submit', ev => {
   abrirServico('biblioteca', `${KIWIX}/search?pattern=${encodeURIComponent(termo)}&books.filter.lang=${idioma}`, `A biblioteca ligou: a busca por “${termo}” está pronta.`);
 });
 $('#buscaIdioma').addEventListener('change', () => { salvarPref('idioma', $('#buscaIdioma').value); montarIdioma(); });
-$('#mapaBotao').addEventListener('click', abrirMapa);
 $('#acervoFiltro').addEventListener('input', mostrarAcervo);
 $('#histBusca').addEventListener('input', () => { clearTimeout(esperaHistorico); esperaHistorico = setTimeout(carregarHistorico, 200); });
 $('#perguntarBotao').addEventListener('click', () => perguntar(false));

@@ -65,14 +65,16 @@ function Obter-ReleaseListagem($def, $padrao) {
     return [pscustomobject]@{ tag_name = $ver; published_at = ''; assets = @($asset); zipball_url = $null }
 }
 
-# Guarda so as duas versoes mais novas de cada motor (a atual e a anterior, de reserva). O llama.cpp sai
-# quase todo dia; sem isso o SSD ganharia ~1,5 GB a cada sincronizacao.
-function Limpar-VersoesAntigas($pastaBase, $atual, $manter = 2) {
+# Guarda so a versao atual de cada motor (sem reserva, a pedido em 06/11/2026). As antigas vao para
+# A:\_para-apagar\motores, no mesmo disco: o espaco volta quando essa pasta for apagada.
+function Limpar-VersoesAntigas($pastaBase, $atual, $manter = 1) {
     $versoes = @(Get-ChildItem -LiteralPath $pastaBase -Directory | Where-Object { $_.Name -notlike '*.tmp' } | Sort-Object CreationTime -Descending)
     foreach ($v in ($versoes | Select-Object -Skip $manter)) {
         if ($v.Name -eq $atual) { continue }
-        Remove-Item -LiteralPath $v.FullName -Recurse -Force
-        Info "Versao antiga removida: $($v.Name)"
+        $destino = Join-Path $Raiz "_para-apagar\motores\$(Split-Path $pastaBase -Leaf)\$($v.Name)"
+        New-Item -ItemType Directory -Force -Path (Split-Path $destino -Parent) | Out-Null
+        Move-Item -LiteralPath $v.FullName -Destination $destino
+        Info "Versao antiga separada em _para-apagar: $($v.Name)"
     }
 }
 

@@ -14,7 +14,7 @@
   qualquer site aberto no navegador poderia mandar o PC rodar modelos escondido. O chat do navegador
   pede a chave uma vez (ela vai copiada para a area de transferencia: cole com Ctrl+V).
   Clientes (VS Code/Continue, Cline, Open WebUI, Aider): base URL http://127.0.0.1:8080/v1,
-  chave de API = o texto de catalogo\chave-api.txt, modelo = id do catalogo (ex.: qwen3-coder-next).
+  chave de API = o texto de catalogo\chave-api.txt, modelo = id do catalogo (ex.: ornith-1.5-35b-a3b).
   -SemChave desliga a chave (nao recomendado). -SemAgente tira as ferramentas do cofre (MCP) do chat.
 #>
 param(

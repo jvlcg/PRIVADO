@@ -191,20 +191,6 @@ class Chave(unittest.TestCase):
         self.assertNotIn("Authorization", enviados[1])
 
 
-class Mapa(unittest.TestCase):
-    def setUp(self):
-        central._mapa.update(quando=0.0, url=None)
-
-    def test_prefere_o_mapa_do_brasil(self):
-        livros = [("maps_en_south-america_2026-08", "en"), ("maps_en_brazil_2026-06", "en"), ("wikipedia_pt", "pt")]
-        with mock.patch.object(sabio, "livros_kiwix", return_value=livros):
-            self.assertEqual(central.endereco_mapa(), f"{sabio.KIWIX}/content/maps_en_brazil_2026-06")
-
-    def test_sem_mapa(self):
-        with mock.patch.object(sabio, "livros_kiwix", return_value=[("wikipedia_pt", "pt")]):
-            self.assertIsNone(central.endereco_mapa())
-
-
 class _LlamaFalso(BaseHTTPRequestHandler):
     """Imita o llama-server em streaming: um pedaco de texto a cada 0,1 s. Anota se o cliente desligou."""
     pedacos = 3
@@ -378,7 +364,7 @@ class QualFerramenta(unittest.TestCase):
     def test_cada_pedido_vai_para_a_ferramenta_certa(self):
         casos = {
             "meu filho cortou o dedo e está sangrando muito": ("emergencia", "buscar"),
-            "onde fica o hospital mais próximo": ("mapa", "mapa"),
+            "onde fica o hospital mais próximo": ("lugar", "buscar"),
             "gere uma imagem de um gato astronauta": ("criar", "comfyui"),
             "traduza para o inglês: bom dia": ("traduzir", "chat"),
             "meu script python dá erro de import": ("codigo", "chat"),

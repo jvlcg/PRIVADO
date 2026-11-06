@@ -57,7 +57,7 @@ PADRAO = {
     "relator_profundo": "qwen3.8-27b-iq3",
     "triagem": "gemma-4-26b-a4b-qat",
     "max_membros": 3,
-    "especialistas": {"codigo": "qwen3-coder-next", "medicina": "medgemma-27b", "traducao": "translategemma-12b"},
+    "especialistas": {"codigo": "ornith-1.5-35b-a3b", "medicina": "medgemma-27b", "traducao": "translategemma-12b"},
 }
 AREAS = {
     "geral": "conhecimentos gerais e conversa",

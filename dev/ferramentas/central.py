@@ -54,7 +54,6 @@ PEDIU_AGORA = threading.Event()
 LIGANDO: dict[str, float] = {}  # servico -> quando foi pedido; evita abrir duas janelas do mesmo
 ESPERA_LIGAR = 300  # depois disso o painel avisa que o servico nao ligou
 _placa = {"quando": 0.0, "dados": None}
-_mapa = {"quando": 0.0, "url": None}
 HISTORICO = tarefas.Historico()
 # Nome de cada tarefa do registro de gasto, para o painel de energia.
 NOMES_TAREFA = {
@@ -64,16 +63,6 @@ NOMES_TAREFA = {
     "integridade": "Conferir a integridade", "status": "Status do acervo", "verificar": "Verificar novidades",
     "testar": "Testar o projeto", "biblioteca": "Biblioteca", "gigante": "Modelo gigante do HD",
 }
-
-
-def endereco_mapa() -> str | None:
-    """Pagina do mapa offline na biblioteca (o do Brasil, se houver; senao o primeiro mapa), guardada por 60 s."""
-    if time.time() - _mapa["quando"] < 60:
-        return _mapa["url"]
-    mapas = sorted(nome for nome, _ in sabio.livros_kiwix() if nome.startswith("maps_"))
-    preferido = next((m for m in mapas if m.startswith("maps_en_brazil")), mapas[0] if mapas else None)
-    _mapa.update(quando=time.time(), url=f"{sabio.KIWIX}/content/{preferido}" if preferido else None)
-    return _mapa["url"]
 
 
 def placa() -> dict | None:
@@ -193,7 +182,6 @@ def estado() -> dict:
         "placa": p,
         "memoria": memoria(),
         "modelos": modelos_na_memoria() if ligados["chat"] else [],
-        "mapa": endereco_mapa() if ligados["biblioteca"] else None,
         "modo_jogo": MODO_JOGO.exists(),
         "vigia": vigia_ligada(),
         "gasto_mes": texto_gasto_mes(),
@@ -288,7 +276,7 @@ def parar_tudo() -> dict:
                         "-Manter", f"{os.getpid()},{os.getppid()}"],
                        capture_output=True, text=True, timeout=90, creationflags=subprocess.CREATE_NO_WINDOW)
     LIGANDO.clear()
-    _placa["quando"] = _mapa["quando"] = 0.0
+    _placa["quando"] = 0.0
     return {"ok": r.returncode == 0, "texto": (r.stdout or r.stderr).strip()[-600:]}
 
 
@@ -312,7 +300,7 @@ def modo_jogo(ligar_modo: bool) -> dict:
     r = subprocess.run(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(SCRIPTS / "modo-jogo.ps1"), *args],
                        capture_output=True, text=True, timeout=90, creationflags=subprocess.CREATE_NO_WINDOW)
     LIGANDO.clear()
-    _placa["quando"] = _mapa["quando"] = 0.0
+    _placa["quando"] = 0.0
     return {"ok": r.returncode == 0, "ligado": MODO_JOGO.exists(), "texto": (r.stdout or r.stderr).strip()[-600:]}
 
 

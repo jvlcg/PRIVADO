@@ -16,7 +16,7 @@ $opcoes = @(
        acao = { Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSScriptRoot\central.ps1`"" } }
     @{ n = 2;  grupo = 'USAR NO DIA A DIA'; nome = 'Chat com todos os modelos'; tarefa = 'chat'
        acao = { Nova-Janela 'iniciar-servidor.ps1' } }
-    @{ n = 3;  grupo = 'USAR NO DIA A DIA'; nome = 'Biblioteca offline: Wikipédia, mapa, medicina, manuais'; tarefa = 'biblioteca'
+    @{ n = 3;  grupo = 'USAR NO DIA A DIA'; nome = 'Biblioteca offline: Wikipédia, medicina, manuais, fóruns'; tarefa = 'biblioteca'
        acao = { Nova-Janela 'iniciar-biblioteca.ps1' } }
     @{ n = 4;  grupo = 'USAR NO DIA A DIA'; nome = 'Perguntar (só buscar, rápida ou com fonte)'; tarefa = 'perguntar'
        acao = { $q = Read-Host '  Sua pergunta'; if ($q) { Perguntar-ComModo $q } } }
@@ -66,7 +66,7 @@ $opcoes = @(
 )
 # Palavras que acham cada opção quando você digita uma palavra em vez do número.
 $chaves = @{
-    1 = 'central painel navegador site inicio'; 2 = 'chat conversar modelo modelos ia'; 3 = 'biblioteca wikipedia mapa livros manual kiwix'
+    1 = 'central painel navegador site inicio'; 2 = 'chat conversar modelo modelos ia'; 3 = 'biblioteca wikipedia livros manual kiwix forum'
     4 = 'perguntar pergunta fonte resposta buscar'; 5 = 'conselho debate opiniao decidir decisao'; 6 = 'comfyui imagem video musica 3d criar desenho'
     7 = 'gerar imagem video'; 8 = 'transcrever audio whisper legenda'; 9 = 'falar voz piper ler alto'
     10 = 'medir energia consumo watts conta'; 11 = 'fechar parar liberar placa'; 12 = 'jogo jogar game'
@@ -140,7 +140,7 @@ function Mostrar-Menu {
     Write-Host '    0  ' -ForegroundColor Yellow -NoNewline
     Write-Host 'Sair'
     Write-Host ''
-    Write-Host '  Dica: digite o número, uma palavra (mapa, jogo, energia...) ou já a sua pergunta.' -ForegroundColor DarkGray
+    Write-Host '  Dica: digite o número, uma palavra (biblioteca, jogo, energia...) ou já a sua pergunta.' -ForegroundColor DarkGray
 }
 
 if ($SoMostrar) { Mostrar-Menu; return }

@@ -1,26 +1,5 @@
 {
     "modelos":  {
-                    "gemma-4-12b":  {
-                                        "completo":  true,
-                                        "repo":  "google/gemma-4-12B-it-qat-q4_0-gguf",
-                                        "arquivos":  {
-                                                         "gemma-4-12b-it-qat-q4_0.gguf":  {
-                                                                                              "destino":  "modelos\\llm\\gemma-4-12b\\gemma-4-12b-it-qat-q4_0.gguf",
-                                                                                              "tamanho":  6975879296,
-                                                                                              "sha256":  "93567e57a8fe10b23569b9d9ec38cd005deedf71e29477c421a4b83f418a538b",
-                                                                                              "baixado_em":  "2026-10-25T21:33:47"
-                                                                                          },
-                                                         "mmproj-gemma-4-12b-it-qat-q4_0.gguf":  {
-                                                                                                     "destino":  "modelos\\llm\\gemma-4-12b\\mmproj-gemma-4-12b-it-qat-q4_0.gguf",
-                                                                                                     "tamanho":  175115616,
-                                                                                                     "sha256":  "cb018338a7538a9814d994bfe54644c71eb7ed54e31eae2f721e45fd3c260da7",
-                                                                                                     "baixado_em":  "2026-10-25T21:33:52"
-                                                                                                 }
-                                                     },
-                                        "repo_sha":  "29d097773436b69ff9feafd636ab4cf873786537",
-                                        "repo_modificado":  "2026-07-17T21:24:41.000Z",
-                                        "local":  "cofre"
-                                    },
                     "qwen3-embedding-0.6b":  {
                                                  "completo":  true,
                                                  "repo":  "Qwen/Qwen3-Embedding-0.6B-GGUF",
@@ -49,89 +28,6 @@
                                                    "repo_sha":  "5359861c739e955e79d9a303bcbc70fb988958b1",
                                                    "repo_modificado":  "2024-10-29T18:25:17.000Z"
                                                },
-                    "gemma-4-26b-a4b":  {
-                                            "completo":  true,
-                                            "repo":  "unsloth/gemma-4-26B-A4B-it-GGUF",
-                                            "arquivos":  {
-                                                             "gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf":  {
-                                                                                                        "destino":  "modelos\\llm\\gemma-4-26b-a4b\\gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf",
-                                                                                                        "tamanho":  17010980576,
-                                                                                                        "sha256":  "ef728c8e0c337fd1067b947af006e38a9ef2419e56feced4fd29b4bf0636e30c",
-                                                                                                        "baixado_em":  "2026-10-25T21:38:09"
-                                                                                                    },
-                                                             "mmproj-F16.gguf":  {
-                                                                                     "destino":  "modelos\\llm\\gemma-4-26b-a4b\\mmproj-F16.gguf",
-                                                                                     "tamanho":  1193058784,
-                                                                                     "sha256":  "418a6d8723067cd712235facbbc5cba6c8fbbd413fc1292d2aace5a027d5a42f",
-                                                                                     "baixado_em":  "2026-10-25T21:38:26"
-                                                                                 },
-                                                             "MTP/mtp-gemma-4-26B-A4B-it-Q8_0.gguf":  {
-                                                                                                          "destino":  "modelos\\llm\\gemma-4-26b-a4b\\mtp-gemma-4-26B-A4B-it-Q8_0.gguf",
-                                                                                                          "tamanho":  461766816,
-                                                                                                          "sha256":  "6326fb9f5e487aa8dcdd313a091e3c67724cb2a666ec3b7d2895b5b26d93ed1b",
-                                                                                                          "baixado_em":  "2026-10-26T16:48:09"
-                                                                                                      }
-                                                         },
-                                            "repo_sha":  "c099eb48e663fd284577b04978a94ffccb261841",
-                                            "repo_modificado":  "2026-07-17T13:00:49.000Z",
-                                            "local":  "cofre"
-                                        },
-                    "qwen3.8-27b":  {
-                                        "completo":  true,
-                                        "repo":  "unsloth/Qwen3.8-27B-GGUF",
-                                        "arquivos":  {
-                                                         "Qwen3.8-27B-UD-Q4_K_XL.gguf":  {
-                                                                                             "destino":  "modelos\\llm\\qwen3.8-27b\\Qwen3.8-27B-UD-Q4_K_XL.gguf",
-                                                                                             "tamanho":  17559178144,
-                                                                                             "sha256":  "3f227079003add2511437e5b1e94812e363385225bf6a9b47b0054a72bc8b01e",
-                                                                                             "baixado_em":  "2026-10-25T21:42:02"
-                                                                                         },
-                                                         "mmproj-F16.gguf":  {
-                                                                                 "destino":  "modelos\\llm\\qwen3.8-27b\\mmproj-F16.gguf",
-                                                                                 "tamanho":  927607488,
-                                                                                 "sha256":  "cbb841a9ee0636b2ec172f5bb8df2ea8dfeb01e90fe7c6126581d662a0b4e43e",
-                                                                                 "baixado_em":  "2026-10-25T21:42:17"
-                                                                             },
-                                                         "MTP/mtp-Qwen3.8-27B-Q4_0.gguf":  {
-                                                                                               "destino":  "modelos\\llm\\qwen3.8-27b\\mtp-Qwen3.8-27B-Q4_0.gguf",
-                                                                                               "tamanho":  1369590656,
-                                                                                               "sha256":  "50d9ce5a6da381bbcfb31061cf73df94a90e6faf8efeddee379a9cb8f1501c6e",
-                                                                                               "baixado_em":  "2026-10-26T16:48:10"
-                                                                                           }
-                                                     },
-                                        "repo_sha":  "4ca720788d1e01f1bff70c033e0d0028fd02e502",
-                                        "repo_modificado":  "2026-08-20T12:04:25.000Z",
-                                        "local":  "cofre"
-                                    },
-                    "qwen3-coder-next":  {
-                                             "completo":  true,
-                                             "repo":  "unsloth/Qwen3-Coder-Next-GGUF",
-                                             "arquivos":  {
-                                                              "Qwen3-Coder-Next-UD-IQ4_XS.gguf":  {
-                                                                                                      "destino":  "modelos\\codigo\\qwen3-coder-next\\Qwen3-Coder-Next-UD-IQ4_XS.gguf",
-                                                                                                      "tamanho":  38429272064,
-                                                                                                      "sha256":  "abf56d7fe8a0a99c15d220c13de4aa57b69cfba6ef4c2a007b56e34d7b40cd11",
-                                                                                                      "baixado_em":  "2026-10-25T21:50:39"
-                                                                                                  }
-                                                          },
-                                             "repo_sha":  "ce09c67b53bc8739eef83fe67b2f5d293c270632",
-                                             "repo_modificado":  "2026-03-06T14:38:33.000Z"
-                                         },
-                    "mimo-v2.6-distill-9b":  {
-                                                 "completo":  true,
-                                                 "repo":  "bartowski/MiMo-V2.6-Distill-Qwen-9B-GGUF",
-                                                 "arquivos":  {
-                                                                  "MiMo-V2.6-Distill-Qwen-9B-Q4_K_M.gguf":  {
-                                                                                                                "destino":  "modelos\\llm\\mimo-v2.6-distill-9b\\MiMo-V2.6-Distill-Qwen-9B-Q4_K_M.gguf",
-                                                                                                                "tamanho":  5841049120,
-                                                                                                                "sha256":  "4bca6f18c73f72270c7a20c2ea2bea581de8246e318714277120369d34048c81",
-                                                                                                                "baixado_em":  "2026-10-25T21:51:53"
-                                                                                                            }
-                                                              },
-                                                 "repo_sha":  "4371da10c84fb26da3592d4cf312d24aa82b7b65",
-                                                 "repo_modificado":  "2026-09-21T22:44:19.000Z",
-                                                 "local":  "cofre"
-                                             },
                     "z-image-turbo":  {
                                           "completo":  true,
                                           "repo":  "Comfy-Org/Z-Image-Turbo",
@@ -158,41 +54,6 @@
                                           "repo_sha":  "6fc90a3b1b653e935a0d175e260736de25b84df5",
                                           "repo_modificado":  "2026-09-23T08:02:57.000Z"
                                       },
-                    "embeddinggemma-2":  {
-                                             "completo":  true,
-                                             "repo":  "ggml-org/embeddinggemma-2-GGUF",
-                                             "arquivos":  {
-                                                              "embeddinggemma-2-Q8_0.gguf":  {
-                                                                                                 "destino":  "modelos\\embeddings\\embeddinggemma-2\\embeddinggemma-2-Q8_0.gguf",
-                                                                                                 "tamanho":  309855456,
-                                                                                                 "sha256":  "2188ac1deca4b77dffefd603c2776a9d76d9d74ec01841392982ebb840b09135",
-                                                                                                 "baixado_em":  "2026-10-25T21:55:48"
-                                                                                             }
-                                                          },
-                                             "repo_sha":  "58faf90940886df2d62be555c8765d00dac362c5",
-                                             "repo_modificado":  "2026-10-19T10:57:29.000Z"
-                                         },
-                    "qwen3.6-35b-a3b":  {
-                                            "completo":  true,
-                                            "repo":  "unsloth/Qwen3.6-35B-A3B-GGUF",
-                                            "arquivos":  {
-                                                             "Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf":  {
-                                                                                                     "destino":  "modelos\\llm\\qwen3.6-35b-a3b\\Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf",
-                                                                                                     "tamanho":  22360456160,
-                                                                                                     "sha256":  "707a55a8a4397ecde44de0c499d3e68c1ad1d240d1da65826b4949d1043f4450",
-                                                                                                     "baixado_em":  "2026-10-25T22:00:21"
-                                                                                                 },
-                                                             "mmproj-F16.gguf":  {
-                                                                                     "destino":  "modelos\\llm\\qwen3.6-35b-a3b\\mmproj-F16.gguf",
-                                                                                     "tamanho":  899283680,
-                                                                                     "sha256":  "8971ee4f331ff0a4c609374f32984b3d4e6dc086c0aa35f1d637fad1829e887f",
-                                                                                     "baixado_em":  "2026-10-25T22:00:34"
-                                                                                 }
-                                                         },
-                                            "repo_sha":  "a483e9e6cbd595906af30beda3187c2663a1118c",
-                                            "repo_modificado":  "2026-04-20T12:42:25.000Z",
-                                            "local":  "cofre"
-                                        },
                     "gpt-oss-20b":  {
                                         "completo":  true,
                                         "repo":  "ggml-org/gpt-oss-20b-GGUF",
@@ -207,42 +68,6 @@
                                         "repo_sha":  "15dcfc7e7c608c6161507211ed43c5b590801b4b",
                                         "repo_modificado":  "2026-10-19T14:14:26.000Z"
                                     },
-                    "devstral-small-2":  {
-                                             "completo":  true,
-                                             "repo":  "unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF",
-                                             "arquivos":  {
-                                                              "Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf":  {
-                                                                                                                         "destino":  "modelos\\codigo\\devstral-small-2\\Devstral-Small-2-24B-Instruct-2512-UD-Q4_K_XL.gguf",
-                                                                                                                         "tamanho":  14506151072,
-                                                                                                                         "sha256":  "b44e34b78180fc3ab1abbe1edad9f1f3926fdca10eed3bfae168b065e683f6cd",
-                                                                                                                         "baixado_em":  "2026-10-25T22:06:05"
-                                                                                                                     }
-                                                          },
-                                             "repo_sha":  "6e458b8add42681bfd023de5eab93637694aaf82",
-                                             "repo_modificado":  "2025-12-15T10:16:01.000Z",
-                                             "local":  "cofre"
-                                         },
-                    "qwen3.5-2b":  {
-                                       "completo":  true,
-                                       "repo":  "unsloth/Qwen3.5-2B-GGUF",
-                                       "arquivos":  {
-                                                        "Qwen3.5-2B-UD-Q4_K_XL.gguf":  {
-                                                                                           "destino":  "modelos\\leve\\qwen3.5-2b\\Qwen3.5-2B-UD-Q4_K_XL.gguf",
-                                                                                           "tamanho":  1339752704,
-                                                                                           "sha256":  "0af96165ea615bea39a04118d63f0b6d35908aea850ee4a51aa6151d851b8b35",
-                                                                                           "baixado_em":  "2026-10-25T22:41:25"
-                                                                                       },
-                                                        "mmproj-F16.gguf":  {
-                                                                                "destino":  "modelos\\leve\\qwen3.5-2b\\mmproj-F16.gguf",
-                                                                                "tamanho":  668227264,
-                                                                                "sha256":  "7035e9cb8d7c6a9681d07eef9a364783e86ea4cd73faab2eabb4f43a101830c7",
-                                                                                "baixado_em":  "2026-10-25T22:41:35"
-                                                                            }
-                                                    },
-                                       "local":  "nucleo",
-                                       "repo_sha":  "f6d5376be1edb4d416d56da11e5397a961aca8ae",
-                                       "repo_modificado":  "2026-03-02T14:07:35.000Z"
-                                   },
                     "gemma-4-e4b":  {
                                         "completo":  true,
                                         "repo":  "google/gemma-4-E4B-it-qat-q4_0-gguf",
@@ -279,54 +104,6 @@
                                                 "repo_sha":  "a02f48bb4f057028298c21fa033da2b30d7742d5",
                                                 "repo_modificado":  "2025-10-03T10:19:38.000Z"
                                             },
-                    "kokoro-82m":  {
-                                       "completo":  true,
-                                       "repo":  "hexgrad/Kokoro-82M",
-                                       "arquivos":  {
-                                                        "kokoro-v1_0.pth":  {
-                                                                                "destino":  "modelos\\audio\\kokoro-82m\\kokoro-v1_0.pth",
-                                                                                "tamanho":  327212226,
-                                                                                "sha256":  "496dba118d1a58f5f3db2efc88dbdc216e0483fc89fe6e47ee1f2c53f18ad1e4",
-                                                                                "baixado_em":  "2026-10-25T22:43:10"
-                                                                            },
-                                                        "config.json":  {
-                                                                            "destino":  "modelos\\audio\\kokoro-82m\\config.json",
-                                                                            "tamanho":  2351,
-                                                                            "sha256":  "5abb01e2403b072bf03d04fde160443e209d7a0dad49a423be15196b9b43c17f",
-                                                                            "baixado_em":  "2026-10-25T22:43:10"
-                                                                        },
-                                                        "voices/pf_dora.pt":  {
-                                                                                  "destino":  "modelos\\audio\\kokoro-82m\\voices\\pf_dora.pt",
-                                                                                  "tamanho":  523425,
-                                                                                  "sha256":  "07e4ff987c5d5a8c3995efd15cc4f0db7c4c15e881b198d8ab7f67ecf51f5eb7",
-                                                                                  "baixado_em":  "2026-10-25T22:43:12"
-                                                                              },
-                                                        "voices/pm_alex.pt":  {
-                                                                                  "destino":  "modelos\\audio\\kokoro-82m\\voices\\pm_alex.pt",
-                                                                                  "tamanho":  523425,
-                                                                                  "sha256":  "cf0ba8c573c2480fc54123683a35cf1e2ae130428e441eb91f9149bdb188a526",
-                                                                                  "baixado_em":  "2026-10-25T22:43:15"
-                                                                              }
-                                                    },
-                                       "local":  "nucleo",
-                                       "repo_sha":  "f3ff3571791e39611d31c381e3a41a3af07b4987",
-                                       "repo_modificado":  "2025-04-10T18:12:48.000Z"
-                                   },
-                    "lfm2.5-1.2b":  {
-                                        "completo":  true,
-                                        "repo":  "LiquidAI/LFM2.5-1.2B-Instruct-GGUF",
-                                        "arquivos":  {
-                                                         "LFM2.5-1.2B-Instruct-Q4_K_M.gguf":  {
-                                                                                                  "destino":  "modelos\\leve\\lfm2.5-1.2b\\LFM2.5-1.2B-Instruct-Q4_K_M.gguf",
-                                                                                                  "tamanho":  730895168,
-                                                                                                  "sha256":  "b1b3de114215d9507409a662a501a631095a479a419584e8a2ded6304b19b4f5",
-                                                                                                  "baixado_em":  "2026-10-25T22:43:26"
-                                                                                              }
-                                                     },
-                                        "local":  "nucleo",
-                                        "repo_sha":  "8ed288026e23958ad9dfa92d53ed773a8eee7125",
-                                        "repo_modificado":  "2026-09-22T20:41:54.000Z"
-                                    },
                     "qwen3.5-0.8b":  {
                                          "completo":  true,
                                          "repo":  "unsloth/Qwen3.5-0.8B-GGUF",
@@ -725,7 +502,7 @@
                                                                                                         "baixado_em":  "2026-11-05T21:00:27"
                                                                                                     }
                                                             },
-                                               "local":  "cofre",
+                                               "local":  "nucleo",
                                                "repo_sha":  "12393612fd4f730ff5aadc23e9b8f9648aa49ceb",
                                                "repo_modificado":  "2026-08-24T03:43:47.000Z"
                                            },
@@ -1005,15 +782,6 @@
                                               "sha256":  "34162d18b9f96f494eac48a73a309c72e0bc95d85f76be405d0f5de795854aa6",
                                               "baixado_em":  "2026-10-26T19:26:14"
                                           },
-                         "gutenberg-en":  {
-                                              "arquivo":  "gutenberg_en_all_2025-11.zim",
-                                              "versao":  "2025-11",
-                                              "local":  "cofre",
-                                              "destino":  "conhecimento\\gutenberg_en_all_2025-11.zim",
-                                              "tamanho":  221251590584,
-                                              "sha256":  "01677c8d554a1cab2cbfd020ac99ebca7dd6c74d3ce0d13f266a2ba603dfaf28",
-                                              "baixado_em":  "2026-10-26T20:46:34"
-                                          },
                          "stackoverflow":  {
                                                "arquivo":  "stackoverflow.com_en_all_2026-07.zim",
                                                "versao":  "2026-07",
@@ -1023,15 +791,6 @@
                                                "sha256":  "2878fd0bbc4d0d7a05249bc04f45b71f183c09929a843308b923190f1d15436f",
                                                "baixado_em":  "2026-10-26T21:24:26"
                                            },
-                         "mapa-brasil":  {
-                                             "arquivo":  "maps_en_brazil_2026-06.zim",
-                                             "versao":  "2026-06",
-                                             "local":  "nucleo",
-                                             "destino":  "conhecimento\\maps_en_brazil_2026-06.zim",
-                                             "tamanho":  3097612187,
-                                             "sha256":  "cfc65305c6cba1cd87f07cab4bf24a2b3141264165e631c0eda52c6918c7eeb6",
-                                             "baixado_em":  "2026-10-29T17:06:20"
-                                         },
                          "pos-desastre":  {
                                               "arquivo":  "zimgit-post-disaster_en_2024-05.zim",
                                               "versao":  "2024-05",
@@ -1293,15 +1052,6 @@
                                               "sha256":  "45c1c8d79a38a814098be41044a42d4ac7cc3dfa5cdfe398e9974e08d80591dc",
                                               "baixado_em":  "2026-11-05T21:50:36"
                                           },
-                         "lowtech-magazine":  {
-                                                  "arquivo":  "solar.lowtechmagazine.com_mul_all_2025-01.zim",
-                                                  "versao":  "2025-01",
-                                                  "local":  "nucleo",
-                                                  "destino":  "conhecimento\\solar.lowtechmagazine.com_mul_all_2025-01.zim",
-                                                  "tamanho":  700555670,
-                                                  "sha256":  "0a21bde8e3be3b80b8b7dea13118fb2190a60274f2341a5b72715f89fd049740",
-                                                  "baixado_em":  "2026-11-05T21:51:09"
-                                              },
                          "librepathology":  {
                                                 "arquivo":  "librepathology_en_all_maxi_2026-09.zim",
                                                 "versao":  "2026-09",

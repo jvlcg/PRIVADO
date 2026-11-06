@@ -7,7 +7,7 @@ schema: v1
 models:
   - name: Qwen3-Coder-Next (agente de codigo)
     provider: openai
-    model: qwen3-coder-next
+    model: ornith-1.5-35b-a3b
     apiBase: http://127.0.0.1:8080/v1
     apiKey: COLE-A-CHAVE
     roles: [chat, edit, apply]

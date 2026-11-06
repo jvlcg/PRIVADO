@@ -7,9 +7,11 @@
     3. a placa de video folgada, abaixo de -GpuOcupada % (um jogo aberto segura o desligamento).
   Com os tres, agenda o desligamento com -Aviso segundos de aviso na tela. Se voce mexer no PC durante
   o aviso, ele e cancelado sozinho; para cancelar na mao: Win+R, "shutdown /a".
-  Vale so enquanto esta vigia estiver aberta: nao muda nenhuma configuracao do Windows.
+  Vale so enquanto esta vigia estiver aberta. Com -Agendar, ela roda como tarefa agendada do Windows
+  (uma vez, na sua sessao): continua vigiando mesmo se o app do Claude fechar.
 .EXAMPLE
   .\desligar-ao-terminar.ps1              # vigia com os padroes (20 min sem Claude, 15 min parado)
+  .\desligar-ao-terminar.ps1 -Agendar     # a mesma vigia, mas pela tarefa agendada (fora do Claude)
   .\desligar-ao-terminar.ps1 -Status      # mostra se a vigia esta ligada e os sinais agora
   .\desligar-ao-terminar.ps1 -Parar       # para a vigia e cancela um desligamento ja agendado
 #>
@@ -19,7 +21,8 @@ param(
     [int]$GpuOcupada = 40,
     [int]$Aviso = 300,
     [switch]$Status,
-    [switch]$Parar
+    [switch]$Parar,
+    [switch]$Agendar
 )
 . "$PSScriptRoot\comum.ps1"
 $ErrorActionPreference = 'Continue'
@@ -118,6 +121,21 @@ if ($Status) {
     if ($v) { Ok "Vigia ligada (processo $($v.Id), desde $($v.StartTime.ToString('dd/MM HH:mm')))." } else { Info 'Vigia desligada.' }
     Info (Texto-Sinais (Sinais))
     if (Test-Path -LiteralPath $log) { Info 'Ultimas anotacoes:'; Get-Content -LiteralPath $log -Tail 5 | ForEach-Object { Info "  $_" } }
+    return
+}
+
+if ($Agendar) {
+    # Tarefa de uma vez so, daqui a 15 s, na sessao de quem esta usando o PC (para ler teclado, mouse e controle).
+    # Fora do processo do Claude: quando a sessao dele acaba, a vigia continua. Sem limite de tempo de execucao.
+    if (Vigia-Aberta) { Ok 'A vigia ja esta ligada. Para ver: -Status. Para parar: -Parar.'; return }
+    $nome = 'SSD-IA - vigia de desligar'
+    $acao = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSCommandPath`" -MinutosSemClaude $MinutosSemClaude -MinutosParado $MinutosParado -GpuOcupada $GpuOcupada -Aviso $Aviso"
+    $gatilho = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(15)
+    $config = New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -MultipleInstances IgnoreNew
+    $quem = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive -RunLevel Limited
+    Register-ScheduledTask -TaskName $nome -Action $acao -Trigger $gatilho -Settings $config -Principal $quem -Force | Out-Null
+    Ok "Tarefa '$nome' agendada: a vigia comeca em 15 s e segue mesmo se o Claude fechar."
+    Info 'Para ver: .\desligar-ao-terminar.ps1 -Status   Para parar: .\desligar-ao-terminar.ps1 -Parar'
     return
 }
 

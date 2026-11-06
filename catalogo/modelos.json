@@ -19,7 +19,7 @@
     "triagem": "gemma-4-26b-a4b-qat",
     "max_membros": 3,
     "especialistas": {
-      "codigo": "qwen3-coder-next",
+      "codigo": "ornith-1.5-35b-a3b",
       "medicina": "medgemma-27b",
       "traducao": "translategemma-12b"
     }
@@ -167,9 +167,8 @@
     { "id": "se-medicalsciences", "nome": "Fórum de Ciências Médicas", "pasta_kiwix": "stack_exchange", "prefixo": "medicalsciences.stackexchange.com_en_all", "tamanho_gb": 0.06, "local": "nucleo", "uso": "Perguntas de saúde respondidas por especialistas." },
     { "id": "se-electronics", "nome": "Fórum de Eletrônica", "pasta_kiwix": "stack_exchange", "prefixo": "electronics.stackexchange.com_en_all", "tamanho_gb": 4.0, "local": "nucleo", "uso": "Circuitos, energia solar, baterias, rádio." },
     { "id": "wikipedia-en", "nome": "Wikipedia em inglês (completa, com imagens)", "pasta_kiwix": "wikipedia", "prefixo": "wikipedia_en_all_maxi", "tamanho_gb": 119.0, "local": "cofre", "uso": "A maior enciclopédia do mundo." },
-    { "id": "gutenberg-en", "nome": "Projeto Gutenberg em inglês", "pasta_kiwix": "gutenberg", "prefixo": "gutenberg_en_all", "tamanho_gb": 206.0, "local": "cofre", "uso": "Cerca de 70 mil livros em domínio público." },
+    { "id": "gutenberg-en", "nome": "Projeto Gutenberg em inglês", "pasta_kiwix": "gutenberg", "prefixo": "gutenberg_en_all", "tamanho_gb": 206.0, "local": "cofre", "uso": "Cerca de 70 mil livros em domínio público.", "status": "observar", "motivo": "fora da nata em 06/11/2026: 206 GB de literatura em ingles, sem busca por texto (o Gutenberg em portugues ficou)" },
     { "id": "stackoverflow", "nome": "Stack Overflow (programação)", "pasta_kiwix": "stack_exchange", "prefixo": "stackoverflow.com_en_all", "tamanho_gb": 107.0, "local": "cofre", "uso": "Todas as perguntas e respostas de programação." },
-    { "id": "mapa-brasil", "nome": "Mapa do Brasil (OpenStreetMap)", "pasta_kiwix": "maps", "prefixo": "maps_en_brazil", "tamanho_gb": 2.9, "local": "nucleo", "uso": "Mapa offline do país inteiro: ruas, estradas, hospitais, postos e escolas, com zoom até o nível da rua e busca de cidades." },
     { "id": "pos-desastre", "nome": "Biblioteca pós-desastre (inglês)", "pasta_kiwix": "other", "prefixo": "zimgit-post-disaster_en", "tamanho_gb": 0.65, "local": "nucleo", "uso": "Manuais práticos para depois de um desastre: abrigo, água, saneamento, energia, saúde." },
     { "id": "agua", "nome": "Tratamento de água (inglês)", "pasta_kiwix": "other", "prefixo": "zimgit-water_en", "tamanho_gb": 0.02, "local": "nucleo", "uso": "Coletar e purificar água." },
     { "id": "medicina-campo", "nome": "Medicina de campo e de emergência (inglês)", "pasta_kiwix": "other", "prefixo": "zimgit-medicine_en", "tamanho_gb": 0.07, "local": "nucleo", "uso": "Livros de medicina para emergências e lugares sem hospital." },
@@ -199,7 +198,6 @@
     { "id": "nhs-medicamentos", "nome": "Medicamentos do NHS (serviço de saúde britânico, inglês)", "pasta_kiwix": "zimit", "prefixo": "nhs.uk_en_medicines", "tamanho_gb": 0.02, "local": "nucleo", "uso": "Para que serve cada remédio, como tomar, dose e efeitos colaterais." },
     { "id": "ready-gov", "nome": "Ready.gov: preparação para emergências e desastres (inglês)", "pasta_kiwix": "zimit", "prefixo": "ready.gov_en_all", "tamanho_gb": 1.9, "local": "nucleo", "uso": "Guia oficial dos EUA: kit de emergência, enchente, incêndio, falta de luz, pandemia." },
     { "id": "cdc-viajante", "nome": "CDC: saúde do viajante (inglês)", "pasta_kiwix": "zimit", "prefixo": "wwwnc.cdc.gov_en_all", "tamanho_gb": 0.17, "local": "nucleo", "uso": "Doenças por região, vacinas, água e comida seguras." },
-    { "id": "lowtech-magazine", "nome": "Low-tech Magazine (vários idiomas)", "pasta_kiwix": "zimit", "prefixo": "solar.lowtechmagazine.com_mul_all", "tamanho_gb": 0.67, "local": "nucleo", "uso": "Tecnologia simples e de pouca energia: solar, aquecimento, refrigeração, transporte sem combustível." },
     { "id": "se-mechanics", "nome": "Fórum de Mecânica de veículos", "pasta_kiwix": "stack_exchange", "prefixo": "mechanics.stackexchange.com_en_all", "tamanho_gb": 0.33, "local": "nucleo", "uso": "Conserto e manutenção de carros e motos." },
     { "id": "se-bicycles", "nome": "Fórum de Bicicletas", "pasta_kiwix": "stack_exchange", "prefixo": "bicycles.stackexchange.com_en_all", "tamanho_gb": 0.48, "local": "nucleo", "uso": "Conserto e manutenção de bicicletas." },
     { "id": "se-ham", "nome": "Fórum de Rádio amador", "pasta_kiwix": "stack_exchange", "prefixo": "ham.stackexchange.com_en_all", "tamanho_gb": 0.07, "local": "nucleo", "uso": "Rádio amador: comunicação quando celular e internet caem." },
@@ -223,56 +221,9 @@
     { "id": "se-superuser", "nome": "Super User (Windows e PC)", "pasta_kiwix": "stack_exchange", "prefixo": "superuser.com_en_all", "tamanho_gb": 3.7, "local": "cofre", "uso": "Problemas de Windows, hardware e programas do PC." },
     { "id": "se-security", "nome": "Fórum de Segurança da informação", "pasta_kiwix": "stack_exchange", "prefixo": "security.stackexchange.com_en_all", "tamanho_gb": 0.42, "local": "cofre", "uso": "Senhas, criptografia, proteção de computadores." },
     { "id": "pt-stackoverflow", "nome": "Stack Overflow em português", "pasta_kiwix": "stack_exchange", "prefixo": "pt.stackoverflow.com_mul_all", "tamanho_gb": 0.89, "local": "cofre", "uso": "Perguntas e respostas de programação em português." },
-    { "id": "survivor-library", "nome": "Survivor Library (inglês)", "pasta_kiwix": "zimit", "prefixo": "survivorlibrary.com_en_all", "tamanho_gb": 220.0, "local": "cofre", "status": "observar", "uso": "Milhares de livros antigos de ofícios e técnicas para quando a tecnologia não funciona. Gigante: baixe com -Id survivor-library." },
-    { "id": "mapa-mundo", "nome": "Mapa do mundo inteiro (OpenStreetMap)", "pasta_kiwix": "maps", "prefixo": "maps_en_all", "tamanho_gb": 72.0, "local": "cofre", "status": "observar", "uso": "Todos os países com zoom até o nível da rua. Gigante: baixe com -Id mapa-mundo." }
+    { "id": "survivor-library", "nome": "Survivor Library (inglês)", "pasta_kiwix": "zimit", "prefixo": "survivorlibrary.com_en_all", "tamanho_gb": 220.0, "local": "cofre", "status": "observar", "uso": "Milhares de livros antigos de ofícios e técnicas para quando a tecnologia não funciona. Gigante: baixe com -Id survivor-library." }
   ],
   "modelos": [
-    {
-      "id": "gemma-4-26b-a4b",
-      "nome": "Gemma 4 26B-A4B (instruct)",
-      "tipo": "llm",
-      "uso": "Assistente geral rápido, entende imagens. MoE: 25,8 bi no total, 4 bi ativos.",
-      "origem": "google/gemma-4-26B-A4B-it",
-      "repo": "unsloth/gemma-4-26B-A4B-it-GGUF",
-      "pasta": "llm\\gemma-4-26b-a4b",
-      "arquivos": [
-        { "caminho": "gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf" },
-        { "caminho": "mmproj-F16.gguf" },
-        { "caminho": "MTP/mtp-gemma-4-26B-A4B-it-Q8_0.gguf" }
-      ],
-      "tamanho_gb": 17.38,
-      "parametros": "25.8B (MoE, 4B ativos)",
-      "licenca": "apache-2.0",
-      "motor": "llama.cpp",
-      "contexto": 32768,
-      "prioridade": 3,
-      "local": "cofre",
-      "status": "baixar",
-      "nota": "Versão anterior, de reserva no HD: a padrão é a gemma-4-26b-a4b-qat (medido em 05/11/2026: 75 contra 57 palavras/s)."
-    },
-    {
-      "id": "qwen3.8-27b",
-      "nome": "Qwen3.8 27B",
-      "tipo": "llm",
-      "uso": "Melhor qualidade que roda aqui (texto, código e imagem). Denso: parte fica na RAM, mais lento.",
-      "origem": "Qwen/Qwen3.8-27B",
-      "repo": "unsloth/Qwen3.8-27B-GGUF",
-      "pasta": "llm\\qwen3.8-27b",
-      "arquivos": [
-        { "caminho": "Qwen3.8-27B-UD-Q4_K_XL.gguf" },
-        { "caminho": "mmproj-F16.gguf" },
-        { "caminho": "MTP/mtp-Qwen3.8-27B-Q4_0.gguf" }
-      ],
-      "tamanho_gb": 18.49,
-      "parametros": "27.8B (denso)",
-      "licenca": "apache-2.0",
-      "motor": "llama.cpp",
-      "contexto": 16384,
-      "prioridade": 3,
-      "local": "cofre",
-      "status": "baixar",
-      "nota": "Versão em 4 bits, de reserva no HD (com visão): a padrão é a qwen3.8-27b-iq3 (medido em 05/11/2026: 10 contra 6,5 palavras/s)."
-    },
     {
       "id": "qwen3.8-27b-iq3",
       "nome": "Qwen3.8 27B em ~3 bits (GSQ-RCO, cabe na placa)",
@@ -378,8 +329,8 @@
       "licenca": "mit",
       "motor": "llama.cpp",
       "contexto": 65536,
-      "prioridade": 2,
-      "local": "cofre",
+      "prioridade": 1,
+      "local": "nucleo",
       "status": "baixar"
     },
     {
@@ -400,29 +351,8 @@
       "contexto": 32768,
       "prioridade": 1,
       "local": "nucleo",
-      "status": "baixar"
-    },
-    {
-      "id": "gemma-4-12b",
-      "nome": "Gemma 4 12B QAT (oficial do Google)",
-      "tipo": "llm",
-      "uso": "O mais rápido: cabe inteiro na RTX 4070. Bom para o dia a dia e para testar.",
-      "origem": "google/gemma-4-12B-it",
-      "repo": "google/gemma-4-12B-it-qat-q4_0-gguf",
-      "pasta": "llm\\gemma-4-12b",
-      "arquivos": [
-        { "caminho": "gemma-4-12b-it-qat-q4_0.gguf" },
-        { "caminho": "mmproj-gemma-4-12b-it-qat-q4_0.gguf" }
-      ],
-      "tamanho_gb": 6.66,
-      "parametros": "12B (denso)",
-      "licenca": "apache-2.0",
-      "motor": "llama.cpp",
-      "contexto": 32768,
-      "prioridade": 3,
-      "local": "cofre",
-      "status": "baixar",
-      "nota": "Versão anterior, de reserva no HD: a padrão é a gemma-4-12b-qat (medido em 05/11/2026: 109 contra 54 palavras/s)."
+      "status": "observar",
+      "motivo": "fora da nata em 06/11/2026: o ornith-1.5-35b-a3b faz o mesmo trabalho de agente de codigo, acerta mais chamadas de ferramenta e ocupa 21 GB em vez de 36"
     },
     {
       "id": "qwen3-embedding-0.6b",
@@ -524,7 +454,8 @@
       "args": "--embedding",
       "prioridade": 2,
       "local": "nucleo",
-      "status": "baixar"
+      "status": "observar",
+      "motivo": "fora da nata em 06/11/2026: a busca usa o qwen3-embedding-0.6b"
     },
     {
       "id": "medgemma-27b",
@@ -650,7 +581,8 @@
       "args": "--reasoning off",
       "prioridade": 2,
       "local": "nucleo",
-      "status": "baixar"
+      "status": "observar",
+      "motivo": "fora da nata em 06/11/2026: para computador fraco ficaram o gemma-4-e4b e o qwen3.5-0.8b"
     },
     {
       "id": "qwen3.5-0.8b",
@@ -691,7 +623,8 @@
       "contexto": 16384,
       "prioridade": 2,
       "local": "nucleo",
-      "status": "baixar"
+      "status": "observar",
+      "motivo": "fora da nata em 06/11/2026: para computador fraco ficaram o gemma-4-e4b e o qwen3.5-0.8b"
     },
     {
       "id": "piper-pt-br",
@@ -735,7 +668,8 @@
       "motor": "python",
       "prioridade": 2,
       "local": "nucleo",
-      "status": "baixar"
+      "status": "observar",
+      "motivo": "fora da nata em 06/11/2026: o 'falar' usa o Piper em portugues"
     },
     {
       "id": "qwen3-vl-8b",
@@ -756,7 +690,8 @@
       "contexto": 16384,
       "prioridade": 3,
       "local": "nucleo",
-      "status": "baixar"
+      "status": "observar",
+      "motivo": "fora da nata em 06/11/2026: os Gemma 4 QAT ja entendem imagens"
     },
     {
       "id": "qwen3.6-35b-a3b",
@@ -777,7 +712,8 @@
       "contexto": 32768,
       "prioridade": 2,
       "local": "cofre",
-      "status": "baixar"
+      "status": "observar",
+      "motivo": "fora da nata em 06/11/2026: o gemma-4-26b-a4b-qat (dia a dia) e o qwen3.8-27b-iq3 (melhor resposta) cobrem o uso; o ornith e derivado dele para codigo"
     },
     {
       "id": "devstral-small-2",
@@ -797,7 +733,8 @@
       "contexto": 32768,
       "prioridade": 2,
       "local": "cofre",
-      "status": "baixar"
+      "status": "observar",
+      "motivo": "fora da nata em 06/11/2026: superado pelo ornith-1.5-35b-a3b"
     },
     {
       "id": "mimo-v2.6-distill-9b",
@@ -817,7 +754,8 @@
       "contexto": 32768,
       "prioridade": 2,
       "local": "cofre",
-      "status": "baixar"
+      "status": "observar",
+      "motivo": "fora da nata em 06/11/2026: o gemma-4-12b-qat responde melhor e mais rapido"
     },
     {
       "id": "gpt-oss-120b",

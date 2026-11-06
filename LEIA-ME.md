@@ -15,7 +15,7 @@ e as ferramentas para usar tudo isso. Montado em 25/10/2026.
 5. Mais facil ainda: dois cliques em `Painel.cmd`. Abre a Central do Cofre no navegador (http://127.0.0.1:8070):
    escreva do que precisa e ela mostra o jeito que resolve gastando menos energia. Tambem liga e desliga
    cada servico, mostra o consumo do PC em reais e guarda o historico das respostas. Ctrl+K procura qualquer acao.
-6. O menu aceita palavras: escreva "mapa", "jogo" ou ja a sua pergunta. Opcao 19: desliga o PC parado sozinho.
+6. O menu aceita palavras: escreva "biblioteca", "jogo" ou ja a sua pergunta. Opcao 19: desliga o PC parado sozinho.
 
 Precisa de Windows 10/11. Com placa NVIDIA fica rapido; sem ela, funciona mais devagar.
 Os scripts estao em `scripts\` e todos tem ajuda: `Get-Help .\scripts\<nome>.ps1 -Examples`
@@ -34,7 +34,7 @@ Os scripts estao em `scripts\` e todos tem ajuda: `Get-Help .\scripts\<nome>.ps1
 | `SHA256SUMS.txt` | hash de cada arquivo, para conferir a integridade |
 
 Ha um segundo disco, o COFRE PROFUNDO (`D:\COFRE-IA`), com os modelos gigantes, a Wikipedia em ingles,
-o Projeto Gutenberg, o Stack Overflow e uma copia de seguranca deste SSD.
+o Stack Overflow e os foruns de Linux e Windows. So a nata: um modelo por tarefa, bibliotecas so em portugues e ingles.
 
 ## Escolha do modelo
 
@@ -42,11 +42,11 @@ o Projeto Gutenberg, o Stack Overflow e uma copia de seguranca deste SSD.
 |------------------------------|-----|
 | conversar rapido             | gemma-4-12b-qat |
 | melhor resposta geral        | gemma-4-26b-a4b-qat ou qwen3.8-27b-iq3 (mais lento) |
-| programar                    | qwen3-coder-next ou ornith-1.5-35b-a3b (agente de codigo, no HD) |
+| programar                    | ornith-1.5-35b-a3b (agente de codigo) |
 | saude                        | medgemma-27b (junto com a WikiMed; nao substitui medico) |
 | traduzir                     | translategemma-12b |
 | ler documento ou foto        | glm-ocr |
-| computador fraco ou sem GPU  | gemma-4-e4b, qwen3.5-2b, lfm2.5-1.2b, qwen3.5-0.8b |
+| computador fraco ou sem GPU  | gemma-4-e4b, qwen3.5-0.8b |
 | o maior que roda aqui        | nemotron-3.5-bolt-74b (fica no HD: ~5 min para carregar) |
 | varias IAs decidindo juntas  | Conselho de IAs: menu, opcao 5 (http://127.0.0.1:8090) |
 
