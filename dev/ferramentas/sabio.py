@@ -393,7 +393,8 @@ def palavras_chave(pergunta: str, modelo: str) -> dict[str, str]:
 
 
 def livros_kiwix() -> list[tuple[str, str]]:
-    """Livros servidos pelo kiwix-serve: [(nome usado na busca, idioma de 2 letras)]."""
+    """Livros servidos pelo kiwix-serve: [(nome usado na busca, "pt" | "en" | "mul")]. "mul" = varios idiomas
+    (ex.: Low-tech Magazine): o kiwix-serve recusa juntar idiomas diferentes numa busca, entao esses buscam sozinhos."""
     try:
         raiz = ET.fromstring(http_texto(f"{KIWIX}/catalog/v2/entries?count=-1"))
     except Exception:
@@ -403,8 +404,9 @@ def livros_kiwix() -> list[tuple[str, str]]:
     for e in raiz.findall("a:entry", ns):
         link = next((l.get("href") for l in e.findall("a:link", ns) if (l.get("href") or "").startswith("/content/")), None)
         if link:
-            idioma = (e.findtext("a:language", namespaces=ns) or "eng").split(",")[0]
-            livros.append((link.removeprefix("/content/"), "pt" if idioma.startswith("po") else "en"))
+            idiomas = [i.strip() for i in (e.findtext("a:language", namespaces=ns) or "eng").split(",") if i.strip()]
+            idioma = "pt" if idiomas == ["por"] else "en" if idiomas in (["eng"], []) else "mul"
+            livros.append((link.removeprefix("/content/"), idioma))
     return livros
 
 
@@ -428,7 +430,8 @@ def _itens_busca(params: list[tuple[str, str]]) -> list[tuple[str, str]]:
 
 # Fora da busca padrao: mapas (paginas de lugares) e o Stack Overflow, que so traz programacao e
 # polui palavras comuns ("burn" vira pergunta de grafico em R). Perguntas de codigo o incluem de volta.
-FORA_DA_BUSCA = ("maps_", "stackoverflow.com")
+FORA_DA_BUSCA = ("maps_", "stackoverflow.com", "pt.stackoverflow.com", "askubuntu.com", "superuser.com",
+                 "unix.stackexchange.com", "security.stackexchange.com")
 
 
 def buscar_kiwix(termos: dict[str, str], livros: list[tuple[str, str]], por_livro: int, maximo: int,
@@ -453,6 +456,16 @@ def buscar_kiwix(termos: dict[str, str], livros: list[tuple[str, str]], por_livr
                 except Exception:
                     continue
         por_idioma.append(itens)
+    # Bibliotecas em varios idiomas nao entram nos grupos acima (o Kiwix recusaria o grupo inteiro): uma por vez,
+    # com os termos em ingles e em portugues.
+    for n in [n for n, i in livros if i == "mul" and not n.startswith(excluir)]:
+        itens = []
+        for idioma in ("en", "pt"):
+            try:
+                itens += _itens_busca([("pattern", termos[idioma]), ("format", "xml"), ("pageLength", str(por_livro)), ("books.name", n)])
+            except Exception:
+                continue
+        por_idioma.append(itens)
     escolhidos, conta = [], {}
     for rodada in itertools.zip_longest(*por_idioma):
         for x in rodada:
@@ -474,8 +487,10 @@ def buscar_sem_ia(pergunta: str, maximo: int = 10) -> dict:
         raise RuntimeError("A biblioteca nao esta respondendo. Ligue a biblioteca (menu, opcao 3).")
     palavras = palavras_da_pergunta(pergunta)
     artigos, usadas, vistos = [], "", set()
-    for idioma in ("pt", "en"):
-        nomes = [n for n, i in livros if i == idioma and not n.startswith(FORA_DA_BUSCA)]
+    # Um grupo por idioma; cada biblioteca em varios idiomas busca sozinha (o Kiwix nao junta idiomas diferentes).
+    grupos = [[n for n, i in livros if i == idioma and not n.startswith(FORA_DA_BUSCA)] for idioma in ("pt", "en")]
+    grupos += [[n] for n, i in livros if i == "mul" and not n.startswith(FORA_DA_BUSCA)]
+    for nomes in grupos:
         if not nomes or len(artigos) >= 3:
             continue
         for n in range(len(palavras), 0, -1):

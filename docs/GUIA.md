@@ -72,18 +72,18 @@ São 141 GB no SSD e 821 GB no cofre. Os três gigantes de fronteira não rodam 
 
 ### Bibliotecas offline
 
-São 46 no catálogo e 44 já baixadas e conferidas pelo SHA256: as 17 de antes e 27 novas de 29/10/2026 (marcadas com *; 4 GB no SSD e 14 GB no cofre, em 21 minutos, ~44 Wh ≈ R$ 0,06). As 2 gigantes ficam em observação. Tudo abre na biblioteca (menu, opção 3), inclusive o mapa, e a busca da Central procura em todas de uma vez.
+São 73 no catálogo e 71 baixadas e conferidas pelo SHA256: as 17 do começo, 27 de 29/10/2026 (marcadas com *) e 27 de 05/11/2026 (marcadas com †; 3,9 GB no SSD e 12,5 GB no cofre). As 2 gigantes ficam em observação. Tudo abre na biblioteca (menu, opção 3), inclusive o mapa, e a busca da Central procura em todas de uma vez. Os fóruns de computação (Stack Overflow em inglês e em português, Ask Ubuntu, Unix, Super User e Segurança) ficam fora da busca padrão, para não misturar programação nas perguntas práticas. Eles entram quando o conselho trata de código.
 
 | Área | O que tem | GB |
 | --- | --- | --- |
 | Enciclopédias | Wikipédia em português e em inglês, Wikcionário, Wikivoyage | 138 |
 | Mapas | Brasil* (ruas, estradas, hospitais e postos, com busca de cidades); mundo inteiro* (em observação) | 2,9 + 72 |
-| Saúde | WikiMed, fórum de Ciências Médicas, medicina de campo*, medicina militar*, guias de medicina em vídeo*, LibreTexts Medicina*, WikiVet* (animais) | 4 |
-| Sobrevivência | pós-desastre*, tratamento de água*, preparo de alimentos*, nós*, True Prepper*; Survivor Library* (em observação) | 2,2 + 220 |
-| Técnica e reconstrução | iFixit, fóruns Faça Você Mesmo e Eletrônica, Restarters*, WikiCiv*, Appropedia*, Energypedia*, CD3WD*, LibreTexts Engenharia e Ofícios* | 12 |
-| Agricultura e cozinha | fóruns de Jardinagem e Culinária, Gardenology* | 1,2 |
-| Ensino | Wikilivros, Wikiversidade*, simulações PhET em português*, LibreTexts Física, Matemática, Química, Biologia e Escola* | 12 |
-| Livros e programação | Projeto Gutenberg em português e inglês, Stack Overflow | 314 |
+| Saúde | WikiMed, fórum de Ciências Médicas, medicina de campo*, medicina militar*, guias de medicina em vídeo*, LibreTexts Medicina*, WikiVet* (animais), medicamentos do NHS† (para que serve cada remédio, dose e efeitos), saúde do viajante do CDC†, LibrePathology† | 4,3 |
+| Sobrevivência | pós-desastre*, tratamento de água*, preparo de alimentos*, nós*, True Prepper*, Ready.gov† (guia oficial dos EUA para emergências e desastres), Low-tech Magazine† (tecnologia de pouca energia); Survivor Library* (em observação) | 4,8 + 220 |
+| Técnica e reconstrução | iFixit, fóruns Faça Você Mesmo e Eletrônica, Restarters*, WikiCiv*, Appropedia*, Energypedia*, CD3WD*, LibreTexts Engenharia e Ofícios*, fóruns de Mecânica de veículos†, Bicicletas†, Marcenaria†, Rádio amador† (comunicação sem celular), Engenharia†, Raspberry Pi†, Arduino†, Artesanato† e Truques do dia a dia† | 14 |
+| Agricultura e cozinha | fóruns de Jardinagem e Culinária, Gardenology*, fóruns de Fermentação caseira†, Sustentabilidade† e Animais de estimação† | 1,4 |
+| Ensino | Wikilivros, Wikiversidade*, simulações PhET em português*, LibreTexts Física, Matemática, Química, Biologia e Escola*, fóruns de Química†, Biologia†, Física†, Ciências da Terra† e Criação de filhos† | 15 |
+| Livros e computação | Projeto Gutenberg em português e inglês, Stack Overflow, Stack Overflow em português†, Ask Ubuntu† (Linux para iniciantes), Unix e Linux†, Super User† (Windows e PC) e Segurança† | 323 |
 
 As duas marcadas "em observação" são gigantes e não baixam sozinhas: `baixar-conhecimento.ps1 -Id mapa-mundo` ou `-Id survivor-library`. O mapa do Brasil foi testado em 01/11: abre na biblioteca (e pelo botão da Central), com zoom até o nível da rua. Em Goiânia aparecem as ruas, a Praça Cívica, o Lago dos Buritis, a Avenida Anhanguera e os pontos de ônibus.
 
@@ -117,8 +117,8 @@ O plano, do que rende mais para o que custa menos:
 | 6 | **Feito em 05/11:** Qwen3.8 27B em ~3 bits (`qwen3.8-27b-iq3`), agora no conselho | medido 10 contra 6,5 palavras/s; inteiro na placa só com o monitor na placa-mãe (item 1) | 9,7 GB | |
 | 7 | **Feito em 05/11:** Gemma 4 QAT 26B-A4B e 12B como padrão; os antigos foram para o HD | medido: 12B de 54 para 109 palavras/s, 26B de 57 para 75 | 23 GB (substituem 24 GB) | |
 | 8 | **Feito em 05/11:** Ornith 1.5 35B-A3B no HD (o opencode ainda falta) | medido 58 palavras/s; carrega em 2,5 min do HD | 21 GB (HD) | instalar o opencode |
-| 9 | ComfyUI v0.44 + FLUX 3 klein | imagens ~37% mais rápidas e o FLUX 3 | ~19 GB | login no Hugging Face |
-| 10 | Bibliotecas de out/2026 e novas de saúde e emergência | fontes mais novas | ~19 GB | aprovar o download |
+| 9 | **ComfyUI feito em 05/11:** v0.44.0 (a v0.42.1 ficou de reserva), sem internet (`--offline`) e sem os nós pagos; falta o FLUX 3 klein | o FLUX 3 | ~18 GB | login no Hugging Face (FLUX 3) |
+| 10 | **Feito em 05/11:** 27 bibliotecas novas (saúde, emergência, conserto, rádio amador, ciência, Linux) e 2 atualizadas | fontes mais novas e mais assuntos | 16 GB | |
 
 Ficam em observação no catálogo, sem baixar: Ornith 1.5 9B, Harrier (embeddings), Granite Speech 5.0, VoxCPM2 e LTX-2.5. Não valem para esta placa, porque exigem placas mais novas (Blackwell) ou bem maiores: arquivos NVFP4, Nemotron 3.5 Transcribe, MiniMax H3 e Wan 2.7/3.0.
 
@@ -276,6 +276,9 @@ Testado neste PC de 25/10 a 01/11/2026:
 | Vigia com jogo aberto (05/11) | reconheceu o Alice: Madness Returns aberto (a placa estava a só 9%, abaixo do limite) e segurou o desligamento | a cada minuto |
 | Modelos novos, llama.cpp b12138 (05/11) | 400 palavras sobre filtro de água: gemma-4-12b-qat 109 palavras/s (antigo 54), gemma-4-26b-a4b-qat 75 (antigo 57), qwen3.8-27b-iq3 10 (antigo 6,5), ornith-1.5-35b-a3b 58 | 4 a 40 s por resposta |
 | Agente do Cofre (05/11) | o servidor de modelos achou e registrou as 5 ferramentas MCP do cofre ao ligar | na hora |
+| ComfyUI v0.44.0 (05/11) | imagem 1024x1024 do Z-Image-Turbo com o fluxo do cofre: 24 s com o carregamento, 12 s com o modelo já carregado; a atenção rápida (`-AtencaoRapida`) não mudou o tempo nesse tamanho | 12 s por imagem |
+| Bibliotecas de 05/11 | 27 novas e 2 atualizadas, baixadas de espelhos da Kiwix e conferidas pelo SHA256 | ~13 MB/s |
+| Busca com as bibliotecas novas (05/11) | a Low-tech Magazine, em 11 idiomas, fazia o Kiwix recusar a busca conjunta em inglês (o cofre caía no plano lento, uma biblioteca por vez); corrigido: as multilíngues buscam sozinhas, e a busca voltou a 4 pedidos (3,9 s) com Arduino, Bicicletas e Sustentabilidade nos resultados | 3,9 s |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 7). Exemplos em `A:\dev\midia-gerada`.
 

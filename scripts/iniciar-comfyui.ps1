@@ -7,7 +7,7 @@
   .\iniciar-comfyui.ps1
   .\iniciar-comfyui.ps1 -Rede            # libera para outros aparelhos da sua rede
 #>
-param([int]$Porta = 8188, [switch]$Rede, [switch]$SemNavegador)
+param([int]$Porta = 8188, [switch]$Rede, [switch]$SemNavegador, [switch]$AtencaoRapida)
 . "$PSScriptRoot\comum.ps1"
 Bloquear-SeModoJogo 'o ComfyUI'
 
@@ -27,6 +27,11 @@ $a = @('-s', $main.FullName, '--windows-standalone-build', '--port', "$Porta",
        '--user-directory', (Join-Path $dados 'user'), '--temp-directory', (Join-Path $dados 'temp'))
 if ($Rede) { $a += @('--listen', '0.0.0.0') }
 if ($SemNavegador) { $a += '--disable-auto-launch' }
+# Cofre offline: sem tentar a internet e sem os nos de servicos pagos na nuvem. So entram se a versao
+# instalada tiver a opcao (v0.44 ou mais nova), para a versao de reserva continuar abrindo.
+$opcoes = Get-Content -LiteralPath (Join-Path $main.Directory.FullName 'comfy\cli_args.py') -Raw -ErrorAction SilentlyContinue
+foreach ($o in '--offline', '--disable-partner-nodes') { if ($opcoes -and $opcoes.Contains("`"$o`"")) { $a += $o } }
+if ($AtencaoRapida -and $opcoes -and $opcoes.Contains('"--use-ck-attention"')) { $a += '--use-ck-attention' }
 
 Titulo 'ComfyUI'
 Info "Endereco: http://127.0.0.1:$Porta"

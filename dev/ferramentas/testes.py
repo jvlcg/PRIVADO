@@ -107,6 +107,33 @@ class BuscaNasBibliotecas(unittest.TestCase):
         self.assertEqual(sorted(link.split("/")[2] for _, link in achados),
                          ["mdwiki_en", "wikipedia_en", "wikipedia_pt", "wiktionary_pt"])
 
+    def test_idioma_de_cada_biblioteca_pelo_catalogo(self):
+        def entrada(nome, idioma):
+            return (f'<entry><language>{idioma}</language><link type="text/html" href="/content/{nome}"/></entry>')
+        opds = ('<feed xmlns="http://www.w3.org/2005/Atom">' + entrada("wikipedia_pt", "por") + entrada("wikimed_en", "eng")
+                + entrada("lowtech_mul", "eng,fra,deu,nld,por") + entrada("pt.stackoverflow_mul", "eng,por") + "</feed>")
+        with mock.patch.object(sabio, "http_texto", return_value=opds):
+            self.assertEqual(sabio.livros_kiwix(), [("wikipedia_pt", "pt"), ("wikimed_en", "en"), ("lowtech_mul", "mul"),
+                                                    ("pt.stackoverflow_mul", "mul")])
+
+    def test_biblioteca_de_varios_idiomas_busca_sozinha(self):
+        # O kiwix-serve responde 400 a um grupo com idiomas diferentes: a Low-tech Magazine derrubava o grupo do ingles.
+        livros = [("wikipedia_pt", "pt"), ("wikipedia_en", "en"), ("mdwiki_en", "en"), ("lowtech_mul", "mul")]
+        grupos = []
+
+        def falsa(params):
+            nomes = [v for k, v in params if k == "books.name"]
+            grupos.append(nomes)
+            if "lowtech_mul" in nomes and len(nomes) > 1:
+                raise RuntimeError("HTTP 400: Two or more books in different lang")
+            return [(f"{nomes[0]} artigo", f"/content/{nomes[0]}/A1")]
+
+        with mock.patch.object(sabio, "_itens_busca", side_effect=falsa):
+            r = sabio.buscar_kiwix({"pt": "energia solar", "en": "solar power"}, livros, 2, 10)
+        self.assertTrue(all("lowtech_mul" not in g or len(g) == 1 for g in grupos))
+        self.assertIn("/content/lowtech_mul/A1", [link for _, link in r])
+        self.assertIn(["wikipedia_en", "mdwiki_en"], grupos)  # o grupo do ingles continua inteiro numa busca so
+
     def test_ignora_paginas_de_indice_do_stack_exchange(self):
         xml = ("<rss><channel>"
                "<item><title>Highest Voted 'water' Questions</title><link>/content/diy/questions/tagged/water</link></item>"

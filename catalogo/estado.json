@@ -821,9 +821,9 @@
                                "instalado_em":  "2026-10-26T15:47:11"
                            },
                     "comfyui":  {
-                                    "versao":  "v0.42.1",
-                                    "publicado":  "2026-10-19T01:33:54Z",
-                                    "instalado_em":  "2026-10-26T15:47:12"
+                                    "versao":  "v0.44.0",
+                                    "publicado":  "2026-11-04T01:12:27Z",
+                                    "instalado_em":  "2026-11-05T21:50:06"
                                 },
                     "ollama":  {
                                    "versao":  "v0.40.11",
@@ -1060,13 +1060,13 @@
                                                 "baixado_em":  "2026-10-29T17:07:24"
                                             },
                          "medicina-militar":  {
-                                                  "arquivo":  "irp.fas.org_en_military-medicine_2026-05.zim",
-                                                  "versao":  "2026-05",
+                                                  "arquivo":  "irp.fas.org_en_military-medicine_2026-10.zim",
+                                                  "versao":  "2026-10",
                                                   "local":  "nucleo",
-                                                  "destino":  "conhecimento\\irp.fas.org_en_military-medicine_2026-05.zim",
-                                                  "tamanho":  75874415,
-                                                  "sha256":  "51861e46ed9de76ae6a014bbe81ada999bc9a1bbe968e9217a8d53261561396e",
-                                                  "baixado_em":  "2026-10-29T17:07:45"
+                                                  "destino":  "conhecimento\\irp.fas.org_en_military-medicine_2026-10.zim",
+                                                  "tamanho":  64986090,
+                                                  "sha256":  "9fc5e5d0302504f57a33e0d3aad9c94761cfd6caab22354ed04b9e9bad2ff57f",
+                                                  "baixado_em":  "2026-11-05T21:48:15"
                                               },
                          "alimentos":  {
                                            "arquivo":  "zimgit-food-preparation_en_2025-04.zim",
@@ -1258,13 +1258,256 @@
                                                    "baixado_em":  "2026-10-29T17:25:05"
                                                },
                          "wikiversity-en":  {
-                                                "arquivo":  "wikiversity_en_all_maxi_2026-05.zim",
-                                                "versao":  "2026-05",
+                                                "arquivo":  "wikiversity_en_all_maxi_2026-11.zim",
+                                                "versao":  "2026-11",
                                                 "local":  "cofre",
-                                                "destino":  "conhecimento\\wikiversity_en_all_maxi_2026-05.zim",
-                                                "tamanho":  2459209431,
-                                                "sha256":  "f2667509251c1784270c8c8dd0cd8a79d438a5c4940a6cc70653a6f77318a421",
-                                                "baixado_em":  "2026-10-29T17:26:06"
-                                            }
+                                                "destino":  "conhecimento\\wikiversity_en_all_maxi_2026-11.zim",
+                                                "tamanho":  2110167855,
+                                                "sha256":  "745bb4de7abb255fa31520cf2be0ca558b57d85419d63b142ec370a97e4a7735",
+                                                "baixado_em":  "2026-11-05T21:50:54"
+                                            },
+                         "nhs-medicamentos":  {
+                                                  "arquivo":  "nhs.uk_en_medicines_2026-09b.zim",
+                                                  "versao":  "2026-09b",
+                                                  "local":  "nucleo",
+                                                  "destino":  "conhecimento\\nhs.uk_en_medicines_2026-09b.zim",
+                                                  "tamanho":  15322705,
+                                                  "sha256":  "349f7bc833aa1cfedd1cdd10fbb9ae575aac63b22e17639bfaee6568b6668b62",
+                                                  "baixado_em":  "2026-11-05T21:48:36"
+                                              },
+                         "ready-gov":  {
+                                           "arquivo":  "ready.gov_en_all_2026-10.zim",
+                                           "versao":  "2026-10",
+                                           "local":  "nucleo",
+                                           "destino":  "conhecimento\\ready.gov_en_all_2026-10.zim",
+                                           "tamanho":  2063895408,
+                                           "sha256":  "c88ce03db2a6dd855c1075d87abb6dceac678718e0dd3fa7912009469b9ca225",
+                                           "baixado_em":  "2026-11-05T21:49:57"
+                                       },
+                         "cdc-viajante":  {
+                                              "arquivo":  "wwwnc.cdc.gov_en_all_2024-11.zim",
+                                              "versao":  "2024-11",
+                                              "local":  "nucleo",
+                                              "destino":  "conhecimento\\wwwnc.cdc.gov_en_all_2024-11.zim",
+                                              "tamanho":  178326622,
+                                              "sha256":  "45c1c8d79a38a814098be41044a42d4ac7cc3dfa5cdfe398e9974e08d80591dc",
+                                              "baixado_em":  "2026-11-05T21:50:36"
+                                          },
+                         "lowtech-magazine":  {
+                                                  "arquivo":  "solar.lowtechmagazine.com_mul_all_2025-01.zim",
+                                                  "versao":  "2025-01",
+                                                  "local":  "nucleo",
+                                                  "destino":  "conhecimento\\solar.lowtechmagazine.com_mul_all_2025-01.zim",
+                                                  "tamanho":  700555670,
+                                                  "sha256":  "0a21bde8e3be3b80b8b7dea13118fb2190a60274f2341a5b72715f89fd049740",
+                                                  "baixado_em":  "2026-11-05T21:51:09"
+                                              },
+                         "librepathology":  {
+                                                "arquivo":  "librepathology_en_all_maxi_2026-09.zim",
+                                                "versao":  "2026-09",
+                                                "local":  "cofre",
+                                                "destino":  "conhecimento\\librepathology_en_all_maxi_2026-09.zim",
+                                                "tamanho":  95279611,
+                                                "sha256":  "9474d11f9104e9e649ea09efefff943e10b3fcc0f3afc60d804eeb1b20bd3a3f",
+                                                "baixado_em":  "2026-11-05T21:51:14"
+                                            },
+                         "se-mechanics":  {
+                                              "arquivo":  "mechanics.stackexchange.com_en_all_2026-10.zim",
+                                              "versao":  "2026-10",
+                                              "local":  "nucleo",
+                                              "destino":  "conhecimento\\mechanics.stackexchange.com_en_all_2026-10.zim",
+                                              "tamanho":  341672133,
+                                              "sha256":  "3b8790dcde480f466d0d55fae23941cdb1f06ff464a77168f27110f98d8eb923",
+                                              "baixado_em":  "2026-11-05T21:51:56"
+                                          },
+                         "se-engineering":  {
+                                                "arquivo":  "engineering.stackexchange.com_en_all_2026-10.zim",
+                                                "versao":  "2026-10",
+                                                "local":  "cofre",
+                                                "destino":  "conhecimento\\engineering.stackexchange.com_en_all_2026-10.zim",
+                                                "tamanho":  258556632,
+                                                "sha256":  "5c0e625750963139cd274c4d75f310ed742a5eaf305b790e0c619f80a9d572a1",
+                                                "baixado_em":  "2026-11-05T21:51:58"
+                                            },
+                         "se-chemistry":  {
+                                              "arquivo":  "chemistry.stackexchange.com_en_all_2026-10.zim",
+                                              "versao":  "2026-10",
+                                              "local":  "cofre",
+                                              "destino":  "conhecimento\\chemistry.stackexchange.com_en_all_2026-10.zim",
+                                              "tamanho":  419958885,
+                                              "sha256":  "29df06f911373044997678301ebe894ef10fdf15c8e83d39ab83f7ae91f65394",
+                                              "baixado_em":  "2026-11-05T21:52:24"
+                                          },
+                         "se-bicycles":  {
+                                             "arquivo":  "bicycles.stackexchange.com_en_all_2026-10.zim",
+                                             "versao":  "2026-10",
+                                             "local":  "nucleo",
+                                             "destino":  "conhecimento\\bicycles.stackexchange.com_en_all_2026-10.zim",
+                                             "tamanho":  499254876,
+                                             "sha256":  "151c3966c4db62245e6b070d1e61a68501d205655bc3f9a56fe74ab59f0bd1d8",
+                                             "baixado_em":  "2026-11-05T21:52:41"
+                                         },
+                         "se-biology":  {
+                                            "arquivo":  "biology.stackexchange.com_en_all_2026-10.zim",
+                                            "versao":  "2026-10",
+                                            "local":  "cofre",
+                                            "destino":  "conhecimento\\biology.stackexchange.com_en_all_2026-10.zim",
+                                            "tamanho":  425073886,
+                                            "sha256":  "7c2798a4821340f68ccaaf4bc30ddc4f1e3d477772b56aca2eebbfa3005127c3",
+                                            "baixado_em":  "2026-11-05T21:52:55"
+                                        },
+                         "se-ham":  {
+                                        "arquivo":  "ham.stackexchange.com_en_all_2026-10.zim",
+                                        "versao":  "2026-10",
+                                        "local":  "nucleo",
+                                        "destino":  "conhecimento\\ham.stackexchange.com_en_all_2026-10.zim",
+                                        "tamanho":  77108284,
+                                        "sha256":  "cb8a0cd7ae0078279ace1cd2a05e60505aa2494c29e82dac1942bf4cd54fcf9c",
+                                        "baixado_em":  "2026-11-05T21:53:07"
+                                    },
+                         "se-woodworking":  {
+                                                "arquivo":  "woodworking.stackexchange.com_en_all_2026-10.zim",
+                                                "versao":  "2026-10",
+                                                "local":  "nucleo",
+                                                "destino":  "conhecimento\\woodworking.stackexchange.com_en_all_2026-10.zim",
+                                                "tamanho":  106657287,
+                                                "sha256":  "2ba925d1028f9442c153569701868b5b7abc6dbb2551c620680a92be9272b062",
+                                                "baixado_em":  "2026-11-05T21:53:27"
+                                            },
+                         "se-sustainability":  {
+                                                   "arquivo":  "sustainability.stackexchange.com_en_all_2026-10.zim",
+                                                   "versao":  "2026-10",
+                                                   "local":  "nucleo",
+                                                   "destino":  "conhecimento\\sustainability.stackexchange.com_en_all_2026-10.zim",
+                                                   "tamanho":  27687333,
+                                                   "sha256":  "1516f252827b1409b7b55c1a44671e7e59b857bf2bb3732f3af62c996e40412f",
+                                                   "baixado_em":  "2026-11-05T21:53:44"
+                                               },
+                         "se-homebrew":  {
+                                             "arquivo":  "homebrew.stackexchange.com_en_all_2026-10.zim",
+                                             "versao":  "2026-10",
+                                             "local":  "nucleo",
+                                             "destino":  "conhecimento\\homebrew.stackexchange.com_en_all_2026-10.zim",
+                                             "tamanho":  37374625,
+                                             "sha256":  "d7598765626dd1f8c556173e76720aabbeecf2f2fbdf95f96ed78863032ea07c",
+                                             "baixado_em":  "2026-11-05T21:54:05"
+                                         },
+                         "se-pets":  {
+                                         "arquivo":  "pets.stackexchange.com_en_all_2026-10.zim",
+                                         "versao":  "2026-10",
+                                         "local":  "nucleo",
+                                         "destino":  "conhecimento\\pets.stackexchange.com_en_all_2026-10.zim",
+                                         "tamanho":  86785885,
+                                         "sha256":  "254999358d964a0cb851731456d56b4f7a5e4be11a3ea9c0e8e84f58604d69fe",
+                                         "baixado_em":  "2026-11-05T21:54:24"
+                                     },
+                         "se-physics":  {
+                                            "arquivo":  "physics.stackexchange.com_en_all_2026-10.zim",
+                                            "versao":  "2026-10",
+                                            "local":  "cofre",
+                                            "destino":  "conhecimento\\physics.stackexchange.com_en_all_2026-10.zim",
+                                            "tamanho":  1839301288,
+                                            "sha256":  "1f1767bcca84d5af7c8fb44d2e45c6fc1a28117b33bc5aa75f55cff9e4d3735e",
+                                            "baixado_em":  "2026-11-05T21:55:48"
+                                        },
+                         "se-earthscience":  {
+                                                 "arquivo":  "earthscience.stackexchange.com_en_all_2026-10.zim",
+                                                 "versao":  "2026-10",
+                                                 "local":  "cofre",
+                                                 "destino":  "conhecimento\\earthscience.stackexchange.com_en_all_2026-10.zim",
+                                                 "tamanho":  132908100,
+                                                 "sha256":  "af63d199e3ec876a31d2a9fdd335853acc1655ff73995854f488d03402f55c72",
+                                                 "baixado_em":  "2026-11-05T21:56:14"
+                                             },
+                         "se-raspberrypi":  {
+                                                "arquivo":  "raspberrypi.stackexchange.com_en_all_2026-10.zim",
+                                                "versao":  "2026-10",
+                                                "local":  "cofre",
+                                                "destino":  "conhecimento\\raspberrypi.stackexchange.com_en_all_2026-10.zim",
+                                                "tamanho":  298502933,
+                                                "sha256":  "e66ad00f65531d2e8863ad6c7a24a1e4d29cb837abebfd0b83ce2e2c16e99e9b",
+                                                "baixado_em":  "2026-11-05T21:56:38"
+                                            },
+                         "se-arduino":  {
+                                            "arquivo":  "arduino.stackexchange.com_en_all_2026-10.zim",
+                                            "versao":  "2026-10",
+                                            "local":  "cofre",
+                                            "destino":  "conhecimento\\arduino.stackexchange.com_en_all_2026-10.zim",
+                                            "tamanho":  259577739,
+                                            "sha256":  "a7fb8bba8845f4c30712d587cc369c994baf120bc1e881abfb0ca8d7937d387b",
+                                            "baixado_em":  "2026-11-05T21:57:03"
+                                        },
+                         "se-crafts":  {
+                                           "arquivo":  "crafts.stackexchange.com_en_all_2026-10.zim",
+                                           "versao":  "2026-10",
+                                           "local":  "cofre",
+                                           "destino":  "conhecimento\\crafts.stackexchange.com_en_all_2026-10.zim",
+                                           "tamanho":  58532200,
+                                           "sha256":  "048e7ef82c92b08eab684b5436127b7dd2ff0fd945da7034ff36457253b4fb35",
+                                           "baixado_em":  "2026-11-05T21:57:21"
+                                       },
+                         "se-lifehacks":  {
+                                              "arquivo":  "lifehacks.stackexchange.com_en_all_2026-10.zim",
+                                              "versao":  "2026-10",
+                                              "local":  "cofre",
+                                              "destino":  "conhecimento\\lifehacks.stackexchange.com_en_all_2026-10.zim",
+                                              "tamanho":  48985843,
+                                              "sha256":  "c21597543fa086ede89e9759111fb5ab673adb3c8cd8563471e3402d2d64b191",
+                                              "baixado_em":  "2026-11-05T21:57:39"
+                                          },
+                         "se-parenting":  {
+                                              "arquivo":  "parenting.stackexchange.com_en_all_2026-10.zim",
+                                              "versao":  "2026-10",
+                                              "local":  "cofre",
+                                              "destino":  "conhecimento\\parenting.stackexchange.com_en_all_2026-10.zim",
+                                              "tamanho":  60080756,
+                                              "sha256":  "19b887a0dc7623203e3d2de76e4110cfaa59d65b2c0aa614f485d939160209e4",
+                                              "baixado_em":  "2026-11-05T21:57:57"
+                                          },
+                         "se-askubuntu":  {
+                                              "arquivo":  "askubuntu.com_en_all_2026-10.zim",
+                                              "versao":  "2026-10",
+                                              "local":  "cofre",
+                                              "destino":  "conhecimento\\askubuntu.com_en_all_2026-10.zim",
+                                              "tamanho":  2767228112,
+                                              "sha256":  "126123033e9f06b9a98461be2c57c926b9501e80cf7851ba110a57574a97d248",
+                                              "baixado_em":  "2026-11-05T21:59:22"
+                                          },
+                         "se-unix":  {
+                                         "arquivo":  "unix.stackexchange.com_en_all_2026-10.zim",
+                                         "versao":  "2026-10",
+                                         "local":  "cofre",
+                                         "destino":  "conhecimento\\unix.stackexchange.com_en_all_2026-10.zim",
+                                         "tamanho":  1316253305,
+                                         "sha256":  "793f0fbaf64e9eb8d2fd59fec80f62cf94acb22ca94c87eb25ae145dd589e551",
+                                         "baixado_em":  "2026-11-05T22:03:30"
+                                     },
+                         "se-superuser":  {
+                                              "arquivo":  "superuser.com_en_all_2026-10.zim",
+                                              "versao":  "2026-10",
+                                              "local":  "cofre",
+                                              "destino":  "conhecimento\\superuser.com_en_all_2026-10.zim",
+                                              "tamanho":  4014454341,
+                                              "sha256":  "e2392c0ccb7627740c4bd8e922d41b5d592da35ab4985f89d833298dc7e92f76",
+                                              "baixado_em":  "2026-11-05T22:07:33"
+                                          },
+                         "se-security":  {
+                                             "arquivo":  "security.stackexchange.com_en_all_2026-10.zim",
+                                             "versao":  "2026-10",
+                                             "local":  "cofre",
+                                             "destino":  "conhecimento\\security.stackexchange.com_en_all_2026-10.zim",
+                                             "tamanho":  439776865,
+                                             "sha256":  "71746ebfe884cbd9a50be1d591ab7987403aa287a1a693c5deafa129e7f6962d",
+                                             "baixado_em":  "2026-11-05T22:08:03"
+                                         },
+                         "pt-stackoverflow":  {
+                                                  "arquivo":  "pt.stackoverflow.com_mul_all_2026-10.zim",
+                                                  "versao":  "2026-10",
+                                                  "local":  "cofre",
+                                                  "destino":  "conhecimento\\pt.stackoverflow.com_mul_all_2026-10.zim",
+                                                  "tamanho":  933616206,
+                                                  "sha256":  "977bb245553ca7a0899022febf64c7640cf497995614c7fbfe1061710810bdd8",
+                                                  "baixado_em":  "2026-11-05T22:08:46"
+                                              }
                      }
 }
