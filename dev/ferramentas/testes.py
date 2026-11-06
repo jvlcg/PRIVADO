@@ -524,6 +524,43 @@ class CentralSemModoJogo(unittest.TestCase):
             self.assertIn("frame-ancestors 'none'", r.headers["Content-Security-Policy"])
 
 
+class AgenteDoCofre(unittest.TestCase):
+    """O servidor MCP do cofre conversando pelo protocolo de verdade (stdio), como um agente faria."""
+
+    def conversar(self, mensagens):
+        import subprocess
+        entrada = "".join(json.dumps(m) + "\n" for m in mensagens)
+        r = subprocess.run([sys.executable, str(Path(__file__).resolve().parent / "cofre_mcp.py")], input=entrada,
+                           capture_output=True, text=True, encoding="utf-8", timeout=60)
+        return [json.loads(l) for l in r.stdout.splitlines() if l.strip()]
+
+    def test_inicia_lista_e_chama_uma_ferramenta(self):
+        respostas = self.conversar([
+            {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "teste"}}},
+            {"jsonrpc": "2.0", "method": "notifications/initialized"},
+            {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
+            {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "qual_ferramenta", "arguments": {"pedido": "falta de ar"}}},
+            {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "nao_existe", "arguments": {}}},
+        ])
+        self.assertEqual([r["id"] for r in respostas], [1, 2, 3, 4])  # a notificacao nao tem resposta
+        self.assertEqual(respostas[0]["result"]["serverInfo"]["name"], "cofre")
+        nomes = {f["name"] for f in respostas[1]["result"]["tools"]}
+        self.assertEqual(nomes, {"buscar_bibliotecas", "ler_artigo", "trechos_com_fonte", "respostas_guardadas", "qual_ferramenta"})
+        self.assertIn("emergencia", respostas[2]["result"]["content"][0]["text"])
+        self.assertIn("error", respostas[3])
+
+    def test_ler_artigo_so_le_a_biblioteca_do_cofre(self):
+        import cofre_mcp
+        r = cofre_mcp.atender({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
+                               "params": {"name": "ler_artigo", "arguments": {"link": "https://site-qualquer.example/pagina"}}})
+        self.assertTrue(r["result"]["isError"])
+        with mock.patch.object(sabio, "http_texto", return_value="<p>Ferva a agua por um minuto inteiro.</p>") as falso:
+            r = cofre_mcp.atender({"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+                                   "params": {"name": "ler_artigo", "arguments": {"link": "/content/wikipedia_pt/A/Agua"}}})
+        self.assertIn("Ferva a agua", r["result"]["content"][0]["text"])
+        self.assertTrue(falso.call_args.args[0].startswith(sabio.KIWIX + "/content/"))
+
+
 class ConselhoComPergunta(unittest.TestCase):
     def test_pergunta_no_endereco_abre_a_pagina(self):
         import urllib.request

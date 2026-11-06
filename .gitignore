@@ -21,6 +21,7 @@
 
 # Dentro das pastas incluidas, fica de fora o que e grande, gerado ou pessoal:
 /catalogo/llama-presets.ini
+/catalogo/mcp-servidores.json
 /catalogo/chave-api.txt
 /catalogo/modo-jogo.txt
 /dev/datasets/

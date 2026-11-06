@@ -484,10 +484,10 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
       <table class="tabela">
         <thead><tr><th>Para</th><th>Use</th><th>Observação</th></tr></thead>
         <tbody>
-          <tr><td>Conversar rápido</td><td><code>gemma-4-12b</code></td><td>cabe inteiro na placa de vídeo</td></tr>
-          <tr><td>Melhor resposta geral</td><td><code>gemma-4-26b-a4b</code></td><td><code>qwen3.8-27b</code> é melhor, porém lento</td></tr>
+          <tr><td>Conversar rápido</td><td><code>gemma-4-12b-qat</code></td><td>inteiro na placa: ~109 palavras por segundo</td></tr>
+          <tr><td>Melhor resposta geral</td><td><code>gemma-4-26b-a4b-qat</code></td><td>~75 palavras/s; <code>qwen3.8-27b-iq3</code> é melhor, porém ~10 palavras/s</td></tr>
           <tr><td>Raciocínio e contas</td><td><code>gpt-oss-20b</code></td><td>o mais veloz</td></tr>
-          <tr><td>Programar</td><td><code>qwen3-coder-next</code></td><td>agente de código</td></tr>
+          <tr><td>Programar</td><td><code>qwen3-coder-next</code></td><td>ou <code>ornith-1.5-35b-a3b</code>, o agente de código que mais acerta ferramentas (fica no HD)</td></tr>
           <tr><td>Saúde</td><td><code>medgemma-27b</code></td><td>junto com a WikiMed; não substitui um médico</td></tr>
           <tr><td>Traduzir</td><td><code>translategemma-12b</code></td><td>55 idiomas, inclusive texto em fotos</td></tr>
           <tr><td>Ler foto ou documento</td><td><code>glm-ocr</code></td><td>tabelas e PDFs escaneados</td></tr>

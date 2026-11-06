@@ -40,9 +40,9 @@ o Projeto Gutenberg, o Stack Overflow e uma copia de seguranca deste SSD.
 
 | Para                         | Use |
 |------------------------------|-----|
-| conversar rapido             | gemma-4-12b |
-| melhor resposta geral        | gemma-4-26b-a4b ou qwen3.8-27b (mais lento) |
-| programar                    | qwen3-coder-next |
+| conversar rapido             | gemma-4-12b-qat |
+| melhor resposta geral        | gemma-4-26b-a4b-qat ou qwen3.8-27b-iq3 (mais lento) |
+| programar                    | qwen3-coder-next ou ornith-1.5-35b-a3b (agente de codigo, no HD) |
 | saude                        | medgemma-27b (junto com a WikiMed; nao substitui medico) |
 | traduzir                     | translategemma-12b |
 | ler documento ou foto        | glm-ocr |

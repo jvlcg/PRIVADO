@@ -111,12 +111,12 @@ O plano, do que rende mais para o que custa menos:
 | --- | --- | --- | --- | --- |
 | 1 | Ligar o monitor na saída de vídeo da placa-mãe (iGPU do 7900X) | +1,7 GB na placa para as IAs (14% a mais) | nada | sim: cabo e BIOS |
 | 2 | Limitar a placa a 150 W para texto (`nvidia-smi -pl 150`, como administrador; 200 W para jogo e vídeo) | ~16% menos energia por palavra, ~1% mais lento | nada | sim: administrador |
-| 3 | Atualizar o llama.cpp para a v0.9.0, numa pasta nova, com a atual de reserva | MoE mais rápido, agentes, cache de especialistas | ~0,5 GB | aprovar o download |
+| 3 | **Feito em 05/11:** llama.cpp b12138 (a b11901 ficou de reserva), com atenção rápida, memória da conversa em 8 bits, cache de prompt de 16 GB na RAM e folga de memória no roteador | MoE mais rápido, agentes, cache de especialistas | 0,5 GB | |
 | 4 | No conselho, trocar o membro qwen3.8-27b pelo qwen3.6-35b-a3b (MoE) | 5 a 10 vezes menos tempo e energia por resposta desse membro | nada (já baixado) | aprovar a troca |
-| 5 | Agente do Cofre: o "perguntar com fonte" e as bibliotecas como ferramentas MCP, para o llama.cpp novo, o opencode e outros agentes | IA que pesquisa sozinha no acervo offline, citando | ~0,1 GB | aprovar |
-| 6 | Qwen3.8 27B em ~3 bits | o melhor modelo do cofre inteiro na placa | 9,4 GB | aprovar o download |
-| 7 | Gemma 4 QAT (26B-A4B e 12B) no lugar dos atuais | mais qualidade no mesmo tamanho | ~24 GB (substitui) | aprovar o download |
-| 8 | Ornith 1.5 35B-A3B + opencode | agente de código melhor e menor que o qwen3-coder-next | ~21 GB (HD) | aprovar o download |
+| 5 | **Feito em 05/11:** Agente do Cofre, com 5 ferramentas MCP no próprio servidor (veja "Agente do Cofre" em Como usar) | IA que pesquisa sozinha no acervo offline, citando | 0 GB | |
+| 6 | **Feito em 05/11:** Qwen3.8 27B em ~3 bits (`qwen3.8-27b-iq3`), agora no conselho | medido 10 contra 6,5 palavras/s; inteiro na placa só com o monitor na placa-mãe (item 1) | 9,7 GB | |
+| 7 | **Feito em 05/11:** Gemma 4 QAT 26B-A4B e 12B como padrão; os antigos foram para o HD | medido: 12B de 54 para 109 palavras/s, 26B de 57 para 75 | 23 GB (substituem 24 GB) | |
+| 8 | **Feito em 05/11:** Ornith 1.5 35B-A3B no HD (o opencode ainda falta) | medido 58 palavras/s; carrega em 2,5 min do HD | 21 GB (HD) | instalar o opencode |
 | 9 | ComfyUI v0.44 + FLUX 3 klein | imagens ~37% mais rápidas e o FLUX 3 | ~19 GB | login no Hugging Face |
 | 10 | Bibliotecas de out/2026 e novas de saúde e emergência | fontes mais novas | ~19 GB | aprovar o download |
 
@@ -228,6 +228,18 @@ Na Central, cada degrau é desenhado com a altura do gasto. A recomendação sai
 
 **Respostas guardadas.** Cada resposta rápida ou com fonte fica no Histórico (`A:\dev\historico`, só neste PC; não vai para o GitHub). Repetir a pergunta, mesmo com outras palavras vazias ("Como purificar a água?" e "purificar água"), mostra a resposta guardada na hora: 0 Wh e nada é ligado. Isso vale até no modo jogo. Uma resposta com fonte serve para quem pediu a rápida; o contrário, não. Respostas cortadas pelo "Responder agora" não contam. Para perguntar de novo: o botão "Perguntar de novo" na Central, ou `perguntar.ps1 "..." -DeNovo` no terminal. Ao digitar, o Início também avisa das perguntas parecidas que você já fez.
 
+**Agente do Cofre.** O servidor de modelos agora traz ferramentas que a própria IA pode chamar sozinha para pesquisar no acervo offline (protocolo MCP; `dev\ferramentas\cofre_mcp.py`). No chat, elas aparecem no botão de ferramentas:
+
+| Ferramenta | O que faz | Gasto |
+| --- | --- | --- |
+| buscar_bibliotecas | artigos com as palavras, com o trecho onde aparecem | quase nada |
+| ler_artigo | o texto de um artigo da biblioteca, para a IA ler antes de responder | quase nada |
+| trechos_com_fonte | os melhores trechos para a pergunta, já reordenados e numerados para citar | o reordenador pequeno, menos de 0,1 Wh |
+| respostas_guardadas | o que o cofre já respondeu (o Histórico) | 0 Wh |
+| qual_ferramenta | o jeito mais barato de resolver um pedido, com avisos de emergência e saúde | 0 Wh |
+
+As ferramentas só leem: nada de comandos nem de escrita em arquivos. `ler_artigo` só abre páginas da biblioteca deste PC. A biblioteca precisa estar ligada. Outros agentes (opencode, Qwen Code, Goose, Hermes) usam o mesmo servidor; a configuração gerada fica em `catalogo\mcp-servidores.json`. Para tirar as ferramentas do chat: `iniciar-servidor.ps1 -SemAgente`.
+
 **Modo jogo.** Antes de jogar, use a opção 12 do menu ou o botão **Modo jogo** na Central ou no painel do conselho: fecha o chat, a biblioteca, o conselho, o ComfyUI, o Ollama e a própria Central, e libera a placa de vídeo, a memória e o disco. Enquanto ele estiver ligado, nada das IAs abre (nem a verificação semanal nem a sincronização) e o menu só deixa usar as opções leves. Para sair: a opção 12 de novo, ou `Painel.cmd` e "Sair do modo jogo".
 
 Testado neste PC de 25/10 a 01/11/2026:
@@ -261,6 +273,9 @@ Testado neste PC de 25/10 a 01/11/2026:
 | Respostas guardadas (01/11) | pergunta repetida voltou na hora, sem ligar nada, inclusive no modo jogo; pergunta nova no modo jogo foi recusada com a explicação | na hora |
 | Central nova (01/11) | testada no navegador em três larguras (tela grande, janela estreita, celular) e nos temas claro e escuro; 39 testes automáticos passando | na hora |
 | Vigia de desligar (01/11) | leu os três sinais (conversa do Claude, teclado e mouse, uso da placa) e ficou vigiando | a cada minuto |
+| Vigia com jogo aberto (05/11) | reconheceu o Alice: Madness Returns aberto (a placa estava a só 9%, abaixo do limite) e segurou o desligamento | a cada minuto |
+| Modelos novos, llama.cpp b12138 (05/11) | 400 palavras sobre filtro de água: gemma-4-12b-qat 109 palavras/s (antigo 54), gemma-4-26b-a4b-qat 75 (antigo 57), qwen3.8-27b-iq3 10 (antigo 6,5), ornith-1.5-35b-a3b 58 | 4 a 40 s por resposta |
+| Agente do Cofre (05/11) | o servidor de modelos achou e registrou as 5 ferramentas MCP do cofre ao ligar | na hora |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 7). Exemplos em `A:\dev\midia-gerada`.
 

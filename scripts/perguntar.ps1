@@ -8,7 +8,7 @@
   .\perguntar.ps1 "how to fix a leaking faucet" -Livros ifixit_pt_all_2026-03
   .\perguntar.ps1 -Indexar C:\Users\voce\Documents\manuais
   .\perguntar.ps1 -Buscar "qual a garantia do inversor solar?"
-  .\perguntar.ps1 "..." -Modelo qwen3.8-27b
+  .\perguntar.ps1 "..." -Modelo qwen3.8-27b-iq3
   .\perguntar.ps1 "torniquete" -Modo buscar      # so a biblioteca, sem IA (quase nada de energia)
   .\perguntar.ps1 "capital da Bolivia" -Modo rapida   # IA pequena, sem fontes (~1 Wh)
   Pergunta repetida mostra a resposta guardada (0 Wh); -DeNovo pergunta outra vez.
@@ -18,7 +18,7 @@ param(
     [string]$Indexar,
     [string]$Buscar,
     [string]$Livros,
-    [string]$Modelo = 'gemma-4-26b-a4b',
+    [string]$Modelo = 'gemma-4-26b-a4b-qat',
     [ValidateSet('fonte', 'rapida', 'buscar')][string]$Modo = 'fonte',
     [switch]$DeNovo
 )

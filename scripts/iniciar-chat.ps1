@@ -12,7 +12,7 @@
   Usa a mesma chave de acesso do iniciar-servidor.ps1 (catalogo\chave-api.txt); -SemChave desliga.
 #>
 param(
-    [string]$Id = 'gemma-4-12b',
+    [string]$Id = 'gemma-4-12b-qat',
     [int]$Contexto = 0,
     [int]$Porta = 8080,
     [switch]$Rede,

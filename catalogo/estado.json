@@ -685,13 +685,109 @@
                                          "local":  "cofre",
                                          "repo_sha":  "7200b74bea78b0a2964ef9f3897eefa401e890ff",
                                          "repo_modificado":  "2026-10-19T14:14:21.000Z"
-                                     }
+                                     },
+                    "qwen3.8-27b-iq3":  {
+                                            "completo":  true,
+                                            "repo":  "ISTA-DASLab/Qwen3.8-27B-GSQ-RCO-GGUF",
+                                            "arquivos":  {
+                                                             "Qwen3.8-27B-GSQ-RCO-IQ3_XXS-mtp.gguf":  {
+                                                                                                          "destino":  "modelos\\llm\\qwen3.8-27b-iq3\\Qwen3.8-27B-GSQ-RCO-IQ3_XXS-mtp.gguf",
+                                                                                                          "tamanho":  10442827840,
+                                                                                                          "sha256":  "63f29a2189a6b4cc31f81e093d3856ad293a5583114439f41ae1ed7af4093262",
+                                                                                                          "baixado_em":  "2026-11-05T20:56:50"
+                                                                                                      },
+                                                             "mmproj-Qwen3.8-27B-BF16.gguf":  {
+                                                                                                  "destino":  "modelos\\llm\\qwen3.8-27b-iq3\\mmproj-Qwen3.8-27B-BF16.gguf",
+                                                                                                  "tamanho":  931146528,
+                                                                                                  "sha256":  "13cb7bebccbd04afc8f4090cb949ecf8937cdf7377c5799b1a0c594e7c0d3e16",
+                                                                                                  "baixado_em":  "2026-11-05T20:57:16"
+                                                                                              }
+                                                         },
+                                            "local":  "nucleo",
+                                            "repo_sha":  "d562806dbafae37109975e970aae91b43e73b440",
+                                            "repo_modificado":  "2026-09-02T09:11:34.000Z"
+                                        },
+                    "ornith-1.5-35b-a3b":  {
+                                               "completo":  true,
+                                               "repo":  "ornith-ai/Ornith-1.5-35B-A3B-GGUF",
+                                               "arquivos":  {
+                                                                "Ornith-1.5-35B-Q4_K_M.gguf":  {
+                                                                                                   "destino":  "modelos\\codigo\\ornith-1.5-35b-a3b\\Ornith-1.5-35B-Q4_K_M.gguf",
+                                                                                                   "tamanho":  21713463040,
+                                                                                                   "sha256":  "42739874cc2ccfdb8523b23fbe52e29b2a7555c8176737ca9ca0b5d59859d41f",
+                                                                                                   "baixado_em":  "2026-11-05T21:00:00"
+                                                                                               },
+                                                                "mmproj-Ornith-1.5-35B-BF16.gguf":  {
+                                                                                                        "destino":  "modelos\\codigo\\ornith-1.5-35b-a3b\\mmproj-Ornith-1.5-35B-BF16.gguf",
+                                                                                                        "tamanho":  902822240,
+                                                                                                        "sha256":  "1921a36a85aee56cd2abd27f46701802c9d85a33474792e600df6c3b282a135d",
+                                                                                                        "baixado_em":  "2026-11-05T21:00:27"
+                                                                                                    }
+                                                            },
+                                               "local":  "cofre",
+                                               "repo_sha":  "12393612fd4f730ff5aadc23e9b8f9648aa49ceb",
+                                               "repo_modificado":  "2026-08-24T03:43:47.000Z"
+                                           },
+                    "gemma-4-26b-a4b-qat":  {
+                                                "completo":  true,
+                                                "repo":  "unsloth/gemma-4-26B-A4B-it-qat-GGUF",
+                                                "arquivos":  {
+                                                                 "gemma-4-26B-A4B-it-qat-UD-Q4_K_XL.gguf":  {
+                                                                                                                "destino":  "modelos\\llm\\gemma-4-26b-a4b-qat\\gemma-4-26B-A4B-it-qat-UD-Q4_K_XL.gguf",
+                                                                                                                "tamanho":  14249047104,
+                                                                                                                "sha256":  "a7c5bc715f5ff8e99a3e8901ce7d2b42b402c669bf24f7c5250747633d0f5891",
+                                                                                                                "baixado_em":  "2026-11-05T21:01:24"
+                                                                                                            },
+                                                                 "mmproj-F16.gguf":  {
+                                                                                         "destino":  "modelos\\llm\\gemma-4-26b-a4b-qat\\mmproj-F16.gguf",
+                                                                                         "tamanho":  1193058784,
+                                                                                         "sha256":  "d00f211a7d4f7fb19bd9b75d8e9342eccffb5920b08fd9562167560fdfcc5dd1",
+                                                                                         "baixado_em":  "2026-11-05T21:01:41"
+                                                                                     },
+                                                                 "MTP/mtp-gemma-4-26B-A4B-it-Q8_0.gguf":  {
+                                                                                                              "destino":  "modelos\\llm\\gemma-4-26b-a4b-qat\\mtp-gemma-4-26B-A4B-it-Q8_0.gguf",
+                                                                                                              "tamanho":  461785600,
+                                                                                                              "sha256":  "75f58e20c32281d1adc086c0569d53f147e8d81a7b8493cf4a73a028415f67af",
+                                                                                                              "baixado_em":  "2026-11-05T21:01:52"
+                                                                                                          }
+                                                             },
+                                                "local":  "nucleo",
+                                                "repo_sha":  "7b92b5b28818151e8669af2e45e88d6086f490dd",
+                                                "repo_modificado":  "2026-07-17T12:43:18.000Z"
+                                            },
+                    "gemma-4-12b-qat":  {
+                                            "completo":  true,
+                                            "repo":  "unsloth/gemma-4-12B-it-qat-GGUF",
+                                            "arquivos":  {
+                                                             "gemma-4-12B-it-qat-UD-Q4_K_XL.gguf":  {
+                                                                                                        "destino":  "modelos\\llm\\gemma-4-12b-qat\\gemma-4-12B-it-qat-UD-Q4_K_XL.gguf",
+                                                                                                        "tamanho":  6716356800,
+                                                                                                        "sha256":  "90fd44e29e0d7cffeb0fd00dc73cfdab9ed0b0e95306ecf7821ea634c940c370",
+                                                                                                        "baixado_em":  "2026-11-05T21:03:27"
+                                                                                                    },
+                                                             "mmproj-F16.gguf":  {
+                                                                                     "destino":  "modelos\\llm\\gemma-4-12b-qat\\mmproj-F16.gguf",
+                                                                                     "tamanho":  175115840,
+                                                                                     "sha256":  "ecc4e93128da8363b7dbf2193eab98cf1142353f52ceaa0c95c0872997aaadd3",
+                                                                                     "baixado_em":  "2026-11-05T21:03:31"
+                                                                                 },
+                                                             "MTP/mtp-gemma-4-12B-it-Q8_0.gguf":  {
+                                                                                                      "destino":  "modelos\\llm\\gemma-4-12b-qat\\mtp-gemma-4-12B-it-Q8_0.gguf",
+                                                                                                      "tamanho":  465127936,
+                                                                                                      "sha256":  "f58dff98ecf17079c364b1205954ba85763a00ad076c5595040db0a828eaec1b",
+                                                                                                      "baixado_em":  "2026-11-05T21:03:39"
+                                                                                                  }
+                                                         },
+                                            "local":  "nucleo",
+                                            "repo_sha":  "980b060c40a8539ac159e0501a3e0f66a6365af3",
+                                            "repo_modificado":  "2026-07-17T12:37:30.000Z"
+                                        }
                 },
     "motores":  {
                     "llama.cpp":  {
-                                      "versao":  "b11901",
-                                      "publicado":  "2026-10-26T17:26:52Z",
-                                      "instalado_em":  "2026-10-26T15:47:09"
+                                      "versao":  "b12138",
+                                      "publicado":  "2026-11-05T22:07:28Z",
+                                      "instalado_em":  "2026-11-05T20:51:21"
                                   },
                     "kiwix-tools":  {
                                         "versao":  "3.8.1",

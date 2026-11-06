@@ -15,7 +15,7 @@
   pede a chave uma vez (ela vai copiada para a area de transferencia: cole com Ctrl+V).
   Clientes (VS Code/Continue, Cline, Open WebUI, Aider): base URL http://127.0.0.1:8080/v1,
   chave de API = o texto de catalogo\chave-api.txt, modelo = id do catalogo (ex.: qwen3-coder-next).
-  -SemChave desliga a chave (nao recomendado).
+  -SemChave desliga a chave (nao recomendado). -SemAgente tira as ferramentas do cofre (MCP) do chat.
 #>
 param(
     [int]$Porta = 8080,
@@ -24,7 +24,8 @@ param(
     [switch]$Rede,
     [switch]$SemNavegador,
     [switch]$IncluirGigantes,
-    [switch]$SemChave
+    [switch]$SemChave,
+    [switch]$SemAgente
 )
 . "$PSScriptRoot\comum.ps1"
 Bloquear-SeModoJogo 'o servidor de modelos'
@@ -40,6 +41,10 @@ $ini.Add('version = 1')
 $ini.Add('')
 $ini.Add('[*]')
 $ini.Add('fit = on')
+# Atencao rapida e cache de prompt maior na RAM (64 GB): perguntas que repetem o inicio (conselho, perguntar
+# com fonte) nao reprocessam o que ja foi lido.
+$ini.Add('flash-attn = on')
+$ini.Add('cache-ram = 16384')
 # Modelo parado libera a placa de video e a memoria; a proxima pergunta o carrega de novo.
 if ($DormirMinutos -gt 0) { $ini.Add("sleep-idle-seconds = $($DormirMinutos * 60)") }
 $ini.Add('')
@@ -56,10 +61,13 @@ foreach ($m in @($cat.modelos | Where-Object { $_.status -eq 'baixar' -and $_.mo
     $mtp = $arqs | Where-Object { (Split-Path $_ -Leaf) -match '^mtp-' -and (Test-Path -LiteralPath $_) } | Select-Object -First 1
     $ini.Add("[$($m.id)]")
     $ini.Add("model = $modelo")
-    if ($mmproj) { $ini.Add("mmproj = $mmproj") }
+    # "visao": false no catalogo deixa a parte de imagem de fora: sobra memoria na placa para o texto.
+    if ($mmproj -and $m.visao -ne $false) { $ini.Add("mmproj = $mmproj") }
     # Cabeca MTP: preve varios tokens de uma vez (medido: Qwen3.8 27B +76%, Gemma 4 26B +21%).
     if ($mtp) { $ini.Add('spec-type = draft-mtp'); $ini.Add("spec-draft-model = $mtp") }
     if ($m.contexto) { $ini.Add("c = $($m.contexto)") }
+    # Memoria da conversa (KV) em 8 bits: metade do espaco na placa, perda desprezivel. Os de busca ficam em 16 bits.
+    if ($m.tipo -ne 'embeddings') { $ini.Add('cache-type-k = q8_0'); $ini.Add('cache-type-v = q8_0') }
     # Converte "--embedding --pooling last" em linhas do INI.
     $tokens = @(([string]$m.args) -split '\s+' | Where-Object { $_ })
     for ($i = 0; $i -lt $tokens.Count; $i++) {
@@ -93,6 +101,21 @@ if ($DormirMinutos -gt 0) { Info "Modelo sem uso por $DormirMinutos min sai da m
 Mostrar-Estimativa 'chat' "$(Texto-Estimativa 'chat'); parado, so o PC ligado ($(Texto-Estimativa 'pc-ligado'))"
 # --cors-origins localhost e a chave: um site aberto no navegador nao consegue usar os modelos escondido.
 $argumentos = @('--models-preset', $arqIni, '--models-max', "$Carregados", '--host', $ip, '--port', "$Porta", '--cors-origins', 'localhost')
+# Folga de 1 GB: antes de faltar memoria na placa (o ComfyUI ou um jogo aberto tambem usam), o roteador
+# descarrega o modelo menos usado em vez de travar. So existe a partir da build b12000 (novembro de 2026).
+if ((& $exe --help 2>&1 | Out-String).Contains('--models-memory-margin')) { $argumentos += @('--models-memory-margin', '1024') }
+# Agente do Cofre: as bibliotecas offline viram ferramentas (MCP) que o chat e os agentes podem chamar.
+# So a biblioteca padrao do Python, entao basta o Python do cofre; nada de shell nem escrita em arquivos.
+$python = Get-ChildItem -LiteralPath (Join-Path $PastaMotores 'python') -Filter 'python.exe' -Recurse -ErrorAction SilentlyContinue |
+    Where-Object { $_.DirectoryName -match 'cpython-3\.1[2-9]' } | Select-Object -First 1
+if (-not $SemAgente -and $python) {
+    $arqMcp = Join-Path $PastaCatalogo 'mcp-servidores.json'
+    $mcp = [ordered]@{ mcpServers = [ordered]@{ cofre = [ordered]@{
+        command = $python.FullName; args = @((Join-Path $Raiz 'dev\ferramentas\cofre_mcp.py')); timeout_ms = 30000 } } }
+    [IO.File]::WriteAllText($arqMcp, ($mcp | ConvertTo-Json -Depth 5), (New-Object Text.UTF8Encoding $false))
+    $argumentos += @('--mcp-servers-config', $arqMcp)
+    Info 'Agente:  ferramentas do cofre no chat (buscar e ler as bibliotecas, trechos com fonte, respostas guardadas)'
+}
 if (-not $SemChave) {
     $chaveApi = Chave-Api
     $argumentos += @('--api-key-file', $ArquivoChave)

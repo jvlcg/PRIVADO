@@ -45,7 +45,7 @@ from pathlib import Path
 
 LLM = os.environ.get("SABIO_LLM", "http://127.0.0.1:8080")
 KIWIX = os.environ.get("SABIO_KIWIX", "http://127.0.0.1:8081")
-MODELO_CHAT = os.environ.get("SABIO_MODELO", "gemma-4-26b-a4b")
+MODELO_CHAT = os.environ.get("SABIO_MODELO", "gemma-4-26b-a4b-qat")
 MODELO_EMB = "qwen3-embedding-0.6b"
 MODELO_RERANK = "qwen3-reranker-0.6b"
 BANCO = Path(os.environ.get("SABIO_BANCO", Path(__file__).resolve().parents[1] / "datasets" / "sabio.sqlite"))

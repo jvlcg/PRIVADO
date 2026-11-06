@@ -32,7 +32,7 @@ MODOS = {
     "fonte": {"titulo": "Perguntar com fonte", "tarefa": "perguntar", "nivel": 2},
     "conselho": {"titulo": "Conselho de IAs", "tarefa": "conselho", "nivel": 3},
 }
-MODELO_RAPIDO = "gemma-4-12b"  # cabe inteiro na placa: responde em segundos
+MODELO_RAPIDO = "gemma-4-12b-qat"  # cabe inteiro na placa: ~109 palavras/s (medido em 05/11/2026)
 
 # ---------- Que ferramenta usar ----------
 

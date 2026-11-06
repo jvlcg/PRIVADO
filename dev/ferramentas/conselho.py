@@ -52,10 +52,10 @@ ATAS = Path(os.environ.get("CONSELHO_ATAS", RAIZ / "dev" / "conselho"))
 
 # Usado so se o catalogo nao tiver a secao "conselho".
 PADRAO = {
-    "membros": ["gemma-4-26b-a4b", "gpt-oss-20b", "qwen3.8-27b"],
-    "relator": "gemma-4-26b-a4b",
-    "relator_profundo": "qwen3.8-27b",
-    "triagem": "gemma-4-26b-a4b",
+    "membros": ["gemma-4-26b-a4b-qat", "gpt-oss-20b", "qwen3.8-27b-iq3"],
+    "relator": "gemma-4-26b-a4b-qat",
+    "relator_profundo": "qwen3.8-27b-iq3",
+    "triagem": "gemma-4-26b-a4b-qat",
     "max_membros": 3,
     "especialistas": {"codigo": "qwen3-coder-next", "medicina": "medgemma-27b", "traducao": "translategemma-12b"},
 }

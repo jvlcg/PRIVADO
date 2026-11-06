@@ -8,7 +8,7 @@
   .\conselho.ps1 "por que este script da erro? ..." -Debate
   .\conselho.ps1 "decisao importante..." -Profundo       # debate + relator mais forte (~20 min)
   .\conselho.ps1 "o que diz esta placa?" -Imagem C:\fotos\placa.jpg
-  .\conselho.ps1 "..." -Membros gemma-4-26b-a4b,gpt-oss-20b -Relator qwen3.8-27b -Pensar muito
+  .\conselho.ps1 "..." -Membros gemma-4-26b-a4b-qat,gpt-oss-20b -Relator qwen3.8-27b-iq3 -Pensar muito
   .\conselho.ps1 -Servir      # painel em http://127.0.0.1:8090 + API compativel com OpenAI
 .NOTES
   O time padrao, o relator e os especialistas por assunto ficam em catalogo\modelos.json, secao "conselho".

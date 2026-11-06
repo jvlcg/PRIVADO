@@ -13,10 +13,10 @@
   },
   "conselho": {
     "nota": "Usado por scripts\\conselho.ps1 (conselho de IAs). A triagem identifica o assunto; se houver especialista para ele, o especialista entra no time no lugar do último membro geral. Os membros falam em fila (um modelo por vez na placa) e o relator compara as respostas e escreve a final. Prefira membros de laboratórios diferentes: erros diferentes se anulam.",
-    "membros": ["gemma-4-26b-a4b", "gpt-oss-20b", "qwen3.8-27b"],
-    "relator": "gemma-4-26b-a4b",
-    "relator_profundo": "qwen3.8-27b",
-    "triagem": "gemma-4-26b-a4b",
+    "membros": ["gemma-4-26b-a4b-qat", "gpt-oss-20b", "qwen3.8-27b-iq3"],
+    "relator": "gemma-4-26b-a4b-qat",
+    "relator_profundo": "qwen3.8-27b-iq3",
+    "triagem": "gemma-4-26b-a4b-qat",
     "max_membros": 3,
     "especialistas": {
       "codigo": "qwen3-coder-next",
@@ -218,9 +218,10 @@
       "licenca": "apache-2.0",
       "motor": "llama.cpp",
       "contexto": 32768,
-      "prioridade": 1,
-      "local": "nucleo",
-      "status": "baixar"
+      "prioridade": 3,
+      "local": "cofre",
+      "status": "baixar",
+      "nota": "Versão anterior, de reserva no HD: a padrão é a gemma-4-26b-a4b-qat (medido em 05/11/2026: 75 contra 57 palavras/s)."
     },
     {
       "id": "qwen3.8-27b",
@@ -240,8 +241,118 @@
       "licenca": "apache-2.0",
       "motor": "llama.cpp",
       "contexto": 16384,
+      "prioridade": 3,
+      "local": "cofre",
+      "status": "baixar",
+      "nota": "Versão em 4 bits, de reserva no HD (com visão): a padrão é a qwen3.8-27b-iq3 (medido em 05/11/2026: 10 contra 6,5 palavras/s)."
+    },
+    {
+      "id": "qwen3.8-27b-iq3",
+      "nome": "Qwen3.8 27B em ~3 bits (GSQ-RCO, cabe na placa)",
+      "tipo": "llm",
+      "uso": "O melhor modelo do cofre quase inteiro na placa de vídeo: bem mais rápido que o qwen3.8-27b em 4 bits, que fica metade na RAM.",
+      "origem": "Qwen/Qwen3.8-27B",
+      "repo": "ISTA-DASLab/Qwen3.8-27B-GSQ-RCO-GGUF",
+      "pasta": "llm\\qwen3.8-27b-iq3",
+      "arquivos": [
+        {
+          "caminho": "Qwen3.8-27B-GSQ-RCO-IQ3_XXS-mtp.gguf"
+        },
+        {
+          "caminho": "mmproj-Qwen3.8-27B-BF16.gguf"
+        }
+      ],
+      "tamanho_gb": 11.38,
+      "parametros": "27.8B (denso, ~3 bits)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 16384,
+      "args": "--spec-type draft-mtp",
+      "visao": false,
       "prioridade": 1,
       "local": "nucleo",
+      "status": "baixar",
+      "nota": "pesquisa 05/11/2026: no teste dos autores, IQ3_XXS 84,57 contra 85,71 do BF16 no LiveCodeBench v6. A cabeça MTP vem dentro do arquivo."
+    },
+    {
+      "id": "gemma-4-26b-a4b-qat",
+      "nome": "Gemma 4 26B-A4B QAT (treinado para 4 bits)",
+      "tipo": "llm",
+      "uso": "O mesmo Gemma 4 26B do dia a dia, treinado para rodar em 4 bits: arquivo menor e resposta melhor. Entende imagens.",
+      "origem": "google/gemma-4-26B-A4B-it",
+      "repo": "unsloth/gemma-4-26B-A4B-it-qat-GGUF",
+      "pasta": "llm\\gemma-4-26b-a4b-qat",
+      "arquivos": [
+        {
+          "caminho": "gemma-4-26B-A4B-it-qat-UD-Q4_K_XL.gguf"
+        },
+        {
+          "caminho": "mmproj-F16.gguf"
+        },
+        {
+          "caminho": "MTP/mtp-gemma-4-26B-A4B-it-Q8_0.gguf"
+        }
+      ],
+      "tamanho_gb": 15.89,
+      "parametros": "25.8B (MoE, 4B ativos)",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 32768,
+      "prioridade": 1,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "gemma-4-12b-qat",
+      "nome": "Gemma 4 12B QAT (treinado para 4 bits)",
+      "tipo": "llm",
+      "uso": "O Gemma 4 12B rápido, treinado para 4 bits: cabe inteiro na placa com folga. Texto, imagem e áudio.",
+      "origem": "google/gemma-4-12B-it",
+      "repo": "unsloth/gemma-4-12B-it-qat-GGUF",
+      "pasta": "llm\\gemma-4-12b-qat",
+      "arquivos": [
+        {
+          "caminho": "gemma-4-12B-it-qat-UD-Q4_K_XL.gguf"
+        },
+        {
+          "caminho": "mmproj-F16.gguf"
+        },
+        {
+          "caminho": "MTP/mtp-gemma-4-12B-it-Q8_0.gguf"
+        }
+      ],
+      "tamanho_gb": 7.31,
+      "parametros": "12B",
+      "licenca": "apache-2.0",
+      "motor": "llama.cpp",
+      "contexto": 32768,
+      "prioridade": 1,
+      "local": "nucleo",
+      "status": "baixar"
+    },
+    {
+      "id": "ornith-1.5-35b-a3b",
+      "nome": "Ornith 1.5 35B-A3B (agente de código)",
+      "tipo": "codigo",
+      "uso": "Agente de código: acertou 100% das chamadas de ferramenta no ggufbench. MoE com 3 bi ativos: os especialistas ficam na RAM.",
+      "origem": "ornith-ai/Ornith-1.5-35B-A3B",
+      "repo": "ornith-ai/Ornith-1.5-35B-A3B-GGUF",
+      "pasta": "codigo\\ornith-1.5-35b-a3b",
+      "arquivos": [
+        {
+          "caminho": "Ornith-1.5-35B-Q4_K_M.gguf"
+        },
+        {
+          "caminho": "mmproj-Ornith-1.5-35B-BF16.gguf"
+        }
+      ],
+      "tamanho_gb": 22.61,
+      "parametros": "35B (MoE, 3B ativos)",
+      "licenca": "mit",
+      "motor": "llama.cpp",
+      "contexto": 65536,
+      "prioridade": 2,
+      "local": "cofre",
       "status": "baixar"
     },
     {
@@ -281,9 +392,10 @@
       "licenca": "apache-2.0",
       "motor": "llama.cpp",
       "contexto": 32768,
-      "prioridade": 1,
-      "local": "nucleo",
-      "status": "baixar"
+      "prioridade": 3,
+      "local": "cofre",
+      "status": "baixar",
+      "nota": "Versão anterior, de reserva no HD: a padrão é a gemma-4-12b-qat (medido em 05/11/2026: 109 contra 54 palavras/s)."
     },
     {
       "id": "qwen3-embedding-0.6b",
@@ -883,10 +995,7 @@
     { "id": "qwen3.8-flash-next", "nome": "Qwen3.8 Flash-Next", "tipo": "llm", "repo": "Qwen/Qwen3.8-Flash-Next", "parametros": "180B", "licenca": "qwen-community-1.0", "status": "observar", "motivo": "~100 GB em Q4; licença comunitária" },
     { "id": "flux-3-image-klein", "nome": "FLUX 3 klein (Black Forest Labs)", "tipo": "imagem", "repo": "black-forest-labs/flux-3-image-klein", "parametros": "5.5B", "licenca": "flux-kommunity-license", "status": "observar", "motivo": "saiu em 15/10/2026; repositório oficial para ComfyUI (black-forest-labs/flux-3-image-klein-comfy) com int8 que roda na 4070 (~17,7 GB com codificador e upsampler); exige ComfyUI 0.41+ e aceitar a licença com login no Hugging Face (HF_TOKEN)" },
     { "id": "qwen-image-2.1-turbo", "nome": "Qwen-Image 2.1 Turbo", "tipo": "imagem", "repo": "Qwen/Qwen-Image-2.1-Turbo", "parametros": "7.1B", "licenca": "qwen-research", "status": "observar", "motivo": "licença só para pesquisa / não comercial" },
-    { "id": "ornith-1.5-35b-a3b", "nome": "Ornith 1.5 35B-A3B (agente de código)", "tipo": "codigo", "repo": "ornith-ai/Ornith-1.5-35B-A3B-GGUF", "parametros": "35B-A3B", "licenca": "mit", "status": "observar", "motivo": "pesquisa 05/11/2026: 100% nas chamadas de ferramenta no ggufbench; ~21 GB em Q4_K_M, mesmo formato do qwen3.6-35b-a3b; conferir o arquivo antes de baixar" },
     { "id": "ornith-1.5-9b", "nome": "Ornith 1.5 9B (subagente de código, inteiro na placa)", "tipo": "codigo", "repo": "ornith-ai/Ornith-1.5-9B", "parametros": "9B", "licenca": "mit", "status": "observar", "motivo": "pesquisa 05/11/2026: ~7,5 GB em Q6_K; GGUF oficial talvez ainda não exista" },
-    { "id": "qwen3.8-27b-iq3", "nome": "Qwen3.8 27B em ~3 bits (inteiro na placa)", "tipo": "llm", "repo": "ISTA-DASLab (GSQ-RCO IQ3_XXS)", "parametros": "27B", "licenca": "apache-2.0", "status": "observar", "motivo": "pesquisa 05/11/2026: 9,4 GiB cabe nos ~10 GB livres e sairia do gargalo de ~7 tok/s; números de blog, precisa do llama.cpp novo (arquitetura qwen35)" },
-    { "id": "gemma-4-qat", "nome": "Gemma 4 QAT (26B-A4B e 12B treinados para 4 bits, com MTP)", "tipo": "llm", "repo": "unsloth/gemma-4-26B-A4B-it-qat-GGUF", "parametros": "26B-A4B / 12B", "licenca": "gemma", "status": "observar", "motivo": "pesquisa 05/11/2026: mesma família do catálogo com qualidade melhor no mesmo tamanho; também unsloth/gemma-4-12B-it-qat-GGUF" },
     { "id": "harrier-oss-v1-0.6b", "nome": "Harrier OSS v1 0.6B (embeddings multilíngues)", "tipo": "embeddings", "repo": "microsoft/harrier-oss-v1-0.6b", "parametros": "0.6B", "licenca": "mit", "status": "observar", "motivo": "pesquisa 05/11/2026: MTEB multilíngue 69,0 contra ~64,3 do qwen3-embedding-0.6b; trocar exige reindexar; medir antes num conjunto-ouro" },
     { "id": "granite-speech-5.0-2b", "nome": "Granite Speech 5.0 2B (fala para texto, roda no llama.cpp)", "tipo": "audio", "repo": "ibm-granite/granite-speech-5.0-2b", "parametros": "2B", "licenca": "apache-2.0", "status": "observar", "motivo": "pesquisa 05/11/2026: português oficial, GGUF Q8_0 no roteador; sem marcas de tempo (o Whisper continua para legendas)" },
     { "id": "voxcpm2", "nome": "VoxCPM2 (voz com clonagem, inclui português)", "tipo": "audio", "repo": "openbmb/VoxCPM2", "parametros": "?", "licenca": "apache-2.0", "status": "observar", "motivo": "pesquisa 05/11/2026: ~8 GB de VRAM; testar a qualidade do PT-BR antes" },
