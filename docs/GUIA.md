@@ -112,7 +112,7 @@ O plano, do que rende mais para o que custa menos:
 | 1 | Ligar o monitor na saída de vídeo da placa-mãe (iGPU do 7900X) | +1,7 GB na placa para as IAs (14% a mais) | nada | sim: cabo e BIOS |
 | 2 | Limitar a placa a 150 W para texto (`nvidia-smi -pl 150`, como administrador; 200 W para jogo e vídeo) | ~16% menos energia por palavra, ~1% mais lento | nada | sim: administrador |
 | 3 | **Feito em 05/11:** llama.cpp b12138 (a b11901 ficou de reserva), com atenção rápida, memória da conversa em 8 bits, cache de prompt de 16 GB na RAM e folga de memória no roteador | MoE mais rápido, agentes, cache de especialistas | 0,5 GB | |
-| 4 | No conselho, trocar o membro qwen3.8-27b pelo qwen3.6-35b-a3b (MoE) | 5 a 10 vezes menos tempo e energia por resposta desse membro | nada (já baixado) | aprovar a troca |
+| 4 | **Feito em 05/11, de outro jeito:** no conselho entrou o qwen3.8-27b-iq3 (e os Gemma QAT), mais rápidos sem perder o modelo mais forte; o qwen3.6-35b-a3b segue como alternativa | mais rápido por resposta | nada | |
 | 5 | **Feito em 05/11:** Agente do Cofre, com 5 ferramentas MCP no próprio servidor (veja "Agente do Cofre" em Como usar) | IA que pesquisa sozinha no acervo offline, citando | 0 GB | |
 | 6 | **Feito em 05/11:** Qwen3.8 27B em ~3 bits (`qwen3.8-27b-iq3`), agora no conselho | medido 10 contra 6,5 palavras/s; inteiro na placa só com o monitor na placa-mãe (item 1) | 9,7 GB | |
 | 7 | **Feito em 05/11:** Gemma 4 QAT 26B-A4B e 12B como padrão; os antigos foram para o HD | medido: 12B de 54 para 109 palavras/s, 26B de 57 para 75 | 23 GB (substituem 24 GB) | |

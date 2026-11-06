@@ -18,7 +18,8 @@
                                                                                                  }
                                                      },
                                         "repo_sha":  "29d097773436b69ff9feafd636ab4cf873786537",
-                                        "repo_modificado":  "2026-07-17T21:24:41.000Z"
+                                        "repo_modificado":  "2026-07-17T21:24:41.000Z",
+                                        "local":  "cofre"
                                     },
                     "qwen3-embedding-0.6b":  {
                                                  "completo":  true,
@@ -73,7 +74,7 @@
                                                          },
                                             "repo_sha":  "c099eb48e663fd284577b04978a94ffccb261841",
                                             "repo_modificado":  "2026-07-17T13:00:49.000Z",
-                                            "local":  "nucleo"
+                                            "local":  "cofre"
                                         },
                     "qwen3.8-27b":  {
                                         "completo":  true,
@@ -100,7 +101,7 @@
                                                      },
                                         "repo_sha":  "4ca720788d1e01f1bff70c033e0d0028fd02e502",
                                         "repo_modificado":  "2026-08-20T12:04:25.000Z",
-                                        "local":  "nucleo"
+                                        "local":  "cofre"
                                     },
                     "qwen3-coder-next":  {
                                              "completo":  true,
