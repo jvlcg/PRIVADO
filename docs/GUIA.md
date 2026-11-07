@@ -108,9 +108,10 @@ O plano, do que rende mais para o que custa menos:
 | 5 | **Feito em 05/11:** Agente do Cofre, com 5 ferramentas MCP no próprio servidor (veja "Agente do Cofre" em Como usar) | IA que pesquisa sozinha no acervo offline, citando | 0 GB | |
 | 6 | **Feito em 05/11:** Qwen3.8 27B em ~3 bits (`qwen3.8-27b-iq3`), agora no conselho | medido 10 contra 6,5 palavras/s; inteiro na placa só com o monitor na placa-mãe (item 1) | 9,7 GB | |
 | 7 | **Feito em 05/11:** Gemma 4 QAT 26B-A4B e 12B como padrão; os antigos foram para o HD | medido: 12B de 54 para 109 palavras/s, 26B de 57 para 75 | 23 GB (substituem 24 GB) | |
-| 8 | **Feito em 05/11:** Ornith 1.5 35B-A3B no HD (o opencode ainda falta) | medido 58 palavras/s; carrega em 2,5 min do HD | 21 GB (HD) | instalar o opencode |
+| 8 | **Feito em 05/11:** Ornith 1.5 35B-A3B, no SSD desde 06/11 (o opencode ainda falta) | medido 58 palavras/s | 21 GB | instalar o opencode |
 | 9 | **ComfyUI feito em 05/11:** v0.44.0, sem internet (`--offline`) e sem os nós pagos; falta o FLUX 3 klein | o FLUX 3 | ~18 GB | login no Hugging Face (FLUX 3) |
 | 10 | **Feito em 05/11:** 27 bibliotecas novas (saúde, emergência, conserto, rádio amador, ciência, Linux) e 2 atualizadas | fontes mais novas e mais assuntos | 16 GB | |
+| 11 | **Feito em 06/11:** só a nata. Saíram os mapas, as bibliotecas em outros idiomas, as versões de reserva e o espelho do SSD no HD; a Central ganhou o visual no estilo da Apple | ~530 GB livres e um painel mais claro | libera ~48 GB no SSD e ~483 GB no HD | apagar as duas pastas `_para-apagar` |
 
 Ficam em observação no catálogo, sem baixar: Ornith 1.5 9B, Harrier (embeddings), Granite Speech 5.0, VoxCPM2 e LTX-2.5. Não valem para esta placa, porque exigem placas mais novas (Blackwell) ou bem maiores: arquivos NVFP4, Nemotron 3.5 Transcribe, MiniMax H3 e Wan 2.7/3.0.
 
@@ -156,19 +157,25 @@ Modelos no HD carregam mais devagar (~150 MB/s contra ~3 GB/s do SSD), mas funci
 
 Tudo começa com dois cliques em **`A:\IA.cmd`**, que abre o menu. Nada foi instalado no Windows: os programas rodam de dentro do SSD.
 
-Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofre** no navegador (http://127.0.0.1:8070). Ela tem três colunas: as seções à esquerda, o conteúdo no meio e, à direita, o **medidor**, como um relógio de luz: quanto o PC gasta agora (watts e reais por hora), a placa de vídeo, a RAM livre, o gasto do cofre no mês e o que está ligado. No celular ou numa janela estreita, as seções viram ícones no topo e o medidor, uma faixa. As seções:
+Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofre** no navegador (http://127.0.0.1:8070). O visual segue o estilo da Apple: barra lateral de vidro fosco, cartões arredondados, títulos grandes e modo claro e escuro de verdade. Três peças guiam o uso:
+
+- **A ilha**, no topo, como a Dynamic Island do iPhone, mostra o que está acontecendo agora: "Respondendo, 12 s, 0,6 Wh" com o botão **Responder agora**, um serviço ligando, o modo jogo ou, em repouso, quanto o PC gasta. Clique nela para ir até lá.
+- **Os anéis**, no Início, como os do Apple Watch, mostram ao vivo a potência do PC (até 450 W), a memória da placa de vídeo em uso e a memória do sistema em uso. Ao lado ficam o gasto do cofre no mês e os interruptores do modo jogo e da vigia.
+- **As listas dos serviços** seguem os Ajustes do iPhone: um ícone colorido para cada serviço e o estado, o gasto e os botões ao lado.
+
+Numa janela estreita a barra lateral vira uma coluna de ícones; no celular, uma barra de abas embaixo. As seções:
 
 | Seção | Para quê |
 | --- | --- |
-| Início | **"Do que você precisa?"**: escreva com suas palavras e a Central mostra o jeito que resolve gastando menos energia (veja "Escada de esforço" abaixo). Também traz os atalhos de emergência e os botões para abrir cada ferramenta. |
+| Início | **"Do que você precisa?"**: escreva com suas palavras e a Central mostra o jeito que resolve gastando menos energia (veja "Escada de esforço" abaixo). Também traz os atalhos de emergência, os anéis do PC, as perguntas recentes (abrir uma não gasta nada) e os botões para abrir cada ferramenta. |
 | Perguntar | Escolha na escada quanto esforço a resposta merece. Respostas citam as fontes com links e têm o botão **Responder agora**. |
-| Serviços | Liga e abre o chat, a biblioteca, o conselho e o ComfyUI, como um quadro de disjuntores. Mostra os modelos na memória (com botão para descarregar) e copia a chave do chat. |
+| Serviços | Liga e abre o chat, a biblioteca, o conselho e o ComfyUI, com o estado e o gasto de cada um. Mostra os modelos na memória (com botão para descarregar) e copia a chave do chat. |
 | Biblioteca | Busca nas bibliotecas, emergência e o acervo inteiro (68 bibliotecas), com filtro, onde cada uma está e o link para abrir. |
 | Energia | Gasto do mês por tarefa, os últimos 6 meses e quanto custa o PC parado ligado. |
 | Histórico | As perguntas já respondidas, com busca. Abrir uma resposta guardada não gasta nada; dá para esquecer as que não quiser. |
 | Ajuda | Qual IA usar, os atalhos de teclado e onde está o resto. |
 
-Atalhos: **Ctrl+K** procura qualquer ação (ligar, abrir, emergência, modo jogo, perguntar o que você digitou); **/** vai para a caixa do Início; as teclas **1 a 7** trocam de seção. O botão no pé do menu lateral troca o tema (claro, escuro ou automático). Abrir um serviço desligado o liga e avisa com o link quando estiver pronto. A Central só atende este PC e recusa pedidos vindos de outros sites. O painel funciona sem internet: não carrega nada de fora, nem fontes de letra.
+Atalhos: **Ctrl+K** abre a procura, como o Spotlight: ligar, abrir, emergência, modo jogo ou perguntar o que você digitou; **/** vai para a caixa do Início; as teclas **1 a 7** trocam de seção. O que fecha ou apaga algo (fechar tudo, modo jogo, vigia, esquecer uma resposta) pede confirmação num alerta como o do sistema, e Esc cancela. O botão no pé da barra lateral troca o tema (claro, escuro ou automático). Abrir um serviço desligado o liga e avisa com o link quando estiver pronto. A Central só atende este PC e recusa pedidos vindos de outros sites. O painel funciona sem internet: não carrega nada de fora, nem fontes de letra.
 
 Para imprimir e guardar junto do PC: **`A:\docs\cartao-emergencia.html`** (abra e use Ctrl+P). Numa folha A4: como ligar tudo, os endereços, onde achar cada assunto de emergência, quanto tempo o PC aguenta numa bateria e o que fazer se este PC quebrar.
 
@@ -234,7 +241,7 @@ As ferramentas só leem: nada de comandos nem de escrita em arquivos. `ler_artig
 
 **Modo jogo.** Antes de jogar, use a opção 12 do menu ou o botão **Modo jogo** na Central ou no painel do conselho: fecha o chat, a biblioteca, o conselho, o ComfyUI, o Ollama e a própria Central, e libera a placa de vídeo, a memória e o disco. Enquanto ele estiver ligado, nada das IAs abre (nem a verificação semanal nem a sincronização) e o menu só deixa usar as opções leves. Para sair: a opção 12 de novo, ou `Painel.cmd` e "Sair do modo jogo".
 
-Testado neste PC de 25/10 a 01/11/2026:
+Testado neste PC de 25/10 a 06/11/2026:
 
 | Teste | Resultado | Tempo |
 | --- | --- | --- |
@@ -270,6 +277,7 @@ Testado neste PC de 25/10 a 01/11/2026:
 | ComfyUI v0.44.0 (05/11) | imagem 1024x1024 do Z-Image-Turbo com o fluxo do cofre: 24 s com o carregamento, 12 s com o modelo já carregado; a atenção rápida (`-AtencaoRapida`) não mudou o tempo nesse tamanho | 12 s por imagem |
 | Bibliotecas de 05/11 | 27 novas e 2 atualizadas, baixadas de espelhos da Kiwix e conferidas pelo SHA256 | ~13 MB/s |
 | Busca com as bibliotecas novas (05/11) | a Low-tech Magazine, em 11 idiomas, fazia o Kiwix recusar a busca conjunta em inglês (o cofre caía no plano lento, uma biblioteca por vez); corrigido: as multilíngues buscam sozinhas, e a busca voltou a 4 pedidos (3,9 s) com Arduino, Bicicletas e Sustentabilidade nos resultados | 3,9 s |
+| Central no estilo da Apple (06/11) | conferida no navegador nas sete seções, em tela grande (1440 px), janela estreita e celular (375 px, sem rolagem lateral), nos temas claro e escuro; procura (Ctrl+K), alertas de confirmação, ilha e anéis com as leituras reais; 47 testes automáticos passando | na hora |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 7). Exemplos em `A:\dev\midia-gerada`.
 
@@ -316,7 +324,7 @@ Este PC não tem sensor de consumo total. O script `medir-energia.ps1` (menu, op
 
 Os valores usam a tarifa da **Equatorial Goiás**: **R$ 1,25 por kWh** com impostos. A conta: a residencial B1 custa R$ 0,954/kWh sem impostos desde 22/10/2026 (TUSD R$ 0,617 + TE R$ 0,337, depois do reajuste de 7,36% aprovado pela [ANEEL](https://www.gov.br/aneel/pt-br/assuntos/noticias/2026/novas-tarifas-da-equatorial-goias-sao-aprovadas-pela-aneel)); somando ICMS de 19% (17% + 2% do Protege) e PIS/COFINS de uns 5%, cobrados "por dentro", fica 0,954 ÷ (1 − 0,24) ≈ R$ 1,25, na bandeira verde. A tarifa muda todo 22 de outubro, e as bandeiras amarela e vermelha somam uns centavos por kWh. Para usar o valor exato da sua conta (total a pagar ÷ kWh consumidos), mude `tarifa_kwh` na seção `energia` de `A:\catalogo\modelos.json`: o menu, a Central e os scripts passam a usá-lo. Lá também ficam as estimativas de cada tarefa.
 
-**Gasto do mês.** Cada tarefa que termina (pergunta, conselho, imagem, transcrição, sincronização, testes) anota o tempo e a potência em `A:\logs\gasto-tarefas.csv`, que fica só neste PC. O menu, o status (opção 13) e o medidor da Central mostram o total do mês, como "12 tarefa(s), ~85 Wh ≈ R$ 0,11"; a seção **Energia** da Central separa por tarefa e mostra os últimos 6 meses. O PC ligado sem tarefa não entra nessa conta: ele é a maior parte da fatura (veja os perfis abaixo).
+**Gasto do mês.** Cada tarefa que termina (pergunta, conselho, imagem, transcrição, sincronização, testes) anota o tempo e a potência em `A:\logs\gasto-tarefas.csv`, que fica só neste PC. O menu, o status (opção 13) e o Início da Central mostram o total do mês, como "12 tarefa(s), ~85 Wh ≈ R$ 0,11"; a seção **Energia** da Central separa por tarefa e mostra os últimos 6 meses. O PC ligado sem tarefa não entra nessa conta: ele é a maior parte da fatura (veja os perfis abaixo).
 
 **Medido** (26 a 29/10/2026):
 
@@ -379,7 +387,7 @@ Para gastar menos:
 5. **Se tiver tarifa branca**, rode a sincronização fora do horário de ponta. A verificação semanal (segunda, 10h) já está fora da ponta.
 6. **Feche tudo ao terminar**: opção 11 do menu (`parar-tudo.ps1`); para jogar, a opção 12 (modo jogo). Mesmo sem isso, o servidor de modelos tira da memória o modelo parado há 15 minutos e o recarrega na próxima pergunta (`iniciar-servidor.ps1 -DormirMinutos 30` muda o tempo; `0` desliga). A opção 13 (status) mostra o que do cofre ainda está aberto.
 7. **Comece pelo degrau mais baixo da escada.** Só buscar não liga IA e muitas vezes já resolve; pergunta repetida sai do Histórico sem gastar nada.
-8. **Deixe a vigia ligada** quando for sair ou deixar o Claude trabalhando sozinho: botão no medidor da Central, opção 19 do menu, ou `desligar-ao-terminar.ps1`. A cada minuto ela confere três coisas: se a conversa do Claude parou há 20 min (por exemplo, quando acabam os créditos), se teclado, mouse e controle estão parados há 15 min e se a placa de vídeo está folgada. Ela nunca desliga com um jogo aberto (Steam, Epic, GOG, Xbox), mesmo leve e jogado só com o controle, nem com download, sincronização ou conferência do cofre rodando. Com as três coisas, o Windows avisa e desliga em 5 min; mexer no mouse cancela, e `shutdown /a` também. Ela não muda nenhuma configuração do Windows: vale enquanto a janela dela estiver aberta. `-Status` mostra os sinais e `-Parar` desliga a vigia; o que ela fez fica em `A:\logs\vigia-desligar.log`.
+8. **Deixe a vigia ligada** quando for sair ou deixar o Claude trabalhando sozinho: interruptor no Início da Central, opção 19 do menu, ou `desligar-ao-terminar.ps1`. A cada minuto ela confere três coisas: se a conversa do Claude parou há 20 min (por exemplo, quando acabam os créditos), se teclado, mouse e controle estão parados há 15 min e se a placa de vídeo está folgada. Ela nunca desliga com um jogo aberto (Steam, Epic, GOG, Xbox), mesmo leve e jogado só com o controle, nem com download, sincronização ou conferência do cofre rodando. Com as três coisas, o Windows avisa e desliga em 5 min; mexer no mouse cancela, e `shutdown /a` também. Aberta pelo menu ou pela Central, ela vale enquanto a janela dela estiver aberta; com `-Agendar`, roda como tarefa agendada do Windows (uma vez, na sua sessão) e continua vigiando mesmo se o app do Claude fechar. `-Status` mostra os sinais e `-Parar` desliga a vigia; o que ela fez fica em `A:\logs\vigia-desligar.log`.
 
 ## Catálogo e atualização constante
 

@@ -2,338 +2,438 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
 <title>Central do Cofre</title>
 <style>
-/* Central do Cofre. Tudo neste arquivo (sem fontes nem scripts da internet): funciona offline.
-   Cores com papel fixo: pinho = acoes, ipe (amarelo) = energia, urucum (vermelho) = emergencia e perigo. */
+/* Central do Cofre. Linguagem visual da Apple, feita para o cofre: vidro fosco, cartoes arredondados,
+   titulos grandes e as cores semanticas do sistema (azul = acao, laranja = energia, vermelho = emergencia,
+   verde = ligado). Tudo neste arquivo: nada vem da internet, nem fontes de letra. */
 :root {
-  --papel: #eef1eb; --folha: #fafbf8; --tinta: #1e2b25; --suave: #5c6a62; --linha: #d3dad1; --linha-forte: #b9c3b7;
-  --pinho: #2f5d50; --pinho-fundo: #dce8e1; --sobre-pinho: #fafbf8;
-  --ipe: #e1a915; --ipe-fundo: #f8ecc4; --ipe-tinta: #5a4200;
-  --urucum: #b8432b; --urucum-fundo: #f6e0d8;
-  --ligado: #2f8a57; --desligado: #9aa39c;
-  --sombra: 0 10px 30px rgba(30, 43, 37, .16);
-  --titulo: Bahnschrift, "DIN Alternate", "DIN 2014", "Roboto Condensed", "Segoe UI", sans-serif;
-  --texto: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --fundo: #f5f5f7; --cartao: #ffffff; --cartao-2: #f2f2f7; --texto: #1d1d1f; --texto-2: #6e6e73; --texto-3: #8e8e93;
+  --separador: rgba(60, 60, 67, .13); --vidro: rgba(250, 250, 252, .74); --vidro-forte: rgba(246, 246, 248, .94); --vidro-borda: rgba(0, 0, 0, .07);
+  --azul: #0071e3; --azul-suave: rgba(0, 113, 227, .1); --laranja: #ff9500; --laranja-suave: rgba(255, 149, 0, .13);
+  --vermelho: #ff3b30; --vermelho-suave: rgba(255, 59, 48, .1); --verde: #34c759; --ciano: #32ade6;
+  --sombra: 0 1px 1px rgba(0, 0, 0, .03), 0 8px 28px rgba(0, 0, 0, .06);
+  --sombra-hover: 0 1px 1px rgba(0, 0, 0, .03), 0 14px 34px rgba(0, 0, 0, .1);
+  --sombra-alta: 0 24px 80px rgba(0, 0, 0, .22), 0 2px 8px rgba(0, 0, 0, .08);
+  --fonte: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --fonte-titulo: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --mola: cubic-bezier(.2, .9, .25, 1.05);
+  --suave: cubic-bezier(.25, .8, .25, 1);
   color-scheme: light;
 }
 :root[data-tema="escuro"] {
-  --papel: #131b17; --folha: #1a2520; --tinta: #e4ebe5; --suave: #9fada4; --linha: #2c3a33; --linha-forte: #3d4d45;
-  --pinho: #86c2ab; --pinho-fundo: #213a31; --sobre-pinho: #10201a;
-  --ipe: #f0c24a; --ipe-fundo: #3a2f12; --ipe-tinta: #f6d98a;
-  --urucum: #ef8a72; --urucum-fundo: #3d221b;
-  --ligado: #6fd197; --desligado: #6d7a72;
-  --sombra: 0 10px 30px rgba(0, 0, 0, .45);
+  --fundo: #000000; --cartao: #1c1c1e; --cartao-2: #2c2c2e; --texto: #f5f5f7; --texto-2: #a1a1a6; --texto-3: #6e6e73;
+  --separador: rgba(84, 84, 88, .5); --vidro: rgba(22, 22, 24, .72); --vidro-forte: rgba(44, 44, 46, .95); --vidro-borda: rgba(255, 255, 255, .08);
+  --azul: #0a84ff; --azul-suave: rgba(10, 132, 255, .2); --laranja: #ff9f0a; --laranja-suave: rgba(255, 159, 10, .18);
+  --vermelho: #ff453a; --vermelho-suave: rgba(255, 69, 58, .18); --verde: #30d158; --ciano: #64d2ff;
+  --sombra: 0 0 0 1px rgba(255, 255, 255, .05); --sombra-hover: 0 0 0 1px rgba(255, 255, 255, .12);
+  --sombra-alta: 0 24px 80px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .1);
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-tema="claro"]) {
-    --papel: #131b17; --folha: #1a2520; --tinta: #e4ebe5; --suave: #9fada4; --linha: #2c3a33; --linha-forte: #3d4d45;
-    --pinho: #86c2ab; --pinho-fundo: #213a31; --sobre-pinho: #10201a;
-    --ipe: #f0c24a; --ipe-fundo: #3a2f12; --ipe-tinta: #f6d98a;
-    --urucum: #ef8a72; --urucum-fundo: #3d221b;
-    --ligado: #6fd197; --desligado: #6d7a72;
-    --sombra: 0 10px 30px rgba(0, 0, 0, .45);
+    --fundo: #000000; --cartao: #1c1c1e; --cartao-2: #2c2c2e; --texto: #f5f5f7; --texto-2: #a1a1a6; --texto-3: #6e6e73;
+    --separador: rgba(84, 84, 88, .5); --vidro: rgba(22, 22, 24, .72); --vidro-forte: rgba(44, 44, 46, .95); --vidro-borda: rgba(255, 255, 255, .08);
+    --azul: #0a84ff; --azul-suave: rgba(10, 132, 255, .2); --laranja: #ff9f0a; --laranja-suave: rgba(255, 159, 10, .18);
+    --vermelho: #ff453a; --vermelho-suave: rgba(255, 69, 58, .18); --verde: #30d158; --ciano: #64d2ff;
+    --sombra: 0 0 0 1px rgba(255, 255, 255, .05); --sombra-hover: 0 0 0 1px rgba(255, 255, 255, .12);
+    --sombra-alta: 0 24px 80px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .1);
     color-scheme: dark;
   }
 }
 
 * { box-sizing: border-box; }
-html { background: var(--papel); }
-body { margin: 0; background: var(--papel); color: var(--tinta); font: 16px/1.55 var(--texto); -webkit-font-smoothing: antialiased; }
-a { color: var(--pinho); }
-button, input, select, textarea { font: inherit; color: inherit; }
-:focus-visible { outline: 3px solid var(--pinho); outline-offset: 2px; border-radius: 4px; }
+html { background: var(--fundo); scrollbar-gutter: stable; }
+/* Com um alerta ou a procura aberta, a pagina de tras nao rola. */
+html:has(dialog[open]), html:has(#paleta:not([hidden])) { overflow: hidden; }
+body { margin: 0; background: var(--fundo); color: var(--texto); font: 15px/1.47 var(--fonte); letter-spacing: -.008em; -webkit-font-smoothing: antialiased; }
+a { color: var(--azul); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button, input, select, textarea { font: inherit; color: inherit; letter-spacing: inherit; }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--azul) 55%, transparent); outline-offset: 2px; border-radius: 10px; }
 [hidden] { display: none !important; }
-h1, h2, h3 { font-family: var(--titulo); font-weight: 600; letter-spacing: -.005em; line-height: 1.2; }
-h1 { font-size: 31px; margin: 0 0 6px; }
+h1, h2, h3 { font-family: var(--fonte-titulo); margin: 0; }
+h1 { font-size: 34px; font-weight: 700; letter-spacing: -.022em; line-height: 1.12; }
 h1:focus { outline: none; }
-h2 { font-size: 20px; margin: 36px 0 12px; }
-h3 { font-size: 17px; margin: 0; }
+h2 { font-size: 22px; font-weight: 700; letter-spacing: -.018em; margin: 44px 0 14px; }
+h3 { font-size: 17px; font-weight: 600; letter-spacing: -.012em; }
 p { margin: 0 0 8px; }
-kbd { font-family: var(--titulo); font-size: 12px; border: 1px solid var(--linha-forte); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; color: var(--suave); background: var(--folha); }
-code { font-family: Consolas, ui-monospace, monospace; font-size: 14px; background: var(--pinho-fundo); padding: 1px 5px; border-radius: 4px; }
-.suave { color: var(--suave); }
-.pular { position: absolute; left: -999px; top: 8px; background: var(--folha); padding: 8px 12px; z-index: 50; }
+code { font-family: "SF Mono", "Cascadia Mono", Consolas, ui-monospace, monospace; font-size: 13px; background: var(--cartao-2); padding: 1px 6px; border-radius: 6px; }
+kbd { font-family: var(--fonte); font-size: 11px; font-weight: 600; color: var(--texto-2); border: 1px solid var(--separador); border-radius: 5px; padding: 1px 5px; background: var(--cartao); }
+.secundario { color: var(--texto-2); }
+.subtitulo { color: var(--texto-2); font-size: 17px; margin: 8px 0 0; max-width: 62ch; }
+.pular { position: absolute; left: -999px; top: 8px; background: var(--cartao); padding: 8px 12px; z-index: 90; border-radius: 10px; }
 .pular:focus { left: 8px; }
-.ic { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ic { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 
-/* ---------- Estrutura: trilho | conteudo | medidor ---------- */
-.app { display: grid; grid-template-columns: 216px minmax(0, 1fr) 272px; grid-template-areas: "trilho main medidor"; min-height: 100vh; }
-.trilho { grid-area: trilho; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 4px; padding: 20px 12px; border-right: 1px solid var(--linha); background: var(--papel); }
-main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; }
-.medidor { grid-area: medidor; position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 24px 20px; border-left: 1px solid var(--linha); background: var(--folha); display: flex; flex-direction: column; gap: 16px; }
-
-.marca { display: flex; gap: 10px; align-items: center; text-decoration: none; color: var(--tinta); padding: 4px 8px 16px; }
-.marca svg { width: 30px; height: 30px; flex: none; }
-.marca b { display: block; font-family: var(--titulo); font-size: 18px; font-weight: 600; line-height: 1.1; }
-.marca small { color: var(--suave); font-size: 13px; }
+/* ---------- Estrutura: barra lateral de vidro | palco ---------- */
+.app { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+.lateral { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 6px; padding: 18px 12px 14px;
+  background: var(--vidro); backdrop-filter: saturate(180%) blur(24px); -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-right: 1px solid var(--vidro-borda); z-index: 20; }
+.marca { display: flex; align-items: center; gap: 11px; padding: 6px 8px 14px; color: var(--texto); }
+.marca:hover { text-decoration: none; }
+.marca-icone { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; color: #fff; flex: none;
+  background: linear-gradient(160deg, #48484a, #1c1c1e); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1), 0 2px 6px rgba(0, 0, 0, .18); }
+.marca-icone .ic { width: 20px; height: 20px; }
+.marca b { display: block; font-family: var(--fonte-titulo); font-size: 17px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+.marca small { color: var(--texto-2); font-size: 12px; }
+.procurar { display: flex; align-items: center; gap: 8px; margin: 0 2px 10px; padding: 7px 10px; border-radius: 10px; border: 0; cursor: text;
+  background: color-mix(in srgb, var(--texto) 6%, transparent); color: var(--texto-3); font-size: 14px; text-align: left; }
+.procurar span { flex: 1; }
+.procurar .ic { width: 16px; height: 16px; }
 .secoes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
-.secoes a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: var(--tinta); text-decoration: none; }
+.secoes a { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 9px; color: var(--texto); font-size: 14px; font-weight: 500; }
+.secoes a:hover { text-decoration: none; background: color-mix(in srgb, var(--texto) 6%, transparent); }
+.secoes a .ic { color: var(--azul); width: 19px; height: 19px; }
 .secoes a span { flex: 1; }
-.secoes a kbd { opacity: 0; transition: opacity .15s; }
-.trilho:hover .secoes a kbd, .secoes a:focus-visible kbd { opacity: 1; }
-.secoes a:hover { background: var(--pinho-fundo); }
-.secoes a[aria-current="page"] { background: var(--pinho); color: var(--sobre-pinho); }
-.secoes a[aria-current="page"] kbd { color: var(--sobre-pinho); background: transparent; border-color: currentColor; }
-.trilho-pe { margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
-.trilho-pe button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border: 1px solid var(--linha); border-radius: 8px; background: var(--folha); cursor: pointer; text-align: left; font-size: 14px; }
-.trilho-pe button span { flex: 1; }
-.trilho-pe button:hover { border-color: var(--pinho); }
+.secoes a kbd { opacity: 0; transition: opacity .2s; }
+.lateral:hover .secoes a kbd { opacity: .8; }
+.secoes a[aria-current="page"] { background: var(--azul); color: #fff; }
+.secoes a[aria-current="page"] .ic { color: #fff; }
+.secoes a[aria-current="page"] kbd { color: #fff; border-color: rgba(255, 255, 255, .4); background: transparent; }
+.lateral-pe { margin-top: auto; display: flex; flex-direction: column; gap: 4px; padding-top: 10px; }
+.lateral-pe button { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border: 0; border-radius: 9px; background: none; color: var(--texto-2); cursor: pointer; font-size: 13px; text-align: left; }
+.lateral-pe button:hover { background: color-mix(in srgb, var(--texto) 6%, transparent); color: var(--texto); }
+.tarifa { font-size: 12px; color: var(--texto-3); padding: 2px 10px 0; line-height: 1.4; margin: 0; }
 
-/* ---------- Medidor (como o relogio de luz: o que o PC gasta agora e no mes) ---------- */
-.medidor-titulo { margin: 0; font-size: 15px; color: var(--suave); font-weight: 500; display: flex; align-items: center; gap: 8px; }
-.medidor-titulo .ic { color: var(--ipe); }
-.leitura { display: flex; flex-direction: column; }
-.leitura .rotulo { font-size: 13px; color: var(--suave); }
-.leitura b { font-family: var(--titulo); font-weight: 600; font-size: 25px; font-variant-numeric: tabular-nums; line-height: 1.15; }
-.leitura .sub { font-size: 13px; color: var(--suave); }
-.leitura.agora b { font-size: 39px; }
-.leitura.agora b::after { content: ""; display: block; height: 4px; width: var(--carga, 0%); max-width: 100%; background: var(--ipe); border-radius: 2px; margin-top: 4px; transition: width .6s; }
-.visor { display: inline-flex; align-self: flex-start; gap: 2px; margin-top: 4px; }
-.visor span { font-family: var(--titulo); font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 600; min-width: 20px; padding: 2px 4px; text-align: center; background: var(--tinta); color: var(--ipe); border-radius: 3px; line-height: 1.3; }
-.visor span.sep { background: transparent; color: var(--tinta); min-width: 0; padding: 2px 1px; }
-.lampadas { list-style: none; margin: 0; padding: 12px 0 0; border-top: 1px solid var(--linha); display: grid; gap: 6px; font-size: 14px; }
-.lampadas li { display: flex; align-items: center; gap: 8px; }
-.lampada { width: 10px; height: 10px; border-radius: 50%; background: var(--desligado); flex: none; }
-.lampada.ligado { background: var(--ligado); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ligado) 25%, transparent); }
-.lampada.ligando { background: var(--ipe); animation: piscar 1.2s infinite; }
-.lampada.falhou { background: var(--urucum); }
-@keyframes piscar { 50% { opacity: .35; } }
-.tarifa { font-size: 13px; color: var(--suave); margin: 0; }
-.vigia { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--suave); }
-.vigia.ligada span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ipe); margin-right: 6px; vertical-align: 1px; }
-.medidor-acoes { display: grid; gap: 8px; margin-top: auto; }
+.palco { min-width: 0; }
+main { max-width: 1040px; margin: 0 auto; padding: 84px 48px 96px; view-transition-name: conteudo; }
 
-/* ---------- Botoes e campos ---------- */
-.botao { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 600; border-radius: 8px; padding: 9px 16px; border: 1px solid var(--pinho); background: var(--pinho); color: var(--sobre-pinho); text-decoration: none; cursor: pointer; line-height: 1.2; }
-.botao:hover { filter: brightness(1.08); }
-.botao.leve { background: transparent; color: var(--pinho); }
-.botao.leve:hover { background: var(--pinho-fundo); filter: none; }
-.botao.perigo { background: transparent; color: var(--urucum); border-color: var(--urucum); }
-.botao.perigo:hover { background: var(--urucum-fundo); filter: none; }
-.botao.pequeno { font-size: 14px; padding: 6px 12px; }
-.botao:disabled, .botao[aria-disabled="true"] { opacity: .5; cursor: not-allowed; filter: none; }
-.campo { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--linha-forte); background: var(--folha); }
-.campo:focus { border-color: var(--pinho); outline: none; box-shadow: 0 0 0 3px var(--pinho-fundo); }
-.linha { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
-.dica { font-size: 14px; color: var(--suave); margin: 8px 0 0; }
+/* Barra de vidro no topo: aparece quando a pagina rola, com o nome da secao (como no iPhone). */
+.barra-topo { position: fixed; top: 0; left: 248px; right: 0; height: 62px; z-index: 50; display: flex; align-items: center; padding: 0 28px;
+  background: var(--vidro); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--vidro-borda); font-family: var(--fonte-titulo); font-weight: 600; font-size: 15px; letter-spacing: -.01em;
+  opacity: 0; pointer-events: none; transition: opacity .25s var(--suave); }
+html.rolou .barra-topo { opacity: 1; }
+
+/* ---------- A ilha (como a Dynamic Island): o que esta acontecendo agora ---------- */
+.ilha { position: fixed; top: 12px; left: calc(50% + 124px); transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 6px;
+  max-width: calc(100% - 32px); padding: 4px; border-radius: 999px; background: #000; color: #f5f5f7;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .25), inset 0 0 0 1px rgba(255, 255, 255, .07); font-size: 13px; font-weight: 600; white-space: nowrap;
+  transition: padding .45s var(--mola), box-shadow .3s; view-transition-name: ilha; }
+.ilha-ir { display: flex; align-items: center; gap: 9px; min-height: 30px; padding: 0 12px 0 10px; border: 0; border-radius: 999px; background: none; color: inherit; cursor: pointer; font-weight: 600; min-width: 0; }
+.ilha-ir:focus-visible { outline-color: rgba(255, 255, 255, .6); }
+.ilha .ponto { width: 8px; height: 8px; border-radius: 50%; background: #8e8e93; flex: none; }
+.ilha .ponto.verde { background: #30d158; } .ilha .ponto.laranja { background: #ff9f0a; }
+.ilha .ponto.pulsando { animation: pulsar 1.4s ease-in-out infinite; }
+.ilha .giro { width: 15px; height: 15px; border-radius: 50%; border: 2px solid rgba(255, 159, 10, .25); border-top-color: #ff9f0a; animation: girar .9s linear infinite; flex: none; }
+.ilha .rotulo { overflow: hidden; text-overflow: ellipsis; }
+.ilha .discreto { color: #98989d; font-weight: 500; font-variant-numeric: tabular-nums; }
+.ilha .valor { color: #ff9f0a; font-variant-numeric: tabular-nums; }
+.ilha .acao { border: 0; border-radius: 999px; padding: 6px 13px; background: #f5f5f7; color: #000; font-weight: 600; font-size: 12px; cursor: pointer; flex: none; }
+.ilha .acao:active { transform: scale(.96); }
+.ilha.ativa { padding: 6px; }
+.ilha.ativa .ilha-ir { min-height: 34px; }
+.ilha:hover { box-shadow: 0 10px 36px rgba(0, 0, 0, .32), inset 0 0 0 1px rgba(255, 255, 255, .12); }
+:root[data-tema="escuro"] .ilha { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14); }
+@media (prefers-color-scheme: dark) { :root:not([data-tema="claro"]) .ilha { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14); } }
+@keyframes pulsar { 50% { opacity: .35; transform: scale(.8); } }
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* ---------- Cartoes, listas agrupadas (como os Ajustes) e controles ---------- */
+.cartao { background: var(--cartao); border-radius: 18px; box-shadow: var(--sombra); padding: 20px 22px; }
+.grupo { list-style: none; margin: 0; padding: 0; background: var(--cartao); border-radius: 14px; box-shadow: var(--sombra); overflow: hidden; }
+.grupo > li { display: flex; align-items: center; gap: 14px; padding: 11px 16px; min-height: 52px; position: relative; }
+.grupo > li + li::before { content: ""; position: absolute; top: 0; right: 0; left: 62px; height: 1px; background: var(--separador); }
+.grupo.simples > li + li::before { left: 16px; }
+.grupo .textos { flex: 1; min-width: 0; }
+.grupo .textos b { display: block; font-weight: 500; font-size: 15px; }
+.grupo .textos small { display: block; color: var(--texto-2); font-size: 13px; line-height: 1.38; margin-top: 1px; }
+.grupo .lado { display: flex; align-items: center; gap: 10px; color: var(--texto-2); font-size: 13px; flex: none; }
+.grupo > li.linha-botao { display: block; padding: 0; min-height: 0; }
+.linha { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 52px; padding: 11px 16px; border: 0; background: none; text-align: left; cursor: pointer; color: inherit; }
+.linha:hover { background: color-mix(in srgb, var(--texto) 4%, transparent); }
+.linha:focus-visible { outline-offset: -3px; }
+.seta { color: var(--texto-3); font-size: 22px; line-height: 1; font-weight: 400; transition: transform .25s var(--suave); }
+.linha[aria-expanded="true"] .seta { transform: rotate(90deg); }
+.rotulo-grupo { font-size: 13px; color: var(--texto-2); margin: 28px 16px 8px; font-weight: 500; }
+.icone-app { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; color: #fff; flex: none; }
+.icone-app .ic { width: 18px; height: 18px; stroke-width: 2; }
+.icone-app.azul { background: linear-gradient(180deg, #2a8cff, #0066dd); } .icone-app.verde { background: linear-gradient(180deg, #4cd964, #28b14a); }
+.icone-app.roxo { background: linear-gradient(180deg, #c869f0, #9a3fd0); } .icone-app.rosa { background: linear-gradient(180deg, #ff5a7a, #e81d4b); }
+.icone-app.laranja { background: linear-gradient(180deg, #ffad33, #ff8a00); } .icone-app.vermelho { background: linear-gradient(180deg, #ff6259, #e5291f); }
+.icone-app.cinza { background: linear-gradient(180deg, #a2a2a8, #7c7c82); } .icone-app.ciano { background: linear-gradient(180deg, #5ac8fa, #1fa2e0); }
+.estado-ponto { width: 8px; height: 8px; border-radius: 50%; background: var(--texto-3); flex: none; opacity: .6; }
+.estado-ponto.ligado { background: var(--verde); opacity: 1; } .estado-ponto.ligando { background: var(--laranja); opacity: 1; animation: pulsar 1.4s infinite; }
+.estado-ponto.falhou { background: var(--vermelho); opacity: 1; }
+
+.botao { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 999px; padding: 8px 18px;
+  background: var(--azul); color: #fff; font-weight: 600; font-size: 14px; cursor: pointer; line-height: 1.25; white-space: nowrap;
+  transition: transform .15s var(--suave), filter .15s, background .2s; }
+.botao:hover { filter: brightness(1.08); text-decoration: none; }
+.botao:active { transform: scale(.97); }
+.botao.cinza { background: color-mix(in srgb, var(--texto) 8%, transparent); color: var(--azul); }
+.botao.perigo { background: var(--vermelho-suave); color: var(--vermelho); }
+.botao.pequeno { padding: 5px 14px; font-size: 13px; }
+.botao .ic { width: 15px; height: 15px; stroke-width: 2.2; }
+.botao:disabled { opacity: .45; cursor: not-allowed; transform: none; filter: none; }
+.interruptor { position: relative; width: 51px; height: 31px; border: 0; border-radius: 999px; padding: 0; cursor: pointer; flex: none;
+  background: color-mix(in srgb, var(--texto) 16%, transparent); transition: background .25s var(--suave); }
+.interruptor::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .15), 0 1px 1px rgba(0, 0, 0, .16); transition: transform .3s var(--mola); }
+.interruptor[aria-checked="true"] { background: var(--verde); }
+.interruptor[aria-checked="true"]::after { transform: translateX(20px); }
+.interruptor:disabled { opacity: .5; cursor: not-allowed; }
+.campo { width: 100%; border: 0; border-radius: 12px; padding: 11px 14px; background: var(--cartao); box-shadow: var(--sombra); font-size: 15px; }
+.campo:focus { outline: none; box-shadow: 0 0 0 4px var(--azul-suave), var(--sombra); }
+.segmentado { display: inline-flex; padding: 2px; border-radius: 9px; background: color-mix(in srgb, var(--texto) 7%, transparent); }
+.segmentado button { border: 0; background: none; padding: 5px 14px; border-radius: 7px; font-size: 13px; font-weight: 500; color: var(--texto); cursor: pointer; transition: background .2s, box-shadow .2s; }
+.segmentado button[aria-pressed="true"] { background: var(--cartao); box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 0 0 .5px rgba(0, 0, 0, .04); }
+.gasto { display: inline-flex; align-items: center; gap: 4px; color: var(--laranja); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.gasto .ic { width: 13px; height: 13px; stroke-width: 2.4; }
+.selo { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--azul); color: #fff; letter-spacing: .01em; white-space: nowrap; }
+.selo.suave { background: var(--azul-suave); color: var(--azul); }
+.titulo-linha { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 44px 0 14px; }
+.titulo-linha h2 { margin: 0; }
 
 /* ---------- Faixas de aviso ---------- */
-.faixa { border-radius: 10px; padding: 12px 16px; margin: 0 0 20px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; border: 1px solid var(--linha); background: var(--folha); }
-.faixa.jogo { background: var(--ipe-fundo); border-color: var(--ipe); color: var(--ipe-tinta); }
-.faixa.jogo strong { color: inherit; }
-.faixa span { flex: 1 1 280px; }
+.faixa { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px 18px; border-radius: 16px; margin: 0 0 28px; background: var(--cartao); box-shadow: var(--sombra); }
+.faixa .icone-app { width: 36px; height: 36px; }
+.faixa > span:not(.icone-app) { flex: 1 1 280px; }
 
-/* ---------- Inicio: o pedido e a escada de esforco ---------- */
-.titulo-grande { font-size: 39px; margin-bottom: 14px; }
-.pedido { display: flex; gap: 8px; }
-.pedido input { flex: 1; font-size: 19px; padding: 14px 16px; border-radius: 12px; }
-.pedido .botao { padding: 0 22px; font-size: 16px; border-radius: 12px; }
+/* ---------- Inicio ---------- */
+.saudacao { color: var(--texto-2); font-size: 15px; font-weight: 600; margin: 0 0 4px; }
+.pedido { position: relative; margin-top: 22px; }
+.pedido > .ic { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--texto-3); width: 22px; height: 22px; pointer-events: none; }
+.pedido input { width: 100%; border: 0; border-radius: 16px; padding: 18px 120px 18px 52px; font-size: 19px; background: var(--cartao); box-shadow: var(--sombra); }
+.pedido input:focus { outline: none; box-shadow: 0 0 0 4px var(--azul-suave), var(--sombra); }
+.pedido .botao { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); }
+.pedido .botao:active { transform: translateY(-50%) scale(.97); }
 .exemplos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-.exemplos button { border: 1px dashed var(--linha-forte); background: transparent; border-radius: 999px; padding: 5px 12px; font-size: 14px; cursor: pointer; color: var(--suave); }
-.exemplos button:hover { color: var(--tinta); border-style: solid; border-color: var(--pinho); }
+.exemplos button { border: 0; border-radius: 999px; padding: 6px 14px; font-size: 13px; cursor: pointer; background: var(--cartao); color: var(--texto-2); box-shadow: var(--sombra); transition: color .2s, transform .15s; }
+.exemplos button:hover { color: var(--azul); }
+.exemplos button:active { transform: scale(.97); }
 .sugestao { margin-top: 22px; display: grid; gap: 14px; }
-.alerta { border-left: 4px solid var(--urucum); background: var(--urucum-fundo); padding: 10px 14px; border-radius: 0 8px 8px 0; font-weight: 600; }
-.alerta.saude { border-color: var(--ipe); background: var(--ipe-fundo); color: var(--ipe-tinta); font-weight: 500; }
-.guardada { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 12px 14px; border: 1px solid var(--pinho); border-radius: 10px; background: var(--pinho-fundo); }
-.guardada span { flex: 1 1 260px; }
-.atalho-certo { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: center; padding: 16px 18px; background: var(--folha); border: 1px solid var(--linha); border-left: 4px solid var(--pinho); border-radius: 10px; }
-.atalho-certo h3 { font-size: 19px; }
-.atalho-certo p { margin: 0; color: var(--suave); }
-.atalho-certo .botao { grid-row: 1 / span 3; grid-column: 2; }
-.selo { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--pinho); color: var(--sobre-pinho); vertical-align: middle; }
-.selo.claro { background: var(--pinho-fundo); color: var(--pinho); }
-.gasto { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--ipe-tinta); background: var(--ipe-fundo); border-radius: 6px; padding: 1px 8px; font-variant-numeric: tabular-nums; }
-.gasto .ic { width: 14px; height: 14px; color: var(--ipe); stroke-width: 2.2; }
+.sugestao:empty { display: none; }
+.alerta { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 14px; background: var(--vermelho-suave); color: var(--texto); font-weight: 500; }
+.alerta .ic { color: var(--vermelho); width: 22px; height: 22px; stroke-width: 2; }
+.alerta.saude { background: var(--laranja-suave); }
+.alerta.saude .ic { color: var(--laranja); }
+.guardada { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.guardada > span:first-child { flex: 1 1 260px; }
+.atalho-certo { display: grid; grid-template-columns: auto 1fr auto; gap: 3px 16px; align-items: center; }
+.atalho-certo .icone-app { grid-row: 1 / span 3; width: 44px; height: 44px; border-radius: 11px; }
+.atalho-certo .icone-app .ic { width: 24px; height: 24px; }
+.atalho-certo p { margin: 0; color: var(--texto-2); font-size: 14px; }
+.atalho-certo .botao { grid-row: 1 / span 3; grid-column: 3; }
 
-/* A escada: um degrau por jeito de responder, do que gasta menos ao que gasta mais. A altura e o gasto. */
-.escada-titulo { font-size: 14px; color: var(--suave); margin: 4px 0 -4px; }
-/* Duas linhas comuns a todos os degraus (subgrid): as barras de pe na mesma base e os corpos da mesma altura. */
-.escada { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: auto auto; column-gap: 10px; margin-top: 30px; }
-.degrau { position: relative; display: grid; grid-row: span 2; grid-template-rows: subgrid; row-gap: 0; text-align: left; padding: 0; border: 0; background: none; cursor: pointer; color: var(--tinta); }
-.degrau-barra { position: relative; align-self: end; display: block; height: var(--altura, 12px); background: color-mix(in srgb, var(--ipe) 45%, var(--papel)); border-radius: 6px 6px 0 0; transition: height .45s cubic-bezier(.2, .8, .2, 1), background .2s; }
-.degrau-corpo { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 12px; border: 1px solid var(--linha); border-top: 0; border-radius: 0 0 10px 10px; background: var(--folha); }
-.degrau-titulo { font-family: var(--titulo); font-weight: 600; font-size: 16px; line-height: 1.2; }
-.degrau-porque { font-size: 13px; color: var(--suave); line-height: 1.4; }
-.degrau .gasto { align-self: flex-start; margin-top: auto; font-size: 13px; }
-.degrau-barra .selo { position: absolute; bottom: calc(100% + 6px); left: 0; white-space: nowrap; }
-.degrau:hover .degrau-barra { background: var(--ipe); }
-.degrau:hover .degrau-corpo { border-color: var(--pinho); }
-.degrau.recomendado .degrau-barra, .degrau[aria-checked="true"] .degrau-barra { background: var(--ipe); }
-.degrau.recomendado .degrau-corpo, .degrau[aria-checked="true"] .degrau-corpo { border: 2px solid var(--pinho); border-top: 0; padding: 10px 11px 11px; }
-.degrau.recomendado .degrau-barra, .degrau[aria-checked="true"] .degrau-barra { box-shadow: inset 0 -2px 0 var(--pinho); }
-.degrau:disabled { opacity: .5; cursor: not-allowed; }
-.escada.inicio-vazio .degrau-barra { height: 12px; }
-.parecidas { font-size: 14px; color: var(--suave); }
-.parecidas button { border: 0; background: none; padding: 0; color: var(--pinho); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+/* A escada: um degrau por jeito de responder, do que gasta menos ao que gasta mais. A barra e o gasto. */
+.escada-titulo { font-size: 13px; color: var(--texto-2); margin: 6px 4px 0; font-weight: 500; }
+.escada { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: auto auto; column-gap: 12px; margin-top: 12px; }
+.escada:has(.selo) { margin-top: 34px; }
+.degrau { position: relative; display: grid; grid-row: span 2; grid-template-rows: subgrid; row-gap: 0; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; color: var(--texto); }
+.degrau-barra { position: relative; align-self: end; display: block; height: var(--altura, 12px); margin: 0 14px; border-radius: 8px 8px 0 0;
+  background: linear-gradient(180deg, #ffb340, var(--laranja)); opacity: .38; transition: height .7s var(--mola), opacity .25s; }
+.degrau-corpo { display: flex; flex-direction: column; gap: 5px; height: 100%; padding: 14px 16px 16px; border-radius: 16px; background: var(--cartao); box-shadow: var(--sombra); transition: box-shadow .25s, transform .2s var(--suave); }
+.degrau-titulo { font-family: var(--fonte-titulo); font-weight: 600; font-size: 16px; letter-spacing: -.012em; line-height: 1.22; }
+.degrau-porque { font-size: 13px; color: var(--texto-2); line-height: 1.4; }
+.degrau .gasto { margin-top: auto; padding-top: 4px; }
+.degrau-barra .selo { position: absolute; bottom: calc(100% + 8px); left: -14px; }
+.degrau:hover .degrau-corpo { transform: translateY(-2px); box-shadow: var(--sombra-hover); }
+.degrau:hover .degrau-barra, .degrau.recomendado .degrau-barra, .degrau[aria-checked="true"] .degrau-barra { opacity: 1; }
+.degrau.recomendado .degrau-corpo, .degrau[aria-checked="true"] .degrau-corpo { box-shadow: 0 0 0 2px var(--azul), var(--sombra); }
+.degrau:active .degrau-corpo { transform: scale(.985); }
+.degrau:focus-visible { outline: none; }
+.degrau:focus-visible .degrau-corpo { box-shadow: 0 0 0 4px color-mix(in srgb, var(--azul) 45%, transparent); }
+.escada.inicio-vazio .degrau-barra { height: 10px; }
+.parecidas { font-size: 13px; color: var(--texto-2); margin: 2px 4px; }
+.parecidas button { border: 0; background: none; padding: 0; color: var(--azul); cursor: pointer; font-size: 13px; }
 
-/* Emergencia e ferramentas no inicio */
+/* Widgets "Agora" com os aneis (como os do Apple Watch) */
+.widgets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.widget { background: var(--cartao); border-radius: 22px; box-shadow: var(--sombra); padding: 18px 20px; min-height: 172px; display: flex; flex-direction: column; gap: 6px; }
+.widget.largo { grid-column: span 2; }
+.widget-rotulo { font-size: 13px; font-weight: 600; color: var(--texto-2); display: flex; align-items: center; gap: 6px; }
+.widget-rotulo .ic { width: 15px; height: 15px; stroke-width: 2.2; }
+.aneis-caixa { display: flex; align-items: center; gap: 22px; flex: 1; }
+.aneis { width: 132px; height: 132px; flex: none; transform: rotate(-90deg); }
+.aneis circle { fill: none; stroke-width: 13; stroke-linecap: round; }
+.aneis .trilho { opacity: .18; }
+.aneis .arco { transition: stroke-dashoffset 1.2s var(--mola); }
+.legenda { display: grid; gap: 10px; min-width: 0; }
+.legenda div { display: grid; grid-template-columns: 10px 1fr; column-gap: 9px; align-items: baseline; }
+.legenda i { width: 10px; height: 10px; border-radius: 50%; align-self: center; }
+.legenda b { font-family: var(--fonte-titulo); font-size: 22px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.legenda small { grid-column: 2; color: var(--texto-2); font-size: 12px; line-height: 1.3; }
+.numero-grande { font-family: var(--fonte-titulo); font-size: 34px; font-weight: 700; letter-spacing: -.025em; font-variant-numeric: tabular-nums; color: var(--laranja); line-height: 1.1; margin-top: auto; }
+.widget small.sub { color: var(--texto-2); font-size: 13px; line-height: 1.35; }
+.controles { display: grid; gap: 12px; margin-top: 6px; }
+.controle { display: flex; align-items: center; gap: 10px; }
+.controle span { flex: 1; font-size: 14px; font-weight: 500; line-height: 1.25; }
+.controle small { display: block; color: var(--texto-2); font-size: 12px; font-weight: 400; }
+.controles .botao { justify-self: start; }
+
+/* Emergencia e atalhos */
 .emergencia { display: flex; flex-wrap: wrap; gap: 8px; }
-.emergencia button { border: 1px solid var(--urucum); color: var(--urucum); background: var(--folha); border-radius: 8px; padding: 7px 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
-.emergencia button:hover { background: var(--urucum-fundo); }
-.idioma { display: inline-flex; border: 1px solid var(--linha-forte); border-radius: 8px; overflow: hidden; font-size: 13px; vertical-align: middle; margin-left: 8px; }
-.idioma button { border: 0; background: transparent; padding: 3px 10px; cursor: pointer; color: var(--suave); }
-.idioma button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); }
-.titulo-linha { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 36px 0 12px; }
-.titulo-linha h2 { margin: 0; }
-.ferramentas { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
-.ferramenta { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--linha); border-radius: 10px; background: var(--folha); cursor: pointer; text-align: left; }
-.ferramenta:hover { border-color: var(--pinho); }
-.ferramenta .ic { color: var(--pinho); }
-.ferramenta span { flex: 1; line-height: 1.25; }
-.ferramenta small { display: block; color: var(--suave); font-size: 12px; }
+.emergencia button { border: 0; border-radius: 999px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; background: var(--vermelho-suave); color: var(--vermelho); transition: transform .15s; }
+.emergencia button:hover { filter: brightness(1.05); }
+.emergencia button:active { transform: scale(.96); }
+.dica { font-size: 13px; color: var(--texto-2); margin: 10px 4px 0; }
+.apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+.app-atalho { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 16px; border: 0; border-radius: 18px; background: var(--cartao); box-shadow: var(--sombra); cursor: pointer; text-align: left; transition: transform .2s var(--suave), box-shadow .2s; position: relative; }
+.app-atalho:hover { transform: translateY(-2px); box-shadow: var(--sombra-hover); }
+.app-atalho:active { transform: scale(.98); }
+.app-atalho .icone-app { width: 40px; height: 40px; border-radius: 10px; }
+.app-atalho .icone-app .ic { width: 21px; height: 21px; }
+.app-atalho b { font-size: 14px; font-weight: 600; }
+.app-atalho small { color: var(--texto-2); font-size: 12px; line-height: 1.35; margin-top: -6px; }
+.app-atalho .estado-ponto { position: absolute; top: 18px; right: 18px; }
 
 /* ---------- Perguntar ---------- */
-#pergunta { min-height: 96px; resize: vertical; font-size: 17px; }
-.modos-rotulo { margin: 18px 0 -18px; font-size: 14px; color: var(--suave); }
-.cronometro { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--ipe-tinta); }
-.etapas { list-style: none; padding: 0; margin: 18px 0 0; font-size: 14px; color: var(--suave); display: grid; gap: 4px; }
-.etapas li { display: flex; gap: 8px; align-items: center; }
-.etapas li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--linha-forte); flex: none; }
-.etapas li.atual { color: var(--tinta); }
-.etapas li.atual::before { background: var(--ipe); animation: piscar 1.2s infinite; }
-.resposta { background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; padding: 18px 20px; margin-top: 16px; }
-.resposta-topo { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; font-size: 13px; color: var(--suave); }
-.md { max-width: 72ch; }
-.md p { margin: 0 0 10px; }
-.md ul, .md ol { margin: 0 0 10px; padding-left: 22px; }
-.md li { margin: 3px 0; }
-.md a { color: var(--pinho); font-weight: 600; text-decoration: none; }
-.fontes-titulo { font-size: 14px; color: var(--suave); margin: 14px 0 4px; font-family: var(--texto); font-weight: 600; }
-.fontes { font-size: 14px; margin: 0; padding-left: 22px; }
-.resposta .acoes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--linha); align-items: center; }
-.falha { color: var(--urucum); margin-top: 14px; font-weight: 600; }
-.artigos { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
-.artigos li { border-bottom: 1px solid var(--linha); padding-bottom: 10px; }
-.artigos li:last-child { border-bottom: 0; }
-.artigos a { font-weight: 600; text-decoration: none; }
-.artigos small { color: var(--suave); margin-left: 6px; }
-.artigos p { margin: 2px 0 0; font-size: 14px; color: var(--suave); max-width: 72ch; }
+#pergunta { min-height: 110px; resize: vertical; font-size: 17px; padding: 16px 18px; border-radius: 16px; line-height: 1.45; }
+.acoes-pergunta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.cronometro { font-size: 13px; color: var(--laranja); font-weight: 600; font-variant-numeric: tabular-nums; }
+.etapas { list-style: none; padding: 0; margin: 22px 4px 0; display: grid; gap: 7px; font-size: 14px; color: var(--texto-2); }
+.etapas:empty { display: none; }
+.etapas li { display: flex; align-items: center; gap: 10px; animation: surgir .3s var(--suave); }
+.etapas li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--verde); flex: none; }
+.etapas li.atual { color: var(--texto); font-weight: 500; }
+.etapas li.atual::before { background: var(--laranja); animation: pulsar 1.4s infinite; }
+.resposta { margin-top: 18px; animation: subir .35s var(--mola); }
+.resposta-topo { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--texto-2); margin-bottom: 12px; }
+.md { font-size: 16px; line-height: 1.6; max-width: 70ch; }
+.md p { margin: 0 0 12px; }
+.md ul, .md ol { margin: 0 0 12px; padding-left: 22px; }
+.md li { margin: 4px 0; }
+.md a { font-weight: 600; }
+.fontes-titulo { font-size: 13px; color: var(--texto-2); margin: 16px 0 6px; font-family: var(--fonte); font-weight: 600; }
+.fontes { margin: 0; padding-left: 20px; font-size: 14px; }
+.fontes li { margin: 3px 0; }
+.resposta .acoes { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--separador); }
+.falha { display: flex; gap: 10px; align-items: center; color: var(--vermelho); font-weight: 600; margin-top: 16px; }
+.artigos { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+.artigos li + li { padding-top: 14px; border-top: 1px solid var(--separador); }
+.artigos a { font-weight: 600; font-size: 15px; }
+.artigos small { color: var(--texto-3); margin-left: 6px; }
+.artigos p { margin: 3px 0 0; font-size: 14px; color: var(--texto-2); max-width: 72ch; }
 
-/* ---------- Servicos: como um quadro de disjuntores ---------- */
-.quadro { border: 1px solid var(--linha); border-radius: 12px; background: var(--folha); overflow: hidden; }
-.disjuntor { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 14px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--linha); }
-.disjuntor:last-child { border-bottom: 0; }
-.disjuntor .lampada { width: 12px; height: 12px; grid-row: 1 / span 2; }
-.disjuntor h3 { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
-.disjuntor .estado { font-family: var(--texto); font-weight: 500; font-size: 13px; color: var(--suave); }
-.disjuntor p { margin: 0; font-size: 14px; color: var(--suave); grid-column: 2; }
-.disjuntor .acoes { grid-column: 3; grid-row: 1 / span 2; display: flex; gap: 8px; }
-.modelos { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
-.modelos li { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 8px 12px; border: 1px solid var(--linha); border-radius: 8px; background: var(--folha); }
+/* ---------- Biblioteca, Energia, Historico, Ajuda ---------- */
+.busca { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 24px; }
+.busca .campo { flex: 1 1 280px; }
+.busca select.campo { flex: 0 0 auto; width: auto; }
+.numeros { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 24px; }
+.numeros .widget { min-height: 0; }
+.barras { list-style: none; margin: 0; padding: 18px 20px; display: grid; gap: 14px; }
+.barras li { display: grid; grid-template-columns: minmax(140px, 220px) 1fr auto; gap: 14px; align-items: center; font-size: 14px; }
+.barras .trilha { height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--texto) 8%, transparent); overflow: hidden; }
+.barras .trilha i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #ffb340, var(--laranja)); min-width: 4px; }
+.barras small { color: var(--texto-2); font-variant-numeric: tabular-nums; }
+.meses { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; align-items: end; height: 190px; padding: 18px 20px 0; }
+.mes { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px; height: 100%; font-size: 12px; color: var(--texto-2); font-variant-numeric: tabular-nums; }
+.mes i { display: block; width: 100%; max-width: 46px; border-radius: 8px 8px 3px 3px; min-height: 3px; background: color-mix(in srgb, var(--laranja) 35%, transparent); }
+.mes.atual i { background: linear-gradient(180deg, #ffb340, var(--laranja)); }
+.mes.atual { color: var(--texto); font-weight: 600; }
+.meses-rotulos { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; text-align: center; font-size: 12px; color: var(--texto-2); padding: 8px 20px 18px; }
+.vazio { padding: 18px; color: var(--texto-2); text-align: center; margin: 0; }
+.grupo > li.vazio { display: block; }
+.dicas { margin: 0; padding: 18px 20px 18px 38px; }
+.dicas li { margin: 6px 0; }
+.historico-detalhe { padding: 0 16px 16px; }
+.historico-detalhe .resposta { margin-top: 0; box-shadow: none; background: var(--cartao-2); }
+.tabela { width: 100%; border-collapse: collapse; }
+.tabela th, .tabela td { text-align: left; padding: 11px 16px; vertical-align: top; font-size: 14px; }
+.tabela tr + tr td { border-top: 1px solid var(--separador); }
+.tabela th { font-size: 12px; color: var(--texto-2); font-weight: 600; border-bottom: 1px solid var(--separador); }
+.teclas { display: grid; grid-template-columns: auto 1fr; gap: 10px 18px; margin: 0; padding: 18px 20px; }
+.teclas dt { white-space: nowrap; } .teclas dd { margin: 0; color: var(--texto-2); }
 
-/* ---------- Biblioteca ---------- */
-.busca { display: flex; flex-wrap: wrap; gap: 8px; }
-.busca input { flex: 1 1 260px; }
-.busca select { padding: 10px; border-radius: 10px; border: 1px solid var(--linha-forte); background: var(--folha); }
-.acervo-grupo { margin: 20px 0 6px; font-size: 15px; color: var(--suave); font-family: var(--texto); font-weight: 600; }
-.acervo { list-style: none; padding: 0; margin: 0; border: 1px solid var(--linha); border-radius: 12px; background: var(--folha); }
-.acervo li { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 14px; border-bottom: 1px solid var(--linha); align-items: center; }
-.acervo li:last-child { border-bottom: 0; }
-.acervo b { font-weight: 600; }
-.acervo span.uso { font-size: 14px; color: var(--suave); grid-column: 1; }
-.acervo .lado { grid-column: 2; grid-row: 1 / span 2; text-align: right; font-size: 13px; color: var(--suave); display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-.acervo li.falta b { color: var(--suave); }
+/* ---------- Procurar (Ctrl+K, como o Spotlight), alertas e notificacoes ---------- */
+.spotlight { position: fixed; inset: 0; z-index: 80; display: flex; justify-content: center; align-items: flex-start; padding: 14vh 16px 16px; background: rgba(0, 0, 0, .18); animation: aparecer .18s var(--suave); }
+.spotlight-caixa { width: min(660px, 100%); border-radius: 18px; overflow: hidden; background: var(--vidro-forte); backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: saturate(180%) blur(30px); box-shadow: var(--sombra-alta); animation: subir .28s var(--mola); }
+.spotlight-campo { display: flex; align-items: center; gap: 12px; padding: 14px 18px; }
+.spotlight-campo .ic { width: 24px; height: 24px; color: var(--texto-2); }
+.spotlight input { flex: 1; min-width: 0; border: 0; background: none; font-size: 22px; font-weight: 300; outline: none; color: var(--texto); }
+.spotlight ul { list-style: none; margin: 0; padding: 6px; max-height: 52vh; overflow-y: auto; border-top: 1px solid var(--separador); }
+.spotlight li { display: flex; align-items: center; gap: 12px; padding: 7px 10px; border-radius: 10px; cursor: pointer; font-size: 14px; }
+.spotlight li .icone-app { width: 28px; height: 28px; border-radius: 7px; }
+.spotlight li .icone-app .ic { width: 16px; height: 16px; }
+.spotlight li .texto { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spotlight li small { color: var(--texto-2); font-size: 12px; white-space: nowrap; }
+.spotlight li[aria-selected="true"] { background: var(--azul); color: #fff; }
+.spotlight li[aria-selected="true"] small { color: rgba(255, 255, 255, .82); }
+.spotlight-dica { margin: 0; padding: 8px 18px; font-size: 12px; color: var(--texto-3); border-top: 1px solid var(--separador); }
+dialog.alerta-sheet { border: 0; padding: 0; border-radius: 16px; width: min(320px, calc(100% - 48px)); background: var(--vidro-forte); color: var(--texto);
+  backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: saturate(180%) blur(30px); box-shadow: var(--sombra-alta); text-align: center; }
+dialog.alerta-sheet[open] { animation: alertar .3s var(--mola); }
+dialog.alerta-sheet::backdrop { background: rgba(0, 0, 0, .3); }
+dialog.alerta-sheet form { margin: 0; }
+dialog.alerta-sheet h3 { padding: 20px 18px 6px; font-size: 17px; }
+dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color: var(--texto-2); line-height: 1.45; }
+.alerta-botoes { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--separador); }
+.alerta-botoes button { border: 0; background: none; padding: 12px; font-size: 16px; color: var(--azul); cursor: pointer; }
+.alerta-botoes button + button { border-left: 1px solid var(--separador); font-weight: 600; }
+.alerta-botoes button.perigo { color: var(--vermelho); }
+.alerta-botoes button:hover { background: color-mix(in srgb, var(--texto) 5%, transparent); }
+.alerta-botoes button:focus-visible { outline-offset: -3px; border-radius: 0; }
+.avisos { position: fixed; top: 64px; right: 20px; z-index: 70; display: grid; gap: 10px; width: min(380px, calc(100% - 32px)); }
+.aviso { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 16px; background: var(--vidro-forte); backdrop-filter: saturate(180%) blur(30px); -webkit-backdrop-filter: saturate(180%) blur(30px); box-shadow: var(--sombra-alta); font-size: 14px; animation: deslizar .4s var(--mola); }
+.aviso .icone-app { width: 30px; height: 30px; border-radius: 8px; }
+.aviso span:not(.icone-app) { flex: 1; line-height: 1.4; padding-top: 4px; }
+.aviso a, .aviso button { border: 0; background: none; color: var(--azul); font-weight: 600; cursor: pointer; padding: 4px 0 0; font-size: 14px; }
+.aviso .fechar { color: var(--texto-3); font-size: 20px; line-height: 1; padding: 2px 0 0; }
+@keyframes aparecer { from { opacity: 0; } }
+@keyframes subir { from { opacity: 0; transform: translateY(12px) scale(.98); } }
+@keyframes deslizar { from { opacity: 0; transform: translateX(30px); } }
+@keyframes alertar { from { opacity: 0; transform: scale(1.1); } }
+@keyframes sumir { to { opacity: 0; } }
+@keyframes surgir { from { opacity: 0; transform: translateY(6px); } }
+/* Troca de secao: so o conteudo esmaece e sobe; a barra lateral e a ilha ficam paradas. */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+::view-transition-old(conteudo) { animation: .14s ease-out both sumir; }
+::view-transition-new(conteudo) { animation: .3s var(--suave) both surgir; }
+::view-transition-group(conteudo) { animation-duration: .3s; }
 
-/* ---------- Energia ---------- */
-.numeros { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
-.numero { padding: 14px 16px; border: 1px solid var(--linha); border-radius: 10px; background: var(--folha); }
-.numero span { font-size: 13px; color: var(--suave); display: block; }
-.numero b { font-family: var(--titulo); font-size: 25px; font-weight: 600; font-variant-numeric: tabular-nums; display: block; }
-.barras { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
-.barras li { display: grid; grid-template-columns: minmax(130px, 210px) 1fr auto; gap: 12px; align-items: center; font-size: 14px; }
-.barras .trilha { height: 12px; background: var(--linha); border-radius: 6px; overflow: hidden; }
-.barras .trilha i { display: block; height: 100%; background: var(--ipe); border-radius: 6px; min-width: 3px; }
-.barras small { color: var(--suave); font-variant-numeric: tabular-nums; }
-.meses { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; align-items: end; height: 170px; padding: 0 4px; border-bottom: 1px solid var(--linha-forte); }
-.mes { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; height: 100%; font-size: 12px; color: var(--suave); font-variant-numeric: tabular-nums; }
-.mes i { display: block; width: 100%; max-width: 56px; background: color-mix(in srgb, var(--ipe) 50%, var(--papel)); border-radius: 4px 4px 0 0; min-height: 2px; }
-.mes.atual i { background: var(--ipe); }
-.mes.atual { color: var(--tinta); font-weight: 600; }
-.meses-rotulos { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; text-align: center; font-size: 13px; color: var(--suave); padding-top: 4px; }
-.vazio { padding: 16px; border: 1px dashed var(--linha-forte); border-radius: 10px; color: var(--suave); }
-.dicas { margin: 0; padding-left: 20px; }
-.dicas li { margin: 5px 0; }
-
-/* ---------- Historico ---------- */
-.historico { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 8px; }
-.hist-item { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; text-align: left; padding: 12px 14px; border: 1px solid var(--linha); border-radius: 10px; background: var(--folha); cursor: pointer; }
-.hist-item:hover, .hist-item[aria-expanded="true"] { border-color: var(--pinho); }
-.hist-item b { font-weight: 600; }
-.hist-item .trecho { grid-column: 1; font-size: 14px; color: var(--suave); }
-.hist-item .lado { grid-column: 2; grid-row: 1 / span 2; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font-size: 13px; color: var(--suave); }
-.hist-detalhe .resposta { margin-top: 6px; }
-
-/* ---------- Ajuda ---------- */
-.tabela { width: 100%; border-collapse: collapse; background: var(--folha); border: 1px solid var(--linha); border-radius: 12px; overflow: hidden; }
-.tabela th, .tabela td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--linha); vertical-align: top; }
-.tabela th { font-size: 13px; color: var(--suave); font-weight: 600; }
-.tabela tr:last-child td { border-bottom: 0; }
-.teclas { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0; }
-.teclas dt { white-space: nowrap; }
-.teclas dd { margin: 0; color: var(--suave); }
-
-/* ---------- Paleta de acoes (Ctrl+K) e avisos ---------- */
-.paleta { position: fixed; inset: 0; background: rgba(15, 24, 20, .45); display: flex; align-items: flex-start; justify-content: center; padding: 12vh 16px 16px; z-index: 40; }
-.paleta-caixa { width: min(620px, 100%); background: var(--folha); border-radius: 14px; box-shadow: var(--sombra); overflow: hidden; border: 1px solid var(--linha); }
-.paleta input { width: 100%; border: 0; border-bottom: 1px solid var(--linha); padding: 16px 18px; font-size: 18px; background: transparent; outline: none; }
-.paleta ul { list-style: none; margin: 0; padding: 6px; max-height: 52vh; overflow-y: auto; }
-.paleta li { display: flex; gap: 10px; align-items: center; padding: 9px 12px; border-radius: 8px; cursor: pointer; }
-.paleta li span { flex: 1; }
-.paleta li small { color: var(--suave); font-size: 12px; }
-.paleta li[aria-selected="true"] { background: var(--pinho); color: var(--sobre-pinho); }
-.paleta li[aria-selected="true"] small { color: inherit; }
-.paleta-dica { margin: 0; padding: 8px 16px; font-size: 12px; color: var(--suave); border-top: 1px solid var(--linha); }
-.avisos { position: fixed; left: 50%; transform: translateX(-50%); bottom: 20px; display: grid; gap: 8px; z-index: 45; width: min(560px, calc(100% - 32px)); }
-.aviso-toast { display: flex; gap: 12px; align-items: center; padding: 12px 16px; border-radius: 10px; background: var(--tinta); color: var(--papel); box-shadow: var(--sombra); font-size: 15px; }
-.aviso-toast span { flex: 1; }
-.aviso-toast a, .aviso-toast button { color: var(--ipe); font-weight: 600; background: none; border: 0; cursor: pointer; padding: 0; text-decoration: none; }
-
-/* ---------- Telas menores ---------- */
-@media (max-width: 1200px) {
-  .app { grid-template-columns: 200px minmax(0, 1fr); grid-template-areas: "trilho medidor" "trilho main"; }
-  .medidor { position: static; height: auto; border-left: 0; border-bottom: 1px solid var(--linha); flex-direction: row; flex-wrap: wrap; align-items: flex-start; gap: 12px 28px; padding: 14px 40px; }
-  .medidor-titulo { display: none; }
-  .leitura.agora b { font-size: 25px; }
-  .lampadas { border-top: 0; padding: 0; grid-template-columns: repeat(2, auto); gap: 4px 18px; }
-  .medidor-acoes { margin: 0 0 0 auto; grid-auto-flow: column; }
-  .tarifa { flex-basis: 100%; }
+/* ---------- Telas menores: a barra lateral vira trilho de icones; no celular, barra de abas embaixo ---------- */
+@media (max-width: 1080px) {
+  .app { grid-template-columns: 76px minmax(0, 1fr); }
+  .marca > span:last-child, .secoes a span, .secoes a kbd, .procurar span, .procurar kbd, .lateral-pe button span, .tarifa { display: none; }
+  .marca { justify-content: center; padding: 6px 0 14px; }
+  .procurar { justify-content: center; }
+  .secoes a, .lateral-pe button { justify-content: center; padding: 10px; }
+  .ilha { left: calc(50% + 38px); }
+  .barra-topo { left: 76px; }
+  .widgets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  main { padding: 80px 32px 96px; }
 }
-@media (max-width: 760px) {
-  .app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "trilho" "medidor" "main"; }
-  .trilho { position: sticky; z-index: 30; height: auto; flex-direction: row; align-items: center; padding: 8px 12px; border-right: 0; border-bottom: 1px solid var(--linha); overflow-x: auto; gap: 8px; }
-  .marca { padding: 0 8px 0 0; }
-  .marca span, .secoes a kbd, .trilho-pe button span, .trilho-pe kbd { display: none; }
-  .secoes { flex-direction: row; gap: 2px; }
-  .secoes a { padding: 8px; }
-  .secoes a span { display: none; }
-  .trilho-pe { margin: 0 0 0 auto; flex-direction: row; }
-  .trilho-pe button { width: auto; padding: 8px; }
-  main { padding: 20px 16px 72px; }
-  .medidor { padding: 12px 16px; gap: 10px 20px; }
-  .medidor-acoes { margin: 0; flex-basis: 100%; grid-auto-flow: column; grid-auto-columns: 1fr; }
-  .lampadas { display: none; }
-  .titulo-grande { font-size: 28px; }
-  .pedido input { font-size: 17px; }
-  /* No celular a escada deita: a barra vira uma faixa a esquerda, mais larga quanto mais gasta. */
-  .escada { grid-template-columns: 1fr; grid-template-rows: none; gap: 8px; margin-top: 8px; }
+@media (max-width: 720px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .lateral { position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: auto; flex-direction: row; justify-content: space-around; align-items: center;
+    padding: 4px 2px calc(4px + env(safe-area-inset-bottom)); border-right: 0; border-top: 1px solid var(--vidro-borda); }
+  .marca, .procurar, .lateral-pe { display: none; }
+  .secoes { flex-direction: row; justify-content: space-around; width: 100%; }
+  .secoes li { flex: 1; min-width: 0; }
+  .secoes a { flex-direction: column; gap: 2px; padding: 5px 0; background: none !important; color: var(--texto-3) !important; }
+  .secoes a span { display: block; max-width: 100%; font-size: 10px; font-weight: 500; letter-spacing: -.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .secoes a .ic { width: 23px; height: 23px; color: var(--texto-3); }
+  .secoes a[aria-current="page"], .secoes a[aria-current="page"] .ic { color: var(--azul) !important; }
+  .ilha { left: 50%; top: 10px; }
+  .barra-topo { left: 0; height: 58px; }
+  #barraTitulo { display: none; }
+  main { padding: 68px 16px 110px; }
+  h1 { font-size: 30px; }
+  .widgets { grid-template-columns: minmax(0, 1fr); }
+  .widget.largo { grid-column: auto; }
+  .aneis { width: 112px; height: 112px; }
+  .aneis-caixa { gap: 16px; }
+  .pedido input { font-size: 17px; padding-right: 16px; }
+  .pedido .botao { display: none; }
+  .escada, .escada:has(.selo) { grid-template-columns: 1fr; grid-template-rows: none; gap: 10px; margin-top: 10px; }
   .degrau { display: flex; grid-row: auto; flex-direction: row; align-items: stretch; }
-  .degrau-barra { align-self: stretch; height: auto; width: var(--largura, 8px); border-radius: 8px 0 0 8px; }
+  .degrau-barra { align-self: stretch; height: auto; width: var(--largura, 8px); margin: 6px 0; border-radius: 6px; }
   .escada.inicio-vazio .degrau-barra { height: auto; }
-  .degrau-corpo, .degrau.recomendado .degrau-corpo, .degrau[aria-checked="true"] .degrau-corpo { flex: 1; border-top: 1px solid var(--linha); border-left: 0; border-radius: 0 10px 10px 0; }
-  .degrau.recomendado .degrau-corpo, .degrau[aria-checked="true"] .degrau-corpo { border: 2px solid var(--pinho); border-left: 0; }
+  .degrau-corpo { flex: 1; margin-left: 10px; }
   .degrau-barra .selo { display: none; }
-  .degrau.recomendado .degrau-titulo::after { content: " (recomendado)"; font-family: var(--texto); font-weight: 500; font-size: 13px; color: var(--pinho); }
-  .modos-rotulo { margin-bottom: 8px; }
-  .atalho-certo { grid-template-columns: 1fr; }
-  .atalho-certo .botao { grid-row: auto; grid-column: 1; justify-self: start; margin-top: 8px; }
-  .disjuntor { grid-template-columns: auto 1fr; }
-  .disjuntor .acoes { grid-column: 2; grid-row: auto; margin-top: 6px; }
+  .degrau.recomendado .degrau-titulo::after { content: "  Recomendado"; font-family: var(--fonte); font-size: 12px; color: var(--azul); font-weight: 600; }
+  .atalho-certo { grid-template-columns: auto 1fr; }
+  .atalho-certo .botao { grid-row: auto; grid-column: 1 / -1; justify-self: start; margin-top: 8px; }
   .barras li { grid-template-columns: 1fr auto; }
   .barras .trilha { grid-column: 1 / -1; grid-row: 2; }
   .tabela th:nth-child(3), .tabela td:nth-child(3) { display: none; }
+  .avisos { top: auto; bottom: 84px; right: 16px; }
+  .grupo .lado .estado-texto { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
@@ -342,73 +442,132 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-cofre" viewBox="0 0 32 32"><rect x="3" y="4" width="26" height="23" rx="3" fill="var(--pinho)"/><circle cx="16" cy="15.5" r="6.5" fill="none" stroke="var(--folha)" stroke-width="2"/><path d="M16 9v3M16 19v3M9.5 15.5h3M19.5 15.5h3" stroke="var(--folha)" stroke-width="2"/><path d="M14.5 13.2 17.8 15.5 14.5 17.8Z" fill="var(--ipe)"/><path d="M7 27v2M25 27v2" stroke="var(--pinho)" stroke-width="2.5"/></symbol>
-  <symbol id="i-inicio" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></symbol>
-  <symbol id="i-perguntar" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M9.8 8.6a2.3 2.3 0 1 1 3.3 2c-.7.4-1.1.9-1.1 1.6M12 14.2v.1"/></symbol>
-  <symbol id="i-servicos" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h3v4H8zM13 7h3v4h-3zM8 14h3v3H8zM13 14h3v3h-3z"/></symbol>
-  <symbol id="i-biblioteca" viewBox="0 0 24 24"><path d="M5 4h4v16H5zM10 4h4v16h-4zM15.5 5.5l3.6-1 3 14.5-3.6 1z"/></symbol>
-  <symbol id="i-energia" viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/></symbol>
-  <symbol id="i-historico" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/><path d="M12 8v4.5l3 2"/></symbol>
-  <symbol id="i-ajuda" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.6 2.2c-.8.4-1.2 1-1.2 1.8M12 16.5v.1"/></symbol>
-  <symbol id="i-procurar" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+  <symbol id="i-cofre" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="15" rx="3"/><circle cx="12" cy="11.5" r="3.6"/><path d="M12 7.9v1.2M12 13.9v1.2M8.4 11.5h1.2M14.4 11.5h1.2M6.5 19v1.5M17.5 19v1.5"/></symbol>
+  <symbol id="i-inicio" viewBox="0 0 24 24"><path d="M4 11 12 4.5 20 11v8a1 1 0 0 1-1 1h-4.2v-5.5H9.2V20H5a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-perguntar" viewBox="0 0 24 24"><path d="M12 20.5c4.7 0 8.5-3.4 8.5-7.7S16.7 5 12 5 3.5 8.5 3.5 12.8c0 1.8.7 3.5 1.9 4.8L4.7 20.5l3.4-1c1.2.6 2.5 1 3.9 1z"/><path d="M10 10.5a2 2 0 1 1 2.9 1.8c-.6.3-.9.8-.9 1.4M12 15.6v.1"/></symbol>
+  <symbol id="i-servicos" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+  <symbol id="i-biblioteca" viewBox="0 0 24 24"><path d="M4.5 19.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 10.5 6v13.5M10.5 19.5V8h4v11.5M15.6 7.3l3-.8 3 12.3-3 .8zM3.5 19.5h11"/></symbol>
+  <symbol id="i-energia" viewBox="0 0 24 24"><path d="M13.2 3 5.5 13.4h5.6L10.4 21l7.9-10.6h-5.6z"/></symbol>
+  <symbol id="i-historico" viewBox="0 0 24 24"><path d="M3.8 12a8.2 8.2 0 1 0 2.4-5.8M3.8 4.5v3.7h3.7"/><path d="M12 8.2v4.3l2.9 1.8"/></symbol>
+  <symbol id="i-ajuda" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.7 9.6a2.4 2.4 0 1 1 3.5 2.1c-.8.4-1.2 1-1.2 1.8M12 16.4v.1"/></symbol>
+  <symbol id="i-procurar" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.6 15.6 4.6 4.6"/></symbol>
   <symbol id="i-tema" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></symbol>
-  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11h-6l-4 4v-4H4z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
-  <symbol id="i-conselho" viewBox="0 0 24 24"><circle cx="7" cy="8" r="2.5"/><circle cx="17" cy="8" r="2.5"/><circle cx="12" cy="6" r="2.5"/><path d="M3 18c0-3 2-5 4-5s4 2 4 5M13 18c0-3 2-5 4-5s4 2 4 5M8.5 15c.8-2 2-3 3.5-3s2.7 1 3.5 3"/></symbol>
-  <symbol id="i-criar" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5.5-5 3.5 3 3-2.5 4.5 4"/></symbol>
-  <symbol id="i-copiar" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
-  <symbol id="i-cruz" viewBox="0 0 24 24"><path d="M9 3.5h6v5.5h5.5v6H15v5.5H9V15H3.5V9H9z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 5.5h14a1.5 1.5 0 0 1 1.5 1.5v8.5A1.5 1.5 0 0 1 19 17h-6l-4.5 3.5V17H5a1.5 1.5 0 0 1-1.5-1.5V7A1.5 1.5 0 0 1 5 5.5z"/></symbol>
+  <symbol id="i-conselho" viewBox="0 0 24 24"><circle cx="7" cy="9" r="2.4"/><circle cx="17" cy="9" r="2.4"/><circle cx="12" cy="7" r="2.4"/><path d="M3 18c.3-2.6 2-4.3 4-4.3 1.3 0 2.4.6 3.1 1.6M21 18c-.3-2.6-2-4.3-4-4.3-1.3 0-2.4.6-3.1 1.6M8.5 19c.4-2.4 1.8-3.9 3.5-3.9s3.1 1.5 3.5 3.9"/></symbol>
+  <symbol id="i-criar" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.7"/><path d="m4.5 18 5-4.5 3.5 3 3-2.5 4 3.5"/></symbol>
+  <symbol id="i-copiar" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-cruz" viewBox="0 0 24 24"><path d="M9.5 4h5v5.5H20v5h-5.5V20h-5v-5.5H4v-5h5.5z"/></symbol>
+  <symbol id="i-jogo" viewBox="0 0 24 24"><path d="M7.5 8.5h9a4.5 4.5 0 0 1 4.3 5.8l-.7 2.4a2 2 0 0 1-3.5.6l-1.6-2.2H9l-1.6 2.2a2 2 0 0 1-3.5-.6l-.7-2.4A4.5 4.5 0 0 1 7.5 8.5z"/><path d="M8 11.5v3M6.5 13h3M15.5 12.5h.1M17.5 14h.1"/></symbol>
+  <symbol id="i-desligar" viewBox="0 0 24 24"><path d="M12 3.5v8"/><path d="M7.2 6.3a7.5 7.5 0 1 0 9.6 0"/></symbol>
+  <symbol id="i-chave" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 8.5-8.5M16.5 6.5l2.5 2.5M14 9l2 2"/></symbol>
+  <symbol id="i-alerta" viewBox="0 0 24 24"><path d="M12 4.5 21 19.5H3z"/><path d="M12 10v4.2M12 17v.1"/></symbol>
 </svg>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<div class="barra-topo" aria-hidden="true"><span id="barraTitulo">Início</span></div>
+
+<div class="ilha" id="ilha">
+  <button class="ilha-ir" id="ilhaIr" type="button" title="O que está acontecendo agora (clique para ir até lá)">
+    <span class="giro" id="ilhaGiro" hidden></span><span class="ponto" id="ilhaPonto"></span>
+    <span class="rotulo" id="ilhaRotulo">Cofre de IAs</span><span class="discreto" id="ilhaDiscreto" hidden></span><span class="valor" id="ilhaValor" hidden></span>
+  </button>
+  <button class="acao" id="ilhaAgora" type="button" hidden title="Para o raciocínio e responde com o que já foi encontrado">Responder agora</button>
+</div>
 
 <div class="app" id="app">
-  <nav class="trilho" aria-label="Seções da Central">
-    <a class="marca" href="#inicio"><svg viewBox="0 0 32 32"><use href="#i-cofre"/></svg><span><b>Cofre de IAs</b><small>funciona sem internet</small></span></a>
+  <nav class="lateral" aria-label="Seções da Central">
+    <a class="marca" href="#inicio"><span class="marca-icone"><svg class="ic"><use href="#i-cofre"/></svg></span><span><b>Cofre de IAs</b><small>funciona sem internet</small></span></a>
+    <button class="procurar" type="button" id="abrirPaleta" title="Procurar qualquer ação (Ctrl+K)"><svg class="ic"><use href="#i-procurar"/></svg><span>Procurar</span><kbd>Ctrl K</kbd></button>
     <ul class="secoes" id="secoes"></ul>
-    <div class="trilho-pe">
-      <button type="button" id="abrirPaleta" title="Procurar qualquer ação (Ctrl+K)"><svg class="ic"><use href="#i-procurar"/></svg><span>Procurar ação</span><kbd>Ctrl K</kbd></button>
+    <div class="lateral-pe">
       <button type="button" id="tema" title="Mudar o tema"><svg class="ic"><use href="#i-tema"/></svg><span id="temaNome">Tema automático</span></button>
+      <p class="tarifa" id="tarifa"></p>
     </div>
   </nav>
 
+  <div class="palco">
   <main id="conteudo" tabindex="-1">
-    <div class="faixa jogo" id="avisoJogo" hidden>
-      <span><strong>Modo jogo ligado.</strong> As IAs e a biblioteca estão desligadas e não abrem até você sair. Respostas guardadas continuam abrindo.</span>
+    <div class="faixa" id="avisoJogo" hidden>
+      <span class="icone-app laranja"><svg class="ic"><use href="#i-jogo"/></svg></span>
+      <span><b>Modo jogo ligado.</b> As IAs e a biblioteca estão desligadas e não abrem até você sair. Respostas guardadas continuam abrindo.</span>
       <button class="botao" id="sairJogo" type="button">Sair do modo jogo</button>
     </div>
     <div class="faixa" id="avisoDisco" hidden>
-      <span>Aberto direto do disco, o painel não vê o que está ligado nem responde perguntas. Para tudo funcionar, abra a <strong>Central do Cofre</strong>: dois cliques em <code>A:\Painel.cmd</code> ou menu, opção 1.</span>
+      <span class="icone-app cinza"><svg class="ic"><use href="#i-ajuda"/></svg></span>
+      <span>Aberto direto do disco, o painel não vê o que está ligado nem responde perguntas. Para tudo funcionar, abra a <b>Central do Cofre</b>: dois cliques em <code>A:\Painel.cmd</code> ou menu, opção 1.</span>
     </div>
 
     <section class="vista" data-vista="inicio" aria-labelledby="t-inicio">
-      <h1 class="titulo-grande" id="t-inicio" tabindex="-1">Do que você precisa?</h1>
+      <p class="saudacao" id="saudacao"></p>
+      <h1 id="t-inicio" tabindex="-1">Do que você precisa?</h1>
       <form class="pedido" id="pedidoForm" role="search">
-        <input class="campo" id="pedido" type="search" autocomplete="off" placeholder="Ex.: como purificar água da chuva" aria-label="Do que você precisa" aria-describedby="pedidoDica">
+        <svg class="ic"><use href="#i-procurar"/></svg>
+        <input id="pedido" type="search" autocomplete="off" placeholder="Pergunte ou peça qualquer coisa" aria-label="Do que você precisa" aria-describedby="pedidoDica">
         <button class="botao" type="submit">Ir</button>
       </form>
-      <p class="dica" id="pedidoDica">Escreva com suas palavras. A Central mostra o jeito que resolve gastando menos energia; Enter faz o recomendado.</p>
+      <p class="dica" id="pedidoDica">A Central mostra o jeito que resolve gastando menos energia. Enter faz o recomendado.</p>
       <div class="exemplos" id="exemplos" aria-label="Exemplos"></div>
       <div class="sugestao" id="sugestao" aria-live="polite"></div>
 
       <div class="titulo-linha">
         <h2>Emergência</h2>
-        <span class="suave" style="font-size:14px">Buscar em <span class="idioma" id="idiomaInicio" role="group" aria-label="Idioma da busca"></span></span>
+        <span class="segmentado" id="idiomaInicio" role="group" aria-label="Idioma da busca"></span>
       </div>
       <div class="emergencia" id="emergenciaInicio" role="group" aria-label="Atalhos de emergência"></div>
-      <p class="dica">Abre os artigos na hora, sem IA. Em inglês há mais conteúdo (WikiMed, medicina militar, sobrevivência).</p>
+      <p class="dica">Abre os artigos na hora, sem IA. Em inglês há mais conteúdo: WikiMed, medicina militar, remédios do NHS, Ready.gov.</p>
 
-      <h2>Abrir direto</h2>
-      <div class="ferramentas" id="ferramentas"></div>
+      <div id="blocoAgora">
+        <h2>Agora</h2>
+        <div class="widgets">
+          <div class="widget largo">
+            <span class="widget-rotulo"><svg class="ic"><use href="#i-energia"/></svg>Este PC</span>
+            <div class="aneis-caixa">
+              <svg class="aneis" viewBox="0 0 140 140" aria-hidden="true">
+                <circle class="trilho" cx="70" cy="70" r="60" stroke="var(--laranja)"/><circle class="arco" id="anelPC" cx="70" cy="70" r="60" stroke="var(--laranja)"/>
+                <circle class="trilho" cx="70" cy="70" r="44" stroke="var(--verde)"/><circle class="arco" id="anelPlaca" cx="70" cy="70" r="44" stroke="var(--verde)"/>
+                <circle class="trilho" cx="70" cy="70" r="28" stroke="var(--ciano)"/><circle class="arco" id="anelRam" cx="70" cy="70" r="28" stroke="var(--ciano)"/>
+              </svg>
+              <div class="legenda">
+                <div><i style="background:var(--laranja)"></i><b id="pcW">-</b><small id="pcCusto">PC inteiro, estimado</small></div>
+                <div><i style="background:var(--verde)"></i><b id="watts">-</b><small id="vram">memória da placa de vídeo</small></div>
+                <div><i style="background:var(--ciano)"></i><b id="ram">-</b><small id="ramTotal">memória do sistema</small></div>
+              </div>
+            </div>
+          </div>
+          <div class="widget">
+            <span class="widget-rotulo"><svg class="ic"><use href="#i-energia"/></svg><span id="mesNome">Este mês</span></span>
+            <span class="numero-grande" id="gastoMesValor">-</span>
+            <small class="sub" id="gastoMes">gasto do cofre</small>
+          </div>
+          <div class="widget">
+            <span class="widget-rotulo"><svg class="ic"><use href="#i-servicos"/></svg>Controles</span>
+            <div class="controles">
+              <div class="controle"><span>Modo jogo<small>desliga todas as IAs</small></span><button class="interruptor" id="jogoInterruptor" role="switch" aria-checked="false" aria-label="Modo jogo" type="button"></button></div>
+              <div class="controle" id="vigia" hidden><span>Vigia<small id="vigiaTexto">desliga o PC parado</small></span><button class="interruptor" id="vigiaInterruptor" role="switch" aria-checked="false" aria-label="Vigia de desligar o PC" type="button"></button></div>
+              <button class="botao perigo pequeno" id="pararTudo" type="button">Fechar tudo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="recentesBloco" hidden>
+        <h2>Recentes</h2>
+        <ul class="grupo simples" id="recentes"></ul>
+        <p class="dica">Abrir uma resposta guardada não liga nada: 0 Wh.</p>
+      </div>
+
+      <h2>Abrir</h2>
+      <div class="apps" id="ferramentas"></div>
     </section>
 
     <section class="vista" data-vista="perguntar" aria-labelledby="t-perguntar" hidden>
       <h1 id="t-perguntar" tabindex="-1">Perguntar</h1>
-      <p class="suave">Escolha quanto esforço a resposta merece. Pergunta repetida mostra a resposta guardada, sem ligar nada.</p>
-      <textarea class="campo" id="pergunta" placeholder="Ex.: Como tratar uma queimadura de segundo grau?" aria-label="Sua pergunta"></textarea>
-      <p class="modos-rotulo" id="modosRotulo">Como responder (do que gasta menos ao que gasta mais):</p>
+      <p class="subtitulo">Escolha quanto esforço a resposta merece. Pergunta repetida volta guardada, sem ligar nada.</p>
+      <div style="margin-top:24px"><textarea class="campo" id="pergunta" placeholder="Ex.: Como tratar uma queimadura de segundo grau?" aria-label="Sua pergunta"></textarea></div>
+      <p class="escada-titulo" id="modosRotulo" style="margin-top:20px">Como responder, do que gasta menos ao que gasta mais</p>
       <div class="escada" id="modos" role="radiogroup" aria-labelledby="modosRotulo"></div>
-      <div class="linha">
+      <div class="acoes-pergunta">
         <button class="botao" id="perguntarBotao" type="button">Perguntar</button>
-        <button class="botao leve" id="agoraBotao" type="button" hidden title="Para o raciocínio e responde com o que já foi encontrado">Responder agora</button>
+        <button class="botao cinza" id="agoraBotao" type="button" hidden title="Para o raciocínio e responde com o que já foi encontrado">Responder agora</button>
         <span class="cronometro" id="cronometro" hidden></span>
         <span class="dica" style="margin:0">Ctrl+Enter também pergunta.</span>
       </div>
@@ -417,115 +576,120 @@ main { grid-area: main; padding: 32px 40px 72px; max-width: 900px; width: 100%; 
 
     <section class="vista" data-vista="servicos" aria-labelledby="t-servicos" hidden>
       <h1 id="t-servicos" tabindex="-1">Serviços</h1>
-      <p class="suave">Cada serviço liga numa janela minimizada; fechar a Central não derruba nenhum.</p>
-      <div class="quadro" id="quadro"></div>
-      <h2>Modelos na memória</h2>
-      <ul class="modelos" id="modelos"><li class="suave">Ligue o chat para ver os modelos carregados.</li></ul>
+      <p class="subtitulo">Cada serviço liga numa janela minimizada; fechar a Central não derruba nenhum.</p>
+      <p class="rotulo-grupo">Serviços do cofre</p>
+      <ul class="grupo" id="quadro"></ul>
+      <p class="rotulo-grupo">Modelos na memória</p>
+      <ul class="grupo simples" id="modelos"><li class="secundario">Ligue o chat para ver os modelos carregados.</li></ul>
       <p class="dica">O servidor tira da memória o modelo parado há 15 minutos; descarregar libera a placa na hora.</p>
-      <h2>Chave de acesso do chat</h2>
-      <p>Na primeira vez, o chat pede a chave. Ela fica em <code>A:\catalogo\chave-api.txt</code>; aberto pelo menu, o servidor a copia sozinho.</p>
-      <button class="botao leve" id="copiarChave" type="button">Copiar a chave do chat</button>
+      <p class="rotulo-grupo">Acesso</p>
+      <ul class="grupo">
+        <li><span class="icone-app cinza"><svg class="ic"><use href="#i-chave"/></svg></span><span class="textos"><b>Chave do chat</b><small>Na primeira vez, o chat pede a chave. Ela fica em A:\catalogo\chave-api.txt.</small></span><span class="lado"><button class="botao cinza pequeno" id="copiarChave" type="button">Copiar</button></span></li>
+      </ul>
     </section>
 
     <section class="vista" data-vista="biblioteca" aria-labelledby="t-biblioteca" hidden>
       <h1 id="t-biblioteca" tabindex="-1">Biblioteca</h1>
-      <p class="suave">Wikipédia, WikiMed, iFixit, livros, manuais e fóruns práticos, sem internet.</p>
+      <p class="subtitulo">Wikipédia, WikiMed, iFixit, manuais e fóruns práticos, em português e inglês, sem internet.</p>
       <form class="busca" id="buscaForm" role="search">
-        <input class="campo" type="search" id="buscaTermo" placeholder="Ex.: purificar água, torniquete, painel solar" required aria-label="O que procurar">
-        <select id="buscaIdioma" aria-label="Idioma das bibliotecas"><option value="por">Em português</option><option value="eng">Em inglês (mais conteúdo)</option></select>
+        <input class="campo" type="search" id="buscaTermo" placeholder="Purificar água, torniquete, painel solar" required aria-label="O que procurar">
+        <select class="campo" id="buscaIdioma" aria-label="Idioma das bibliotecas"><option value="por">Português</option><option value="eng">Inglês (mais conteúdo)</option></select>
         <button class="botao" type="submit">Buscar</button>
       </form>
       <h2>Emergência</h2>
       <div class="emergencia" id="emergenciaBiblioteca" role="group" aria-label="Atalhos de emergência"></div>
       <div class="titulo-linha">
         <h2>O acervo</h2>
-        <input class="campo" type="search" id="acervoFiltro" placeholder="Filtrar: medicina, solar, livros..." aria-label="Filtrar as bibliotecas" style="width:min(280px,100%);padding:7px 12px">
+        <input class="campo" type="search" id="acervoFiltro" placeholder="Filtrar: medicina, solar, Linux" aria-label="Filtrar as bibliotecas" style="width:min(280px,100%);padding:8px 14px">
       </div>
       <div id="acervo"><p class="vazio">Abra a Central para ver o acervo.</p></div>
     </section>
 
     <section class="vista" data-vista="energia" aria-labelledby="t-energia" hidden>
       <h1 id="t-energia" tabindex="-1">Energia</h1>
-      <p class="suave" id="tarifaDetalhe"></p>
+      <p class="subtitulo" id="tarifaDetalhe"></p>
       <div class="numeros" id="energiaNumeros"></div>
       <h2>Neste mês, por tarefa</h2>
-      <div id="porTarefa"><p class="vazio">Abra a Central para ver o gasto.</p></div>
+      <div class="cartao" style="padding:0" id="porTarefa"><p class="vazio">Abra a Central para ver o gasto.</p></div>
       <h2>Últimos 6 meses</h2>
-      <div id="meses"></div>
+      <div class="cartao" style="padding:0" id="meses"></div>
       <h2>Para gastar menos</h2>
-      <ul class="dicas">
-        <li>Comece pela escada: <strong>só buscar</strong> não liga IA nenhuma e muitas vezes já resolve.</li>
-        <li>Pergunta repetida não gasta nada: a resposta fica guardada no Histórico.</li>
-        <li>Ao terminar, use <strong>Fechar tudo</strong> (no medidor): libera a placa de vídeo.</li>
-        <li>O PC ligado à toa pesa mais que as IAs. Suspenda quando não for usar, ou deixe a vigia ligada (menu, opção 19): ela desliga o PC parado.</li>
-      </ul>
+      <div class="cartao" style="padding:0">
+        <ul class="dicas">
+          <li>Comece pela escada: <b>só buscar</b> não liga IA nenhuma e muitas vezes já resolve.</li>
+          <li>Pergunta repetida não gasta nada: a resposta fica guardada no Histórico.</li>
+          <li>Ao terminar, use <b>Fechar tudo</b>: libera a placa de vídeo.</li>
+          <li>O PC ligado à toa pesa mais que as IAs. Suspenda quando não for usar, ou deixe a vigia ligada: ela desliga o PC parado.</li>
+        </ul>
+      </div>
     </section>
 
     <section class="vista" data-vista="historico" aria-labelledby="t-historico" hidden>
       <h1 id="t-historico" tabindex="-1">Histórico</h1>
-      <p class="suave">Perguntas já respondidas, só neste PC (fora do GitHub). Abrir uma resposta guardada não gasta energia.</p>
-      <input class="campo" type="search" id="histBusca" placeholder="Procurar no histórico" aria-label="Procurar no histórico">
-      <ul class="historico" id="historico"></ul>
+      <p class="subtitulo">Perguntas já respondidas, só neste PC (fora do GitHub). Abrir uma resposta guardada não gasta energia.</p>
+      <input class="campo" type="search" id="histBusca" placeholder="Procurar no histórico" aria-label="Procurar no histórico" style="margin-top:24px">
+      <ul class="grupo simples" id="historico" style="margin-top:16px"></ul>
     </section>
 
     <section class="vista" data-vista="ajuda" aria-labelledby="t-ajuda" hidden>
       <h1 id="t-ajuda" tabindex="-1">Ajuda</h1>
       <h2>Qual IA usar</h2>
+      <div class="cartao" style="padding:0;overflow:hidden">
       <table class="tabela">
         <thead><tr><th>Para</th><th>Use</th><th>Observação</th></tr></thead>
         <tbody>
           <tr><td>Conversar rápido</td><td><code>gemma-4-12b-qat</code></td><td>inteiro na placa: ~109 palavras por segundo</td></tr>
-          <tr><td>Melhor resposta geral</td><td><code>gemma-4-26b-a4b-qat</code></td><td>~75 palavras/s; <code>qwen3.8-27b-iq3</code> é melhor, porém ~10 palavras/s</td></tr>
-          <tr><td>Raciocínio e contas</td><td><code>gpt-oss-20b</code></td><td>o mais veloz</td></tr>
+          <tr><td>Dia a dia</td><td><code>gemma-4-26b-a4b-qat</code></td><td>~75 palavras por segundo, entende imagens</td></tr>
+          <tr><td>Melhor resposta</td><td><code>qwen3.8-27b-iq3</code></td><td>~10 palavras por segundo</td></tr>
+          <tr><td>Raciocínio e contas</td><td><code>gpt-oss-20b</code></td><td>o mais veloz para pensar</td></tr>
           <tr><td>Programar</td><td><code>ornith-1.5-35b-a3b</code></td><td>o agente de código que mais acerta ferramentas</td></tr>
           <tr><td>Saúde</td><td><code>medgemma-27b</code></td><td>junto com a WikiMed; não substitui um médico</td></tr>
           <tr><td>Traduzir</td><td><code>translategemma-12b</code></td><td>55 idiomas, inclusive texto em fotos</td></tr>
           <tr><td>Ler foto ou documento</td><td><code>glm-ocr</code></td><td>tabelas e PDFs escaneados</td></tr>
-          <tr><td>Segunda opinião</td><td>Conselho de IAs</td><td>várias IAs respondem e um relator decide (3 a 6 min)</td></tr>
+          <tr><td>Segunda opinião</td><td>Conselho de IAs</td><td>várias IAs respondem e um relator decide</td></tr>
           <tr><td>O maior que roda aqui</td><td><code>nemotron-3.5-bolt-74b</code></td><td>fica no HD: ~5 min para carregar</td></tr>
         </tbody>
       </table>
+      </div>
       <h2>Atalhos de teclado</h2>
+      <div class="cartao" style="padding:0">
       <dl class="teclas">
         <dt><kbd>Ctrl</kbd> <kbd>K</kbd></dt><dd>procurar qualquer ação: ligar, abrir, perguntar, emergência</dd>
         <dt><kbd>/</kbd></dt><dd>escrever o que você precisa (no Início)</dd>
-        <dt><kbd>1</kbd> a <kbd>7</kbd></dt><dd>ir para cada seção, na ordem do menu lateral</dd>
+        <dt><kbd>1</kbd> a <kbd>7</kbd></dt><dd>ir para cada seção, na ordem da barra lateral</dd>
         <dt><kbd>Ctrl</kbd> <kbd>Enter</kbd></dt><dd>perguntar</dd>
-        <dt><kbd>Esc</kbd></dt><dd>fechar a procura de ações</dd>
+        <dt><kbd>Esc</kbd></dt><dd>fechar a procura ou um alerta</dd>
       </dl>
+      </div>
       <h2>Bom saber</h2>
+      <div class="cartao" style="padding:0">
       <ul class="dicas">
+        <li>A ilha no topo mostra o que está acontecendo agora: serviço ligando, pergunta em andamento (com o gasto) e o botão Responder agora. Clique nela para ir até lá.</li>
         <li>Guia completo: <code>A:\docs\GUIA.md</code> (offline) e a <a href="https://claude.ai/artifact/XuMQNn1aZENjqeAZKDqruw">versão online</a>.</li>
-        <li>Imprima o <strong>cartão de emergência</strong> (<code>A:\docs\cartao-emergencia.html</code>, Ctrl+P) e guarde junto do PC.</li>
+        <li>Imprima o <b>cartão de emergência</b> (<code>A:\docs\cartao-emergencia.html</code>, Ctrl+P) e guarde junto do PC.</li>
         <li>O menu do terminal (<code>A:\IA.cmd</code>) aceita palavras: escreva “biblioteca”, “jogo” ou já a sua pergunta.</li>
-        <li>Para usar no celular, abra o servidor com <code>iniciar-servidor.ps1 -Rede</code> e acesse o IP deste PC na porta 8080.</li>
       </ul>
+      </div>
     </section>
   </main>
-
-  <aside class="medidor" id="medidor" aria-label="Medidor do PC">
-    <h2 class="medidor-titulo"><svg class="ic"><use href="#i-energia"/></svg>Medidor</h2>
-    <div class="leitura agora"><span class="rotulo">PC inteiro agora (estimado)</span><b id="pcW">-</b><span class="sub" id="pcCusto"></span></div>
-    <div class="leitura"><span class="rotulo">Placa de vídeo</span><b id="watts">-</b><span class="sub" id="vram"></span></div>
-    <div class="leitura"><span class="rotulo">Memória livre</span><b id="ram">-</b><span class="sub" id="ramTotal"></span></div>
-    <div class="leitura"><span class="rotulo">Gasto do cofre no mês</span><span class="visor" id="visorMes" aria-hidden="true"></span><span class="sub" id="gastoMes"></span></div>
-    <ul class="lampadas" id="lampadas" aria-label="O que está ligado"></ul>
-    <div class="vigia" id="vigia" hidden><span id="vigiaTexto"></span><button class="botao leve pequeno" id="vigiaBotao" type="button"></button></div>
-    <p class="tarifa" id="tarifa"></p>
-    <div class="medidor-acoes">
-      <button class="botao perigo pequeno" id="pararTudo" type="button">Fechar tudo e liberar a placa</button>
-      <button class="botao perigo pequeno" id="entrarJogo" type="button" hidden>Modo jogo</button>
-    </div>
-  </aside>
-</div>
-
-<div class="paleta" id="paleta" hidden>
-  <div class="paleta-caixa" role="dialog" aria-modal="true" aria-label="Procurar ação">
-    <input id="paletaBusca" type="text" autocomplete="off" placeholder="Ligar o chat, biblioteca, hemorragia, modo jogo..." aria-label="Procurar ação" aria-controls="paletaLista" role="combobox" aria-expanded="true">
-    <ul id="paletaLista" role="listbox"></ul>
-    <p class="paleta-dica">Setas para escolher, Enter para fazer, Esc para fechar.</p>
   </div>
 </div>
+
+<div class="spotlight" id="paleta" hidden>
+  <div class="spotlight-caixa" role="dialog" aria-modal="true" aria-label="Procurar">
+    <div class="spotlight-campo"><svg class="ic"><use href="#i-procurar"/></svg>
+      <input id="paletaBusca" type="text" autocomplete="off" placeholder="Procurar no cofre" aria-label="Procurar ação" aria-controls="paletaLista" role="combobox" aria-expanded="true"></div>
+    <ul id="paletaLista" role="listbox"></ul>
+    <p class="spotlight-dica">Setas para escolher, Enter para fazer, Esc para fechar.</p>
+  </div>
+</div>
+<dialog class="alerta-sheet" id="confirmacao" aria-labelledby="confTitulo" aria-describedby="confTexto">
+  <form method="dialog">
+    <h3 id="confTitulo"></h3>
+    <p id="confTexto"></p>
+    <div class="alerta-botoes"><button id="confNao" value="nao">Cancelar</button><button id="confSim" value="sim">OK</button></div>
+  </form>
+</dialog>
 <div class="avisos" id="avisos" role="status" aria-live="polite"></div>
 
 <script>
@@ -544,10 +708,10 @@ const VISTAS = [
   { id: 'ajuda', nome: 'Ajuda', icone: 'ajuda' },
 ];
 const SERVICOS = [
-  { id: 'chat', nome: 'Chat com os modelos', curto: 'Chat', faz: 'Todas as IAs de texto; escolha o modelo no topo.', abrir: 'http://127.0.0.1:8080', menu: 2, icone: 'chat' },
-  { id: 'biblioteca', nome: 'Biblioteca offline', curto: 'Biblioteca', faz: 'Wikipédia, WikiMed, iFixit, manuais e fóruns.', abrir: KIWIX, menu: 3, icone: 'biblioteca' },
-  { id: 'conselho', nome: 'Conselho de IAs', curto: 'Conselho', faz: 'Várias IAs respondem e um relator decide.', abrir: 'http://127.0.0.1:8090', menu: 5, icone: 'conselho' },
-  { id: 'comfyui', nome: 'Imagem, vídeo, música e 3D', curto: 'ComfyUI', faz: 'ComfyUI, com modelos prontos em Browse Templates.', abrir: 'http://127.0.0.1:8188', menu: 6, icone: 'criar' },
+  { id: 'chat', nome: 'Chat com os modelos', curto: 'Chat', naIlha: 'o chat', resumo: 'Todas as IAs de texto', faz: 'Todas as IAs de texto; escolha o modelo no topo.', abrir: 'http://127.0.0.1:8080', menu: 2, icone: 'chat', cor: 'azul' },
+  { id: 'biblioteca', nome: 'Biblioteca offline', curto: 'Biblioteca', naIlha: 'a biblioteca', resumo: 'Wikipédia, medicina, manuais', faz: 'Wikipédia, WikiMed, iFixit, manuais e fóruns.', abrir: KIWIX, menu: 3, icone: 'biblioteca', cor: 'verde' },
+  { id: 'conselho', nome: 'Conselho de IAs', curto: 'Conselho', naIlha: 'o conselho', resumo: 'Várias IAs e um relator', faz: 'Várias IAs respondem e um relator decide.', abrir: 'http://127.0.0.1:8090', menu: 5, icone: 'conselho', cor: 'roxo' },
+  { id: 'comfyui', nome: 'Imagem, vídeo, música e 3D', curto: 'Criar', naIlha: 'o ComfyUI', resumo: 'Imagem, vídeo, música e 3D', faz: 'ComfyUI, com modelos prontos em Browse Templates.', abrir: 'http://127.0.0.1:8188', menu: 6, icone: 'criar', cor: 'rosa' },
 ];
 // Os jeitos de responder, do que gasta menos ao que gasta mais (a "escada"). wh vem do catalogo pela Central.
 const MODOS = [
@@ -557,7 +721,7 @@ const MODOS = [
   { id: 'conselho', titulo: 'Conselho de IAs', porque: 'Várias IAs respondem e um relator decide.', wh: 11.5 },
 ];
 const NOME_MODO = { buscar: 'Só buscar', rapida: 'Rápida', fonte: 'Com fonte', conselho: 'Conselho' };
-const ESTADOS_MODELO = { loaded: 'na memória', loading: 'carregando', sleeping: 'dormindo (memória livre)' };
+const ESTADOS_MODELO = { loaded: 'na memória', loading: 'carregando', sleeping: 'dormindo, memória livre' };
 const ATALHOS = [
   { pt: 'primeiros socorros', en: 'first aid' },
   { pt: 'reanimação cardiopulmonar', en: 'cardiopulmonary resuscitation' },
@@ -571,11 +735,14 @@ const ATALHOS = [
   { pt: 'energia solar', en: 'solar power' },
 ];
 const EXEMPLOS = ['Como purificar água da chuva?', 'Onde fica a Chapada dos Veadeiros?', 'Febre alta em criança', 'Traduzir “bom dia” para o inglês', 'Devo comprar painel solar ou gerador?', 'torniquete'];
+const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+const MESES_LONGOS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 
 let E = null;                 // ultimo estado da Central
 let relogio = null;           // proxima verificacao do estado
 let modoEscolhido = 'fonte';
 let rodando = false;          // uma pergunta por vez nesta pagina
+let atividade = null;         // o que a ilha mostra enquanto uma pergunta roda
 const pendentes = new Map();  // servico -> o que abrir quando ele ligar
 
 // ---------- Utilidades ----------
@@ -600,9 +767,13 @@ function icone(nome) {
   s.append(u);
   return s;
 }
+function iconeApp(nome, cor) { return el('span', { class: 'icone-app ' + cor }, icone(nome)); }
 function semAcento(t) { return t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 function escapar(t) { return t.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function tarifa() { return (E && E.energia && E.energia.tarifa_kwh) || 1.25; }
+function gb(n) { return n.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' GB'; }
+// "120 W ≈ R$ 0,15 por hora" -> "R$ 0,15 por hora" (o que vem depois do ≈, quando houver)
+function depoisDoAprox(t) { return t && t.includes('≈') ? t.split('≈')[1].trim() : (t || ''); }
 function textoWh(wh) {
   if (!wh) return '0 Wh';
   if (wh >= 1000) return (wh / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + ' kWh';
@@ -619,15 +790,29 @@ function lerPref(chave, padrao) { try { return localStorage.getItem('cofre-' + c
 function salvarPref(chave, valor) { try { localStorage.setItem('cofre-' + chave, valor); } catch { /* sem armazenamento: so nesta visita */ } }
 function digitando(alvo) { return alvo && (alvo.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(alvo.tagName)); }
 
-function avisar(texto, acao) {
-  const caixa = el('div', { class: 'aviso-toast' }, el('span', { texto }));
+// Avisos chegam como notificacoes no canto, com uma acao opcional.
+function avisar(texto, acao, tipo) {
+  const caixa = el('div', { class: 'aviso' }, iconeApp(tipo === 'erro' ? 'alerta' : 'cofre', tipo === 'erro' ? 'vermelho' : 'cinza'), el('span', { texto }));
   if (acao && acao.href) caixa.append(el('a', { href: acao.href, target: '_blank', rel: 'noopener', texto: acao.texto, onclick: () => caixa.remove() }));
   else if (acao && acao.fazer) caixa.append(el('button', { type: 'button', texto: acao.texto, onclick: () => { caixa.remove(); acao.fazer(); } }));
-  caixa.append(el('button', { type: 'button', 'aria-label': 'Fechar aviso', texto: '×', onclick: () => caixa.remove() }));
+  caixa.append(el('button', { type: 'button', class: 'fechar', 'aria-label': 'Fechar aviso', texto: '×', onclick: () => caixa.remove() }));
   const lista = $('#avisos');
   lista.append(caixa);
   while (lista.children.length > 3) lista.firstChild.remove();
-  setTimeout(() => caixa.remove(), acao ? 30000 : 9000);
+  setTimeout(() => caixa.remove(), acao ? 30000 : 8000);
+}
+
+// Alerta no estilo do sistema (no lugar do confirm do navegador). Esc ou Cancelar = nao.
+function confirmar({ titulo, texto, sim = 'Continuar', perigo = false }) {
+  const d = $('#confirmacao');
+  $('#confTitulo').textContent = titulo;
+  $('#confTexto').textContent = texto;
+  $('#confSim').textContent = sim;
+  $('#confSim').classList.toggle('perigo', perigo);
+  d.returnValue = '';
+  d.showModal();
+  (perigo ? $('#confNao') : $('#confSim')).focus();
+  return new Promise(resolve => d.addEventListener('close', () => resolve(d.returnValue === 'sim'), { once: true }));
 }
 
 async function api(rota, corpo) {
@@ -637,14 +822,11 @@ async function api(rota, corpo) {
   if (!r.ok) throw new Error(dados.erro || `erro ${r.status}`);
   return dados;
 }
+async function copiar(texto) { try { await navigator.clipboard.writeText(texto); return true; } catch { return false; } }
 
-async function copiar(texto) {
-  try { await navigator.clipboard.writeText(texto); return true; } catch { return false; }
-}
-
-// ---------- Navegacao entre as secoes ----------
+// ---------- Navegacao entre as secoes (com transicao suave quando o navegador sabe fazer) ----------
 function vistaAtual() { const h = location.hash.slice(1); return VISTAS.some(v => v.id === h) ? h : 'inicio'; }
-function mostrarVista(focar) {
+function trocarVista(focar) {
   const v = vistaAtual();
   for (const s of document.querySelectorAll('.vista')) s.hidden = s.dataset.vista !== v;
   for (const a of document.querySelectorAll('#secoes a')) {
@@ -652,11 +834,18 @@ function mostrarVista(focar) {
   }
   const info = VISTAS.find(x => x.id === v);
   document.title = v === 'inicio' ? 'Central do Cofre' : `${info.nome}: Central do Cofre`;
+  $('#barraTitulo').textContent = info.nome;
   if (focar) { const h = document.querySelector(`.vista[data-vista="${v}"] h1`); if (h) h.focus({ preventScroll: true }); window.scrollTo(0, 0); }
   if (!CENTRAL) return;
   if (v === 'energia') carregarEnergia();
   if (v === 'historico') carregarHistorico();
   if (v === 'biblioteca') carregarAcervo();
+}
+function mostrarVista(focar) {
+  if (focar && document.startViewTransition && !document.hidden && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // Transicao pulada (cliques rapidos, aba escondida): a secao troca do mesmo jeito, sem erro no console.
+    document.startViewTransition(() => trocarVista(focar)).ready.catch(() => {});
+  } else trocarVista(focar);
 }
 function irPara(v) { if (location.hash.slice(1) === v) mostrarVista(true); else location.hash = v; }
 
@@ -666,6 +855,10 @@ function montar() {
   VISTAS.forEach((v, i) => secoes.append(el('li', {}, el('a', { href: '#' + v.id, 'data-vista': v.id, title: v.nome },
     icone(v.icone), el('span', { texto: v.nome }), el('kbd', { texto: String(i + 1) })))));
 
+  const hora = new Date().getHours();
+  $('#saudacao').textContent = hora < 5 ? 'Boa noite' : hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+  $('#mesNome').textContent = 'Gasto de ' + MESES_LONGOS[new Date().getMonth()];
+
   for (const ex of EXEMPLOS) $('#exemplos').append(el('button', { type: 'button', texto: ex, onclick: () => { $('#pedido').value = ex; pedirSugestao(); $('#pedido').focus(); } }));
 
   montarIdioma();
@@ -673,30 +866,28 @@ function montar() {
     for (const a of ATALHOS) $(alvo).append(el('button', { type: 'button', texto: a.pt[0].toUpperCase() + a.pt.slice(1), onclick: () => abrirEmergencia(a) }));
   }
 
-  const ferramentas = $('#ferramentas');
-  ferramentas.append(el('button', { type: 'button', class: 'ferramenta', onclick: () => irPara('perguntar') },
-    icone('perguntar'), el('span', {}, 'Perguntar', el('small', { texto: 'buscar, rápida ou com fonte' }))));
+  const apps = $('#ferramentas');
+  apps.append(el('button', { type: 'button', class: 'app-atalho', onclick: () => irPara('perguntar') },
+    iconeApp('perguntar', 'laranja'), el('b', { texto: 'Perguntar' }), el('small', { texto: 'Buscar, rápida ou com fonte' })));
   for (const s of SERVICOS) {
-    s.lampadaFerramenta = el('i', { class: 'lampada' });
-    ferramentas.append(el('button', { type: 'button', class: 'ferramenta', onclick: () => abrirServico(s.id) },
-      icone(s.icone), el('span', {}, s.curto === 'ComfyUI' ? 'Criar imagem e vídeo' : s.nome, el('small', { texto: s.faz.split(';')[0].replace(/\.$/, '') })), s.lampadaFerramenta));
+    s.pontoApp = el('i', { class: 'estado-ponto' });
+    apps.append(el('button', { type: 'button', class: 'app-atalho', onclick: () => abrirServico(s.id) },
+      iconeApp(s.icone, s.cor), el('b', { texto: s.curto }), el('small', { texto: s.resumo }), s.pontoApp));
   }
 
   const quadro = $('#quadro');
   for (const s of SERVICOS) {
-    s.lampada = el('i', { class: 'lampada' });
-    s.estado = el('span', { class: 'estado', texto: CENTRAL ? 'verificando' : '' });
+    s.ponto = el('i', { class: 'estado-ponto' });
+    s.estado = el('span', { class: 'estado-texto', texto: CENTRAL ? 'verificando' : '' });
     s.gasto = el('span');
-    s.ligarBotao = el('button', { class: 'botao leve pequeno', type: 'button', texto: 'Ligar', onclick: () => ligar(s.id) });
+    s.ligarBotao = el('button', { class: 'botao cinza pequeno', type: 'button', texto: 'Ligar', onclick: () => ligar(s.id) });
     s.abrirLink = el('a', { class: 'botao pequeno', href: s.abrir, target: '_blank', rel: 'noopener', texto: 'Abrir' });
     s.como = el('span', { texto: ` Menu: opção ${s.menu}.` });
-    if (!CENTRAL) { s.ligarBotao.hidden = true; s.lampada.hidden = true; }
-    quadro.append(el('div', { class: 'disjuntor' }, s.lampada, el('h3', {}, s.nome, s.estado),
-      el('div', { class: 'acoes' }, s.ligarBotao, s.abrirLink), el('p', {}, s.faz + ' ', s.gasto, s.como)));
-    s.lampadaMedidor = el('i', { class: 'lampada' });
-    $('#lampadas').append(el('li', {}, s.lampadaMedidor, s.curto));
+    if (!CENTRAL) { s.ligarBotao.hidden = true; s.ponto.hidden = true; }
+    quadro.append(el('li', {}, iconeApp(s.icone, s.cor),
+      el('span', { class: 'textos' }, el('b', { texto: s.nome }), el('small', {}, s.faz + ' ', s.gasto, s.como)),
+      el('span', { class: 'lado' }, s.ponto, s.estado, s.ligarBotao, s.abrirLink)));
   }
-
   montarModos();
 }
 
@@ -704,7 +895,7 @@ function montarIdioma() {
   const caixa = $('#idiomaInicio');
   caixa.replaceChildren();
   const atual = lerPref('idioma', 'por');
-  for (const [valor, nome] of [['por', 'português'], ['eng', 'inglês']]) {
+  for (const [valor, nome] of [['por', 'Português'], ['eng', 'Inglês']]) {
     caixa.append(el('button', { type: 'button', 'aria-pressed': String(valor === atual), texto: nome, onclick: () => { salvarPref('idioma', valor); $('#buscaIdioma').value = valor; montarIdioma(); } }));
   }
   $('#buscaIdioma').value = atual;
@@ -713,10 +904,7 @@ function montarIdioma() {
 // Altura do degrau: cresce com o gasto (escala logaritmica, para o conselho nao achatar os outros).
 function altura(wh) { return Math.round(12 + 26 * Math.log2(1 + wh)); }
 function whModo(id) { return (E && E.energia && E.energia.wh_modos && E.energia.wh_modos[id]) ?? MODOS.find(m => m.id === id).wh; }
-function gastoModo(id) {
-  const wh = whModo(id);
-  return wh ? `~${textoWh(wh)} ≈ ${textoReais(wh)}` : 'quase nada, sem IA';
-}
+function gastoModo(id) { const wh = whModo(id); return wh ? `~${textoWh(wh)} ≈ ${textoReais(wh)}` : 'quase nada, sem IA'; }
 
 function degrau(m, { selo, ...props }) {
   const h = altura(whModo(m.id));
@@ -742,7 +930,7 @@ function montarModos() {
 async function verificar() {
   if (!CENTRAL) return;
   try { mostrar(await api('/api/estado')); }
-  catch { avisar('A Central não respondeu. Ela ainda está aberta? (menu, opção 1)'); }
+  catch { avisar('A Central não respondeu. Ela ainda está aberta? (menu, opção 1)', null, 'erro'); }
 }
 
 function mostrar(e) {
@@ -750,9 +938,8 @@ function mostrar(e) {
   E = e;
   for (const s of SERVICOS) {
     const ok = e.servicos[s.id], ligando = e.ligando.includes(s.id), falhou = e.falhou.includes(s.id);
-    const classe = 'lampada' + (ok ? ' ligado' : ligando ? ' ligando' : falhou ? ' falhou' : '');
-    s.lampada.className = s.lampadaMedidor.className = s.lampadaFerramenta.className = classe;
-    s.estado.textContent = ok ? 'ligado' : ligando ? 'ligando...' : falhou ? 'não ligou' : 'desligado';
+    s.ponto.className = s.pontoApp.className = 'estado-ponto' + (ok ? ' ligado' : ligando ? ' ligando' : falhou ? ' falhou' : '');
+    s.estado.textContent = ok ? 'Ligado' : ligando ? 'Ligando' : falhou ? 'Não ligou' : 'Desligado';
     s.abrirLink.hidden = !ok;
     s.ligarBotao.hidden = ok;
     s.ligarBotao.disabled = ligando || e.modo_jogo;
@@ -764,59 +951,93 @@ function mostrar(e) {
     const p = pendentes.get(s.id);
     if (ok && p) {
       pendentes.delete(s.id);
-      const url = p.url;
-      if (url) avisar(p.texto || `${s.nome} ligou.`, { href: url, texto: 'Abrir' });
+      if (p.url) avisar(p.texto || `${s.nome} ligou.`, { href: p.url, texto: 'Abrir' });
     }
   }
   $('#vigia').hidden = false;
-  $('#vigia').classList.toggle('ligada', !!e.vigia);
-  $('#vigiaTexto').textContent = e.vigia ? 'Vigia ligada: desliga o PC parado' : 'Vigia de desligar desligada';
-  $('#vigiaBotao').textContent = e.vigia ? 'Parar' : 'Ligar';
+  $('#vigiaInterruptor').setAttribute('aria-checked', String(!!e.vigia));
+  $('#vigiaTexto').textContent = e.vigia ? 'ligada: desliga o PC parado' : 'desliga o PC parado';
+  $('#jogoInterruptor').setAttribute('aria-checked', String(!!e.modo_jogo));
   $('#avisoJogo').hidden = !e.modo_jogo;
-  $('#entrarJogo').hidden = e.modo_jogo;
   // No modo jogo perguntar continua possivel: a Central so responde com o que ja estiver guardado.
   $('#perguntarBotao').disabled = rodando;
 
   $('#tarifa').textContent = e.energia ? `Tarifa ${e.energia.distribuidora}: ${e.energia.tarifa}, com impostos.` : '';
-  $('#pcW').textContent = e.pc_w ? `~${e.pc_w} W` : 'medindo...';
-  $('#pcW').parentElement.style.setProperty('--carga', e.pc_w ? `${Math.min(100, e.pc_w / 450 * 100)}%` : '0%');
-  $('#pcCusto').textContent = e.pc_custo_hora || '';
-  const p = e.placa;
-  $('#watts').textContent = p ? `${p.watts} W` : 'sem leitura';
-  $('#vram').textContent = p ? `${p.vram_usada_gb.toLocaleString('pt-BR')} de ${p.vram_total_gb.toLocaleString('pt-BR')} GB em uso` : '';
-  const m = e.memoria;
-  $('#ram').textContent = m ? `${m.ram_livre_gb.toLocaleString('pt-BR')} GB` : '-';
-  $('#ramTotal').textContent = m ? `de ${m.ram_total_gb.toLocaleString('pt-BR')} GB` : '';
-  mostrarVisor(e.gasto_mes_wh || 0);
-  $('#gastoMes').textContent = e.gasto_mes;
-
+  const p = e.placa, m = e.memoria;
+  $('#pcW').textContent = e.pc_w ? `${e.pc_w} W` : 'medindo';
+  $('#pcCusto').textContent = e.pc_custo_hora ? `PC inteiro, ${depoisDoAprox(e.pc_custo_hora)}` : 'PC inteiro, estimado';
+  $('#watts').textContent = p ? gb(p.vram_usada_gb) : 'sem leitura';
+  $('#vram').textContent = p ? `placa de vídeo, de ${gb(p.vram_total_gb)}, a ${p.watts} W` : 'memória da placa de vídeo';
+  $('#ram').textContent = m ? gb(m.ram_total_gb - m.ram_livre_gb) : '-';
+  $('#ramTotal').textContent = m ? `memória em uso, de ${gb(m.ram_total_gb)}` : 'memória do sistema';
+  aneis(e);
+  const reais = (e.gasto_mes_wh || 0) / 1000 * tarifa();
+  $('#gastoMesValor').textContent = 'R$ ' + reais.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  $('#gastoMes').textContent = e.gasto_mes || 'gasto do cofre';
 
   const lista = $('#modelos');
   lista.replaceChildren();
-  if (!e.servicos.chat) lista.append(el('li', { class: 'suave', texto: 'O chat está desligado: nenhum modelo na memória.' }));
-  else if (!e.modelos.length) lista.append(el('li', { class: 'suave', texto: 'Nenhum modelo na memória: o próximo pedido carrega o escolhido.' }));
+  if (!e.servicos.chat) lista.append(el('li', { class: 'secundario', texto: 'O chat está desligado: nenhum modelo na memória.' }));
+  else if (!e.modelos.length) lista.append(el('li', { class: 'secundario', texto: 'Nenhum modelo na memória: o próximo pedido carrega o escolhido.' }));
   for (const mod of e.modelos) {
-    const li = el('li', {}, el('span', {}, el('code', { texto: mod.id }), ' ' + (ESTADOS_MODELO[mod.estado] || mod.estado)));
-    if (mod.estado !== 'sleeping') li.append(el('button', { class: 'botao leve pequeno', type: 'button', texto: 'Descarregar', onclick: ev => descarregar(mod.id, ev.currentTarget) }));
+    const li = el('li', {}, el('span', { class: 'textos' }, el('b', { texto: mod.id }), el('small', { texto: ESTADOS_MODELO[mod.estado] || mod.estado })));
+    if (mod.estado !== 'sleeping') li.append(el('span', { class: 'lado' }, el('button', { class: 'botao cinza pequeno', type: 'button', texto: 'Descarregar', onclick: ev => descarregar(mod.id, ev.currentTarget) })));
     lista.append(li);
   }
   if (!antes) {  // chegaram os gastos reais do catalogo: redesenha os degraus
     montarModos();
     if (sugestaoAtual) mostrarSugestao(sugestaoAtual);
   }
-
+  atualizarIlha();
   // Mais vezes so enquanto algo esta ligando; parado, a cada 20 s e so com a aba visivel.
   clearTimeout(relogio);
   if (!document.hidden) relogio = setTimeout(verificar, e.ligando.length || pendentes.size ? 3000 : 20000);
 }
 
-// O gasto do mes num visor de digitos, como o relogio de luz.
-function mostrarVisor(wh) {
-  const r = wh / 1000 * tarifa();
-  const texto = r.toLocaleString('pt-BR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-  const visor = $('#visorMes');
-  visor.replaceChildren(el('span', { class: 'sep', texto: 'R$' }));
-  for (const c of texto) visor.append(el('span', { class: /\d/.test(c) ? '' : 'sep', texto: c }));
+// Os aneis: potencia do PC (ate 450 W), memoria da placa em uso e memoria do sistema em uso.
+function aneis(e) {
+  const fracoes = {
+    anelPC: e.pc_w ? e.pc_w / 450 : 0,
+    anelPlaca: e.placa ? e.placa.vram_usada_gb / e.placa.vram_total_gb : 0,
+    anelRam: e.memoria ? 1 - e.memoria.ram_livre_gb / e.memoria.ram_total_gb : 0,
+  };
+  for (const [id, f] of Object.entries(fracoes)) {
+    const c = document.getElementById(id);
+    const comprimento = 2 * Math.PI * Number(c.getAttribute('r'));
+    c.style.strokeDasharray = comprimento;
+    c.style.strokeDashoffset = comprimento * (1 - Math.max(0.02, Math.min(1, f || 0)));
+  }
+}
+
+// A ilha: o que acontece agora. Pergunta rodando > servico ligando > modo jogo > repouso com o consumo do PC.
+function atualizarIlha() {
+  let ponto = 'cinza', giro = false, rotulo = 'Cofre de IAs', discreto = '', valor = '', agora = false, ir = 'inicio';
+  if (atividade) {
+    ir = 'perguntar';
+    rotulo = atividade.titulo; discreto = atividade.tempo || ''; valor = atividade.wh || ''; agora = !!atividade.agora;
+    if (atividade.fim) ponto = 'verde'; else giro = true;
+  } else if (!CENTRAL) { ponto = 'laranja'; discreto = 'aberto do disco'; ir = 'ajuda'; }
+  else if (!E) discreto = 'verificando';
+  else {
+    const ligando = SERVICOS.filter(s => E.ligando.includes(s.id));
+    const ligados = SERVICOS.filter(s => E.servicos[s.id]).length;
+    if (ligando.length) { ponto = 'laranja pulsando'; rotulo = 'Ligando ' + ligando.map(s => s.naIlha).join(' e '); ir = 'servicos'; }
+    else if (E.modo_jogo) { ponto = 'laranja'; rotulo = 'Modo jogo'; discreto = 'IAs desligadas'; }
+    else {
+      if (ligados) { ponto = 'verde'; rotulo = `${ligados} ${ligados === 1 ? 'serviço ligado' : 'serviços ligados'}`; ir = 'servicos'; }
+      else rotulo = 'Tudo desligado';
+      discreto = E.pc_w ? `PC ${E.pc_w} W` : '';
+    }
+  }
+  $('#ilha').classList.toggle('ativa', !!atividade);
+  $('#ilhaPonto').className = 'ponto ' + ponto;
+  $('#ilhaPonto').hidden = giro;
+  $('#ilhaGiro').hidden = !giro;
+  $('#ilhaRotulo').textContent = rotulo;
+  $('#ilhaDiscreto').textContent = discreto; $('#ilhaDiscreto').hidden = !discreto;
+  $('#ilhaValor').textContent = valor; $('#ilhaValor').hidden = !valor;
+  $('#ilhaAgora').hidden = !agora;
+  $('#ilhaIr').dataset.ir = ir;
 }
 
 // ---------- Acoes ----------
@@ -828,7 +1049,7 @@ async function ligar(id) {
     const r = await api('/api/ligar', { servico: id });
     if (r.texto === 'ligando') avisar(`${s.nome}: ligando numa janela minimizada. Os modelos do HD demoram mais.`);
     else if (!r.ok) avisar(`${s.nome}: ${r.texto}.`);
-  } catch (erro) { avisar(`${s.nome}: ${erro.message}`); }
+  } catch (erro) { avisar(`${s.nome}: ${erro.message}`, null, 'erro'); }
   verificar();
 }
 
@@ -855,68 +1076,67 @@ function abrirConselho(pergunta) {
 async function descarregar(modelo, botao) {
   botao.disabled = true;
   try { avisar((await api('/api/descarregar', { modelo })).texto + '.'); }
-  catch (erro) { avisar(`Não deu para descarregar ${modelo}: ${erro.message}`); }
+  catch (erro) { avisar(`Não deu para descarregar ${modelo}: ${erro.message}`, null, 'erro'); }
   verificar();
 }
 
 async function pararTudo() {
-  if (!confirm('Fechar o chat, a biblioteca, o conselho e o ComfyUI? Algo em andamento será interrompido.')) return;
+  if (!await confirmar({ titulo: 'Fechar tudo?', texto: 'O chat, a biblioteca, o conselho e o ComfyUI fecham e a placa de vídeo fica livre. Algo em andamento será interrompido.', sim: 'Fechar', perigo: true })) return;
   const b = $('#pararTudo');
   b.disabled = true;
   avisar('Fechando...');
   try { const r = await api('/api/parar-tudo', {}); avisar(r.ok ? 'Tudo fechado; a placa de vídeo está livre.' : 'Algo não fechou. Use a opção 11 do menu para ver.'); }
-  catch (erro) { avisar(`Não deu para fechar: ${erro.message}`); }
+  catch (erro) { avisar(`Não deu para fechar: ${erro.message}`, null, 'erro'); }
   b.disabled = false;
   verificar();
 }
 
 async function entrarModoJogo() {
-  if (!confirm('Modo jogo: fechar todas as IAs (chat, biblioteca, conselho, ComfyUI e esta Central) para jogar? Nada delas abre até você sair.')) return;
+  if (!await confirmar({ titulo: 'Ligar o modo jogo?', texto: 'Fecha todas as IAs (chat, biblioteca, conselho, ComfyUI) e esta Central, para o jogo ter a placa de vídeo inteira. Nada delas abre até você sair.', sim: 'Ligar' })) return;
   avisar('Ligando o modo jogo...');
   try {
     await api('/api/modo-jogo', { ligar: true });
     clearTimeout(relogio);
-    $('#app').replaceChildren(el('main', { id: 'conteudo' },
-      el('h1', { class: 'titulo-grande', texto: 'Modo jogo ligado' }),
-      el('p', { texto: 'Tudo do cofre foi fechado, inclusive a Central: a placa de vídeo, a memória e o disco estão livres. Bom jogo!' }),
-      el('p', { class: 'suave', texto: 'Para voltar a usar as IAs: dois cliques em A:\\Painel.cmd e "Sair do modo jogo", ou no menu (A:\\IA.cmd), opção 12.' })));
-  } catch (erro) { avisar(`Não deu para ligar o modo jogo: ${erro.message}. Use o menu, opção 12.`); }
+    $('#ilha').hidden = true;
+    $('#app').replaceChildren(el('main', { id: 'conteudo', style: 'padding-top:120px' },
+      el('p', { class: 'saudacao', texto: 'Modo jogo ligado' }),
+      el('h1', { texto: 'Bom jogo.' }),
+      el('p', { class: 'subtitulo', texto: 'Tudo do cofre foi fechado, inclusive a Central: a placa de vídeo, a memória e o disco estão livres.' }),
+      el('p', { class: 'subtitulo', texto: 'Para voltar a usar as IAs: dois cliques em A:\\Painel.cmd e "Sair do modo jogo", ou no menu (A:\\IA.cmd), opção 12.' })));
+  } catch (erro) { avisar(`Não deu para ligar o modo jogo: ${erro.message}. Use o menu, opção 12.`, null, 'erro'); }
 }
 
 async function sairModoJogo() {
   try { await api('/api/modo-jogo', { ligar: false }); avisar('Modo jogo desligado: as IAs voltam a ligar normalmente.'); }
-  catch (erro) { avisar(`Não deu para sair do modo jogo: ${erro.message}. Use o menu, opção 12.`); }
+  catch (erro) { avisar(`Não deu para sair do modo jogo: ${erro.message}. Use o menu, opção 12.`, null, 'erro'); }
   verificar();
 }
+function alternarModoJogo() { if (E && E.modo_jogo) sairModoJogo(); else entrarModoJogo(); }
 
 // A vigia desliga o PC quando o Claude para, ninguem mexe e a placa esta folgada (scripts\desligar-ao-terminar.ps1).
 async function alternarVigia() {
   const ligar = !(E && E.vigia);
-  if (ligar && !confirm('Ligar a vigia? O PC desliga sozinho quando o Claude estiver parado há 20 min, ninguém mexer no teclado e no mouse há 15 min e a placa de vídeo estiver folgada. Antes, o Windows avisa e dá 5 min para cancelar (mexer no mouse cancela).')) return;
-  const b = $('#vigiaBotao');
+  if (ligar && !await confirmar({ titulo: 'Ligar a vigia?', texto: 'O PC desliga sozinho quando o Claude estiver parado há 20 min, ninguém mexer no teclado, no mouse ou no controle há 15 min, nenhum jogo estiver aberto e a placa de vídeo estiver folgada. Antes, o Windows avisa e dá 5 min para cancelar (mexer no mouse cancela).', sim: 'Ligar' })) return;
+  const b = $('#vigiaInterruptor');
   b.disabled = true;
+  b.setAttribute('aria-checked', String(ligar));
   try { const r = await api('/api/vigia', { ligar }); avisar(r.texto[0].toUpperCase() + r.texto.slice(1) + '.'); }
-  catch (erro) { avisar(`Não deu para mudar a vigia: ${erro.message}. Use o menu, opção 19.`); }
+  catch (erro) { avisar(`Não deu para mudar a vigia: ${erro.message}. Use o menu, opção 19.`, null, 'erro'); }
   b.disabled = false;
   verificar();
 }
 
 async function copiarChave() {
-  const b = $('#copiarChave');
   try {
     const { chave } = await api('/api/chave');
     if (!chave) { avisar('Ainda não há chave: ligue o chat uma vez.'); return; }
     avisar(await copiar(chave) ? 'Chave copiada. No chat: "Enter API Key", Ctrl+V e "Save & Retry".' : 'Não deu para copiar: abra A:\\catalogo\\chave-api.txt');
-  } catch { avisar('Não deu para copiar: abra A:\\catalogo\\chave-api.txt'); }
-  b.blur();
+  } catch { avisar('Não deu para copiar: abra A:\\catalogo\\chave-api.txt', null, 'erro'); }
 }
 
 // ---------- Inicio: o que usar para este pedido ----------
 let sugestaoAtual = null, pedidoSeq = 0, esperaSugestao = null;
-function pedirSugestao() {
-  clearTimeout(esperaSugestao);
-  esperaSugestao = setTimeout(buscarSugestao, 180);
-}
+function pedirSugestao() { clearTimeout(esperaSugestao); esperaSugestao = setTimeout(buscarSugestao, 180); }
 async function buscarSugestao() {
   const texto = $('#pedido').value.trim();
   const seq = ++pedidoSeq;
@@ -931,33 +1151,37 @@ async function buscarSugestao() {
   } catch { return null; }
 }
 
+const ICONE_ACAO = { chat: ['chat', 'azul'], comfyui: ['criar', 'rosa'], menu: ['servicos', 'cinza'] };
+function cartaoAtalho(s, texto, recomendado) {
+  const [ic, cor] = ICONE_ACAO[s.acao] || ['cofre', 'cinza'];
+  return el('div', { class: 'cartao atalho-certo' }, iconeApp(ic, cor),
+    el('h3', {}, s.titulo, ' ', recomendado ? el('span', { class: 'selo', texto: 'Recomendado' }) : null),
+    el('p', { texto: s.porque }),
+    s.gasto ? el('p', {}, gastoSelo(s.gasto)) : null,
+    el('button', { class: recomendado ? 'botao' : 'botao cinza', type: 'button', texto: textoBotao(s), onclick: () => executar(s, texto) }));
+}
+
 function mostrarSugestao(r) {
   const caixa = $('#sugestao');
   caixa.replaceChildren();
   $('#exemplos').hidden = true;
-  if (r.aviso) caixa.append(el('p', { class: 'alerta' + (r.tipo === 'saude' ? ' saude' : ''), texto: r.aviso }));
+  if (r.aviso) caixa.append(el('div', { class: 'alerta' + (r.tipo === 'saude' ? ' saude' : '') }, icone(r.tipo === 'saude' ? 'cruz' : 'alerta'), el('span', { texto: r.aviso })));
   if (r.guardada) {
-    caixa.append(el('div', { class: 'guardada' },
-      el('span', {}, el('strong', { texto: 'Você já perguntou isso' }), ` em ${r.guardada.quando_br} (${NOME_MODO[r.guardada.modo] || r.guardada.modo}).`),
-      el('button', { class: 'botao pequeno', type: 'button', texto: 'Ver a resposta guardada', onclick: () => verGuardada(r.guardada.id) }),
-      gastoSelo('0 Wh')));
+    caixa.append(el('div', { class: 'cartao guardada' },
+      el('span', {}, el('b', { texto: 'Você já perguntou isso' }), ` em ${r.guardada.quando_br} (${NOME_MODO[r.guardada.modo] || r.guardada.modo}).`),
+      gastoSelo('0 Wh'),
+      el('button', { class: 'botao pequeno', type: 'button', texto: 'Ver a resposta guardada', onclick: () => verGuardada(r.guardada.id) })));
   }
   const primeira = r.sugestoes[0];
+  const ehModo = s => MODOS.some(m => m.id === s.acao);
   const modos = MODOS.filter(m => r.sugestoes.some(s => s.acao === m.id));
-  if (primeira && !MODOS.some(m => m.id === primeira.acao)) {
-    caixa.append(el('div', { class: 'atalho-certo' },
-      el('h3', {}, primeira.titulo, ' ', el('span', { class: 'selo', texto: 'Recomendado' })),
-      el('p', { texto: primeira.porque }),
-      primeira.gasto ? el('p', {}, gastoSelo(primeira.gasto)) : null,
-      el('button', { class: 'botao', type: 'button', texto: textoBotao(primeira), onclick: () => executar(primeira, r.texto) })));
-    for (const s of r.sugestoes.slice(1).filter(s => !MODOS.some(m => m.id === s.acao))) {
-      caixa.append(el('div', { class: 'atalho-certo' }, el('h3', { texto: s.titulo }), el('p', { texto: s.porque }),
-        s.gasto ? el('p', {}, gastoSelo(s.gasto)) : null,
-        el('button', { class: 'botao leve', type: 'button', texto: textoBotao(s), onclick: () => executar(s, r.texto) })));
-    }
+  // Quando o recomendado e um atalho (chat, ComfyUI, menu), ele e os outros atalhos vem antes da escada.
+  if (primeira && !ehModo(primeira)) {
+    caixa.append(cartaoAtalho(primeira, r.texto, true));
+    for (const s of r.sugestoes.slice(1).filter(s => !ehModo(s))) caixa.append(cartaoAtalho(s, r.texto, false));
   }
   if (modos.length) {
-    caixa.append(el('p', { class: 'escada-titulo', texto: primeira && MODOS.some(m => m.id === primeira.acao) ? 'Do que gasta menos ao que gasta mais:' : 'Ou responda com a escada, do que gasta menos ao que gasta mais:' }));
+    caixa.append(el('p', { class: 'escada-titulo', texto: primeira && ehModo(primeira) ? 'Do que gasta menos ao que gasta mais' : 'Ou responda pela escada, do que gasta menos ao que gasta mais' }));
     const escada = el('div', { class: 'escada inicio-vazio', role: 'group', 'aria-label': 'Jeitos de responder' });
     for (const m of modos) {
       const s = r.sugestoes.find(x => x.acao === m.id);
@@ -966,7 +1190,8 @@ function mostrarSugestao(r) {
         onclick: () => executar(s, r.texto) }));
     }
     caixa.append(escada);
-    requestAnimationFrame(() => requestAnimationFrame(() => escada.classList.remove('inicio-vazio')));  // os degraus sobem
+    void escada.offsetHeight;  // fixa a altura inicial: ao tirar a classe, os degraus sobem
+    escada.classList.remove('inicio-vazio');
   }
   if (r.parecidas && r.parecidas.length) {
     const p = el('p', { class: 'parecidas' }, 'Parecidas que você já fez: ');
@@ -975,9 +1200,7 @@ function mostrarSugestao(r) {
   }
 }
 
-function textoBotao(s) {
-  return { chat: 'Abrir o chat', comfyui: 'Abrir o ComfyUI', menu: 'Como fazer', buscar: 'Buscar' }[s.acao] || 'Fazer';
-}
+function textoBotao(s) { return { chat: 'Abrir o chat', comfyui: 'Abrir o ComfyUI', menu: 'Como fazer', buscar: 'Buscar' }[s.acao] || 'Fazer'; }
 
 async function executar(s, texto) {
   // Os modos de responder vao sempre a Central (no modo jogo ela so mostra o que estiver guardado);
@@ -989,6 +1212,18 @@ async function executar(s, texto) {
   const copiou = await copiar(texto);
   if (s.acao === 'chat') abrirServico('chat', null, `No chat, escolha ${s.modelo} no topo.` + (copiou ? ' Seu pedido foi copiado: Ctrl+V.' : ''));
   if (s.acao === 'comfyui') abrirServico('comfyui', null, 'No ComfyUI, abra Browse Templates e escolha um modelo pronto.' + (copiou ? ' Seu pedido foi copiado: Ctrl+V.' : ''));
+}
+
+// Recentes no Inicio: as ultimas perguntas guardadas (abrir nao liga nada).
+async function carregarRecentes() {
+  if (!CENTRAL) return;
+  let r;
+  try { r = await api('/api/historico?limite=3&busca='); } catch { return; }
+  $('#recentesBloco').hidden = !r.itens.length;
+  $('#recentes').replaceChildren(...r.itens.map(item => el('li', { class: 'linha-botao' },
+    el('button', { type: 'button', class: 'linha', onclick: () => verGuardada(item.id) },
+      el('span', { class: 'textos' }, el('b', { texto: item.pergunta }), el('small', { texto: `${item.quando_br}, ${NOME_MODO[item.modo] || item.modo}` })),
+      el('span', { class: 'lado' }, el('span', { class: 'seta', 'aria-hidden': 'true', texto: '›' }))))));
 }
 
 // ---------- Perguntar ----------
@@ -1028,50 +1263,52 @@ function renderizar(texto, fontes) {
 function cartaoResposta(r, pergunta) {
   const md = el('div', { class: 'md' });
   md.innerHTML = renderizar(r.resposta || '', r.fontes || []);
-  const topo = el('div', { class: 'resposta-topo' }, el('span', { class: 'selo claro', texto: NOME_MODO[r.modo] || 'Resposta' }));
+  const topo = el('div', { class: 'resposta-topo' }, el('span', { class: 'selo suave', texto: NOME_MODO[r.modo] || 'Resposta' }));
   if (r.guardada) topo.append(el('span', { texto: `Guardada em ${r.guardada.quando_br}` }));
   else if (r.quando_br) topo.append(el('span', { texto: r.quando_br }));
-  const cartao = el('article', { class: 'resposta' }, topo, md);
+  const cartao = el('article', { class: 'cartao resposta' }, topo, md);
   if (r.fontes && r.fontes.length) {
     cartao.append(el('h3', { class: 'fontes-titulo', texto: 'Fontes' }),
       el('ol', { class: 'fontes' }, r.fontes.map(f => el('li', {}, el('a', { href: f.link, target: '_blank', rel: 'noopener', texto: f.titulo })))));
   }
   const acoes = el('div', { class: 'acoes' });
   if (r.gasto) acoes.append(gastoSelo(r.gasto));
-  acoes.append(el('button', { class: 'botao leve pequeno', type: 'button', onclick: async () => avisar(await copiar(r.resposta) ? 'Resposta copiada.' : 'Não deu para copiar.') }, icone('copiar'), 'Copiar'));
+  acoes.append(el('button', { class: 'botao cinza pequeno', type: 'button', onclick: async () => avisar(await copiar(r.resposta) ? 'Resposta copiada.' : 'Não deu para copiar.') }, icone('copiar'), 'Copiar'));
   if (pergunta && (r.guardada || r.modo === 'rapida')) {
     const modo = r.modo === 'rapida' ? 'fonte' : r.modo;
-    acoes.append(el('button', { class: 'botao leve pequeno', type: 'button', texto: r.modo === 'rapida' && !r.guardada ? 'Responder com fonte' : 'Perguntar de novo',
+    acoes.append(el('button', { class: 'botao cinza pequeno', type: 'button', texto: r.modo === 'rapida' && !r.guardada ? 'Responder com fonte' : 'Perguntar de novo',
       onclick: () => { $('#pergunta').value = pergunta; modoEscolhido = modo; montarModos(); irPara('perguntar'); perguntar(true); } }));
   }
-  if (pergunta) acoes.append(el('button', { class: 'botao leve pequeno', type: 'button', texto: 'Levar ao conselho', onclick: () => abrirConselho(pergunta) }));
+  if (pergunta) acoes.append(el('button', { class: 'botao cinza pequeno', type: 'button', texto: 'Levar ao conselho', onclick: () => abrirConselho(pergunta) }));
   cartao.append(acoes);
   return cartao;
 }
 
 function cartaoArtigos(r, pergunta) {
-  const cartao = el('article', { class: 'resposta' },
-    el('div', { class: 'resposta-topo' }, el('span', { class: 'selo claro', texto: 'Só buscar' }),
+  const cartao = el('article', { class: 'cartao resposta' },
+    el('div', { class: 'resposta-topo' }, el('span', { class: 'selo suave', texto: 'Só buscar' }),
       el('span', { texto: r.artigos.length ? `${r.artigos.length} artigo(s) com “${r.termos}”, sem IA` : `Nada com “${r.termos}”` })));
   if (r.artigos.length) {
     cartao.append(el('ol', { class: 'artigos' }, r.artigos.map(a => el('li', {},
       el('a', { href: a.link, target: '_blank', rel: 'noopener', texto: a.titulo }), a.livro ? el('small', { texto: a.livro }) : null,
       a.trecho ? el('p', { texto: a.trecho.length > 240 ? a.trecho.slice(0, 240) + '...' : a.trecho }) : null))));
-  } else cartao.append(el('p', { class: 'suave', texto: 'Tente outras palavras ou peça uma resposta com fonte: a IA escolhe os termos de busca por você.' }));
+  } else cartao.append(el('p', { class: 'secundario', texto: 'Tente outras palavras ou peça uma resposta com fonte: a IA escolhe os termos de busca por você.' }));
   cartao.append(el('div', { class: 'acoes' }, gastoSelo(r.gasto || 'quase nada'),
-    el('button', { class: 'botao leve pequeno', type: 'button', texto: 'Explicar com fonte', onclick: () => { modoEscolhido = 'fonte'; montarModos(); $('#pergunta').value = pergunta; perguntar(false); } }),
-    el('button', { class: 'botao leve pequeno', type: 'button', texto: 'Resposta rápida', onclick: () => { modoEscolhido = 'rapida'; montarModos(); $('#pergunta').value = pergunta; perguntar(false); } })));
+    el('button', { class: 'botao cinza pequeno', type: 'button', texto: 'Explicar com fonte', onclick: () => { modoEscolhido = 'fonte'; montarModos(); $('#pergunta').value = pergunta; perguntar(false); } }),
+    el('button', { class: 'botao cinza pequeno', type: 'button', texto: 'Resposta rápida', onclick: () => { modoEscolhido = 'rapida'; montarModos(); $('#pergunta').value = pergunta; perguntar(false); } })));
   return cartao;
 }
 
-let cronometro = null;
+let cronometro = null, fimIlha = null;
 function iniciarCronometro(watts) {
   const inicio = Date.now(), visor = $('#cronometro');
   visor.hidden = false;
   clearInterval(cronometro);
   const atualizar = () => {
     const s = (Date.now() - inicio) / 1000;
-    visor.textContent = `${Math.round(s)} s com o PC em ~${watts} W: ${textoWh(watts * s / 3600)} até agora`;
+    const wh = textoWh(watts * s / 3600);
+    visor.textContent = `${Math.round(s)} s com o PC em ~${watts} W: ${wh} até agora`;
+    if (atividade && !atividade.fim) { atividade.tempo = `${Math.round(s)} s`; atividade.wh = wh; atualizarIlha(); }
   };
   atualizar();
   cronometro = setInterval(atualizar, 1000);
@@ -1087,20 +1324,25 @@ async function perguntar(deNovo) {
   if (rodando) { avisar('Espere a pergunta em andamento terminar (ou use "Responder agora").'); return; }
   rodando = true;
   const modo = modoEscolhido;
+  clearTimeout(fimIlha);
+  atividade = { titulo: modo === 'buscar' ? 'Buscando na biblioteca' : 'Respondendo' };
+  atualizarIlha();
   const botao = $('#perguntarBotao'), agora = $('#agoraBotao'), saida = $('#saida');
   botao.disabled = true;
   agora.hidden = true; agora.disabled = false; agora.textContent = 'Responder agora';
   const etapas = el('ul', { class: 'etapas' });
   saida.replaceChildren(etapas);
+  let final = null;
   const etapa = texto => {
     for (const li of etapas.children) li.classList.remove('atual');
     etapas.append(el('li', { class: 'atual', texto }));
   };
   const tratar = e => {
     if (e.tipo === 'etapa') etapa(e.texto);
-    else if (e.tipo === 'inicio') { agora.hidden = false; iniciarCronometro(e.watts); }
-    else if (e.tipo === 'falha') saida.append(el('p', { class: 'falha', texto: e.texto }));
+    else if (e.tipo === 'inicio') { agora.hidden = false; atividade.agora = true; iniciarCronometro(e.watts); }
+    else if (e.tipo === 'falha') saida.append(el('p', { class: 'falha' }, icone('alerta'), e.texto));
     else if (e.tipo === 'final') {
+      final = e;
       for (const li of etapas.children) li.classList.remove('atual');
       saida.append(e.modo === 'buscar' ? cartaoArtigos(e, pergunta) : cartaoResposta(e, pergunta));
     }
@@ -1122,20 +1364,28 @@ async function perguntar(deNovo) {
       }
     }
   } catch (erro) {
-    saida.append(el('p', { class: 'falha', texto: `A Central não respondeu: ${erro.message}` }));
+    saida.append(el('p', { class: 'falha' }, icone('alerta'), `A Central não respondeu: ${erro.message}`));
   }
   rodando = false;
   pararCronometro();
-  botao.disabled = !!(E && E.modo_jogo);
+  botao.disabled = false;
   agora.hidden = true;
+  // A ilha mostra o resultado por alguns segundos, como uma notificacao que se recolhe.
+  if (final) {
+    atividade = { fim: true, titulo: final.modo === 'buscar' ? `${final.artigos.length} artigo(s)` : final.guardada ? 'Resposta guardada' : 'Resposta pronta', wh: atividade.wh || '' };
+    fimIlha = setTimeout(() => { atividade = null; atualizarIlha(); }, 5000);
+  } else atividade = null;
+  atualizarIlha();
   verificar();
+  carregarRecentes();
 }
 
 // Para o raciocinio: a IA responde ja, com o que tinha encontrado ate aqui.
 async function responderAgora() {
   const agora = $('#agoraBotao');
   agora.disabled = true; agora.textContent = 'Respondendo agora...';
-  try { await api('/api/agora', {}); } catch (erro) { avisar(`Não deu para pedir a resposta agora: ${erro.message}`); }
+  if (atividade) { atividade.agora = false; atividade.titulo = 'Respondendo agora'; atualizarIlha(); }
+  try { await api('/api/agora', {}); } catch (erro) { avisar(`Não deu para pedir a resposta agora: ${erro.message}`, null, 'erro'); }
 }
 
 async function verGuardada(id) {
@@ -1146,12 +1396,15 @@ async function verGuardada(id) {
     montarModos();
     irPara('perguntar');
     $('#saida').replaceChildren(cartaoResposta({ ...item, guardada: { quando_br: item.quando_br }, gasto: '0 Wh: resposta guardada' }, item.pergunta));
-  } catch (erro) { avisar(`Não deu para abrir a resposta guardada: ${erro.message}`); }
+  } catch (erro) { avisar(`Não deu para abrir a resposta guardada: ${erro.message}`, null, 'erro'); }
 }
 
 // ---------- Biblioteca ----------
 let acervoCache = null;
 async function carregarAcervo() {
+  // A leitura do acervo confere os arquivos no disco (uns 2 s): mostra o que ja tinha e atualiza por cima.
+  if (acervoCache) mostrarAcervo();
+  else $('#acervo').replaceChildren(el('p', { class: 'vazio', texto: 'Lendo o acervo...' }));
   try { acervoCache = await api('/api/acervo'); mostrarAcervo(); }
   catch (erro) { $('#acervo').replaceChildren(el('p', { class: 'vazio', texto: `Não deu para ler o acervo: ${erro.message}` })); }
 }
@@ -1160,40 +1413,44 @@ function mostrarAcervo() {
   const filtro = semAcento($('#acervoFiltro').value.trim()).split(/\s+/).filter(Boolean);
   const caixa = $('#acervo');
   caixa.replaceChildren();
-  const grupos = [['nucleo', 'No SSD (rápido, o que você usa)'], ['cofre', 'No HD do cofre (arquivo profundo)']];
+  const grupos = [['nucleo', 'No SSD, rápido'], ['cofre', 'No HD do cofre']];
   let total = 0;
   for (const [local, nome] of grupos) {
-    const itens = acervoCache.bibliotecas.filter(b => b.local === local && filtro.every(f => semAcento(`${b.nome} ${b.uso}`).includes(f)));
+    const itens = acervoCache.bibliotecas.filter(b => b.local === local && !b.observar && filtro.every(f => semAcento(`${b.nome} ${b.uso}`).includes(f)));
     if (!itens.length) continue;
     total += itens.length;
-    caixa.append(el('h3', { class: 'acervo-grupo', texto: `${nome}: ${itens.length}` }));
-    caixa.append(el('ul', { class: 'acervo' }, itens.map(b => {
+    caixa.append(el('p', { class: 'rotulo-grupo', texto: `${nome}: ${itens.length}` }));
+    caixa.append(el('ul', { class: 'grupo simples' }, itens.map(b => {
       const lado = el('span', { class: 'lado' }, `${(b.tamanho_gb || 0).toLocaleString('pt-BR')} GB`);
-      if (b.link) lado.append(el('a', { class: 'botao leve pequeno', href: b.link, target: '_blank', rel: 'noopener', texto: 'Abrir' }));
-      else lado.append(el('span', { texto: b.baixada ? `versão ${b.versao}` : b.observar ? 'só acompanhando' : 'falta baixar' }));
-      return el('li', { class: b.baixada ? '' : 'falta' }, el('b', { texto: b.nome }), el('span', { class: 'uso', texto: b.uso }), lado);
+      if (b.link) lado.append(el('a', { class: 'botao cinza pequeno', href: b.link, target: '_blank', rel: 'noopener', texto: 'Abrir' }));
+      else lado.append(el('span', { texto: b.baixada ? `versão ${b.versao}` : 'falta baixar' }));
+      return el('li', {}, el('span', { class: 'textos' }, el('b', { texto: b.nome }), el('small', { texto: b.uso })), lado);
     })));
   }
+  const observando = acervoCache.bibliotecas.filter(b => b.observar).length;
   if (!total) caixa.append(el('p', { class: 'vazio', texto: 'Nenhuma biblioteca com essas palavras.' }));
-  else if (!acervoCache.ligada) caixa.prepend(el('p', { class: 'dica', texto: 'Ligue a biblioteca para abrir cada uma daqui.' }));
+  else {
+    if (!acervoCache.ligada) caixa.prepend(el('p', { class: 'dica', texto: 'Ligue a biblioteca para abrir cada uma daqui.' }));
+    if (observando && !filtro.length) caixa.append(el('p', { class: 'dica', texto: `Mais ${observando} em observação no catálogo, fora do cofre: dá para baixar de novo quando quiser.` }));
+  }
 }
 
 // ---------- Energia ----------
-const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 async function carregarEnergia() {
   let r;
   try { r = await api('/api/energia'); } catch (erro) { $('#porTarefa').replaceChildren(el('p', { class: 'vazio', texto: `Não deu para ler o gasto: ${erro.message}` })); return; }
   $('#tarifaDetalhe').textContent = r.tarifa_detalhe || '';
   const totalMes = r.por_tarefa.reduce((s, t) => s + t.wh, 0);
+  const widget = (rotulo, valor, sub) => el('div', { class: 'widget' }, el('span', { class: 'widget-rotulo' }, icone('energia'), rotulo), el('span', { class: 'numero-grande', texto: valor }), el('small', { class: 'sub', texto: sub }));
   $('#energiaNumeros').replaceChildren(
-    el('div', { class: 'numero' }, el('span', { texto: 'Cofre neste mês' }), el('b', { texto: textoReais(totalMes) }), el('span', { texto: textoWh(totalMes) })),
-    el('div', { class: 'numero' }, el('span', { texto: 'PC parado ligado 24 horas' }), el('b', { texto: r.pc_parado_dia.split('≈')[1].trim() }), el('span', { texto: `${r.pc_parado_w} W sem fazer nada` })),
-    el('div', { class: 'numero' }, el('span', { texto: 'PC parado ligado o mês todo' }), el('b', { texto: r.pc_parado_mes.split('≈')[1].trim() }), el('span', { texto: 'é isso que a vigia e o suspender evitam' })));
+    widget('Cofre neste mês', textoReais(totalMes), textoWh(totalMes)),
+    widget('PC parado, 24 horas', depoisDoAprox(r.pc_parado_dia), `${r.pc_parado_w} W sem fazer nada`),
+    widget('PC parado, o mês todo', depoisDoAprox(r.pc_parado_mes), 'é isso que a vigia e o suspender evitam'));
   if (!r.por_tarefa.length) $('#porTarefa').replaceChildren(el('p', { class: 'vazio', texto: 'Nenhuma tarefa registrada neste mês. Cada pergunta, conselho ou sincronização anota aqui o que gastou.' }));
   else {
     const maior = Math.max(...r.por_tarefa.map(t => t.wh)) || 1;
     $('#porTarefa').replaceChildren(el('ul', { class: 'barras' }, r.por_tarefa.map(t => el('li', {},
-      el('span', {}, t.nome, el('small', { texto: ` ${t.vezes}×` })),
+      el('span', {}, t.nome, el('small', { texto: `  ${t.vezes}×` })),
       el('span', { class: 'trilha' }, el('i', { style: `width:${Math.max(1, t.wh / maior * 100)}%` })),
       el('small', { texto: t.custo })))));
   }
@@ -1201,7 +1458,7 @@ async function carregarEnergia() {
   const atual = r.meses[r.meses.length - 1].mes;
   $('#meses').replaceChildren(
     el('div', { class: 'meses', role: 'img', 'aria-label': 'Gasto do cofre nos últimos 6 meses: ' + r.meses.map(m => `${MESES[+m.mes.slice(5) - 1]} ${textoWh(m.wh)}`).join(', ') },
-      r.meses.map(m => el('div', { class: 'mes' + (m.mes === atual ? ' atual' : '') }, m.wh ? textoWh(m.wh) : '', el('i', { style: `height:${m.wh ? Math.max(2, m.wh / maiorMes * 130) : 2}px` })))),
+      r.meses.map(m => el('div', { class: 'mes' + (m.mes === atual ? ' atual' : '') }, m.wh ? textoWh(m.wh) : '', el('i', { style: `height:${m.wh ? Math.max(3, m.wh / maiorMes * 140) : 3}px` })))),
     el('div', { class: 'meses-rotulos', 'aria-hidden': 'true' }, r.meses.map(m => el('span', { texto: MESES[+m.mes.slice(5) - 1] + (m.mes.slice(5) === '01' ? ' ' + m.mes.slice(0, 4) : '') }))));
 }
 
@@ -1218,12 +1475,12 @@ async function carregarHistorico() {
     return;
   }
   for (const item of r.itens) {
-    const detalhe = el('div', { class: 'hist-detalhe', hidden: true });
-    const botao = el('button', { class: 'hist-item', type: 'button', 'aria-expanded': 'false', onclick: () => abrirItem(item, botao, detalhe) },
-      el('b', { texto: item.pergunta }),
-      el('span', { class: 'trecho', texto: item.trecho }),
-      el('span', { class: 'lado' }, el('span', { texto: item.quando_br }), el('span', { class: 'selo claro', texto: (NOME_MODO[item.modo] || item.modo) + (item.interrompida ? ', cortada' : '') }), textoWh(item.wh)));
-    lista.append(el('li', {}, botao, detalhe));
+    const detalhe = el('div', { class: 'historico-detalhe', hidden: true });
+    const botao = el('button', { type: 'button', class: 'linha', 'aria-expanded': 'false', onclick: () => abrirItem(item, botao, detalhe) },
+      el('span', { class: 'textos' }, el('b', { texto: item.pergunta }), el('small', { texto: item.trecho })),
+      el('span', { class: 'lado' }, el('span', { class: 'selo suave', texto: (NOME_MODO[item.modo] || item.modo) + (item.interrompida ? ', cortada' : '') }),
+        el('span', { texto: item.quando_br }), el('span', { class: 'seta', 'aria-hidden': 'true', texto: '›' })));
+    lista.append(el('li', { class: 'linha-botao' }, botao, detalhe));
   }
 }
 async function abrirItem(item, botao, detalhe) {
@@ -1234,39 +1491,39 @@ async function abrirItem(item, botao, detalhe) {
   try {
     const completo = await api('/api/historico?id=' + encodeURIComponent(item.id));
     const cartao = cartaoResposta({ ...completo, gasto: `${textoWh(completo.wh)} quando foi respondida; abrir agora: 0 Wh` }, completo.pergunta);
-    cartao.querySelector('.acoes').append(el('button', { class: 'botao perigo pequeno', type: 'button', texto: 'Esquecer esta resposta', onclick: async () => {
-      if (!confirm('Esquecer esta resposta? Ela sai do histórico deste PC.')) return;
-      try { await api('/api/esquecer', { id: item.id }); avisar('Resposta esquecida.'); carregarHistorico(); } catch (erro) { avisar(`Não deu para esquecer: ${erro.message}`); }
+    cartao.querySelector('.acoes').append(el('button', { class: 'botao perigo pequeno', type: 'button', texto: 'Esquecer', onclick: async () => {
+      if (!await confirmar({ titulo: 'Esquecer esta resposta?', texto: 'Ela sai do histórico deste PC. Se perguntar de novo, a IA responde outra vez.', sim: 'Esquecer', perigo: true })) return;
+      try { await api('/api/esquecer', { id: item.id }); avisar('Resposta esquecida.'); carregarHistorico(); carregarRecentes(); } catch (erro) { avisar(`Não deu para esquecer: ${erro.message}`, null, 'erro'); }
     } }));
     detalhe.append(cartao);
   } catch (erro) { detalhe.append(el('p', { class: 'falha', texto: `Não deu para abrir: ${erro.message}` })); }
 }
 
-// ---------- Paleta de acoes (Ctrl+K) ----------
+// ---------- Procurar (Ctrl+K), como o Spotlight ----------
 let paletaItens = [], paletaSel = 0, focoAntes = null;
 function acoesPaleta(q) {
   const lista = [];
-  VISTAS.forEach((v, i) => lista.push({ titulo: `Ir para ${v.nome}`, dica: `tecla ${i + 1}`, icone: v.icone, fazer: () => irPara(v.id) }));
+  VISTAS.forEach((v, i) => lista.push({ titulo: `Ir para ${v.nome}`, dica: `tecla ${i + 1}`, icone: v.icone, cor: 'azul', fazer: () => irPara(v.id) }));
   for (const s of SERVICOS) {
-    lista.push({ titulo: `Abrir ${s.nome}`, dica: E && E.servicos[s.id] ? 'ligado' : 'liga se precisar', icone: s.icone, chaves: s.curto, fazer: () => abrirServico(s.id) });
-    if (CENTRAL && !(E && E.servicos[s.id])) lista.push({ titulo: `Ligar ${s.nome}`, dica: `menu, opção ${s.menu}`, icone: s.icone, chaves: s.curto, fazer: () => ligar(s.id) });
+    lista.push({ titulo: `Abrir ${s.nome}`, dica: E && E.servicos[s.id] ? 'ligado' : 'liga se precisar', icone: s.icone, cor: s.cor, chaves: `${s.curto} ${s.id}`, fazer: () => abrirServico(s.id) });
+    if (CENTRAL && !(E && E.servicos[s.id])) lista.push({ titulo: `Ligar ${s.nome}`, dica: `menu, opção ${s.menu}`, icone: s.icone, cor: s.cor, chaves: `${s.curto} ${s.id}`, fazer: () => ligar(s.id) });
   }
   if (CENTRAL) {
-    lista.push({ titulo: 'Fechar tudo e liberar a placa de vídeo', icone: 'energia', chaves: 'parar desligar', fazer: pararTudo });
-    if (E && E.modo_jogo) lista.push({ titulo: 'Sair do modo jogo', icone: 'energia', chaves: 'jogo jogar', fazer: sairModoJogo });
-    else lista.push({ titulo: 'Modo jogo: desligar todas as IAs', icone: 'energia', chaves: 'jogo jogar game', fazer: entrarModoJogo });
-    lista.push({ titulo: 'Copiar a chave do chat', icone: 'copiar', chaves: 'api senha acesso', fazer: copiarChave });
-    lista.push({ titulo: E && E.vigia ? 'Parar a vigia de desligar' : 'Ligar a vigia de desligar o PC parado', icone: 'energia', chaves: 'desligar vigia ocioso dormir', fazer: alternarVigia });
+    lista.push({ titulo: 'Fechar tudo e liberar a placa de vídeo', icone: 'desligar', cor: 'vermelho', chaves: 'parar desligar', fazer: pararTudo });
+    if (E && E.modo_jogo) lista.push({ titulo: 'Sair do modo jogo', icone: 'jogo', cor: 'laranja', chaves: 'jogo jogar', fazer: sairModoJogo });
+    else lista.push({ titulo: 'Modo jogo: desligar todas as IAs', icone: 'jogo', cor: 'laranja', chaves: 'jogo jogar game', fazer: entrarModoJogo });
+    lista.push({ titulo: 'Copiar a chave do chat', icone: 'chave', cor: 'cinza', chaves: 'api senha acesso', fazer: copiarChave });
+    lista.push({ titulo: E && E.vigia ? 'Parar a vigia de desligar' : 'Ligar a vigia de desligar o PC parado', icone: 'desligar', cor: 'cinza', chaves: 'desligar vigia ocioso dormir', fazer: alternarVigia });
   }
-  lista.push({ titulo: 'Mudar o tema (claro, escuro, automático)', icone: 'tema', chaves: 'cor noite escuro claro', fazer: trocarTema });
-  for (const a of ATALHOS) lista.push({ titulo: `Emergência: ${a.pt}`, dica: 'abre os artigos', icone: 'cruz', chaves: a.en, fazer: () => abrirEmergencia(a) });
+  lista.push({ titulo: 'Mudar o tema (claro, escuro, automático)', icone: 'tema', cor: 'cinza', chaves: 'cor noite escuro claro', fazer: trocarTema });
+  for (const a of ATALHOS) lista.push({ titulo: `Emergência: ${a.pt}`, dica: 'abre os artigos', icone: 'cruz', cor: 'vermelho', chaves: a.en, fazer: () => abrirEmergencia(a) });
   const termos = semAcento(q).split(/\s+/).filter(Boolean);
   const achados = lista.filter(a => termos.every(t => semAcento(`${a.titulo} ${a.chaves || ''}`).includes(t)));
   if (q.trim()) {
     const texto = q.trim();
-    achados.push({ titulo: `Perguntar com fonte: “${texto}”`, dica: gastoModo('fonte'), icone: 'perguntar', fazer: () => irPerguntar(texto, 'fonte') });
-    achados.push({ titulo: `Só buscar: “${texto}”`, dica: 'sem IA', icone: 'procurar', fazer: () => irPerguntar(texto, 'buscar') });
-    achados.push({ titulo: `O que usar para “${texto}”`, dica: 'sugestão no Início', icone: 'inicio', fazer: () => { irPara('inicio'); $('#pedido').value = texto; buscarSugestao(); } });
+    achados.push({ titulo: `Perguntar com fonte: “${texto}”`, dica: gastoModo('fonte'), icone: 'perguntar', cor: 'laranja', fazer: () => irPerguntar(texto, 'fonte') });
+    achados.push({ titulo: `Só buscar: “${texto}”`, dica: 'sem IA', icone: 'procurar', cor: 'verde', fazer: () => irPerguntar(texto, 'buscar') });
+    achados.push({ titulo: `O que usar para “${texto}”`, dica: 'sugestão no Início', icone: 'inicio', cor: 'azul', fazer: () => { irPara('inicio'); $('#pedido').value = texto; buscarSugestao(); } });
   }
   return achados;
 }
@@ -1274,6 +1531,7 @@ function abrirPaleta() {
   focoAntes = document.activeElement;
   $('#paleta').hidden = false;
   $('#paletaBusca').value = '';
+  paletaSel = 0;
   desenharPaleta();
   $('#paletaBusca').focus();
 }
@@ -1281,12 +1539,11 @@ function fecharPaleta() { $('#paleta').hidden = true; if (focoAntes && focoAntes
 function desenharPaleta() {
   paletaItens = acoesPaleta($('#paletaBusca').value);
   paletaSel = Math.min(paletaSel, Math.max(0, paletaItens.length - 1));
-  if (!$('#paletaBusca').value) paletaSel = 0;
   const ul = $('#paletaLista');
   ul.replaceChildren();
   paletaItens.forEach((a, i) => ul.append(el('li', { role: 'option', id: 'acao-' + i, 'aria-selected': String(i === paletaSel),
     onmousemove: () => { if (paletaSel !== i) { paletaSel = i; marcarPaleta(); } }, onclick: () => fazerPaleta(i) },
-    icone(a.icone || 'procurar'), el('span', { texto: a.titulo }), a.dica ? el('small', { texto: a.dica }) : null)));
+    iconeApp(a.icone || 'procurar', a.cor || 'cinza'), el('span', { class: 'texto', texto: a.titulo }), a.dica ? el('small', { texto: a.dica }) : null)));
   marcarPaleta();
 }
 function marcarPaleta() {
@@ -1308,13 +1565,22 @@ function trocarTema() {
   const t = TEMAS[(TEMAS.indexOf(lerPref('tema', 'auto')) + 1) % TEMAS.length];
   salvarPref('tema', t);
   aplicarTema(t);
+  avisar(NOME_TEMA[t] + '.');
 }
 
 // ---------- Ligacoes ----------
 aplicarTema(lerPref('tema', 'auto'));
 montar();
 mostrarVista(false);
+atualizarIlha();
 window.addEventListener('hashchange', () => mostrarVista(true));
+let rolouAntes = false;
+window.addEventListener('scroll', () => {
+  const rolou = window.scrollY > 56;
+  if (rolou !== rolouAntes) { rolouAntes = rolou; document.documentElement.classList.toggle('rolou', rolou); }
+}, { passive: true });
+$('#ilhaIr').addEventListener('click', () => irPara($('#ilhaIr').dataset.ir || 'inicio'));
+$('#ilhaAgora').addEventListener('click', responderAgora);
 $('#abrirPaleta').addEventListener('click', abrirPaleta);
 $('#tema').addEventListener('click', trocarTema);
 $('#paleta').addEventListener('click', ev => { if (ev.target === $('#paleta')) fecharPaleta(); });
@@ -1327,6 +1593,7 @@ $('#paletaBusca').addEventListener('keydown', ev => {
   else if (ev.key === 'Tab') ev.preventDefault();
 });
 document.addEventListener('keydown', ev => {
+  if ($('#confirmacao').open) return;
   if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'k') { ev.preventDefault(); if ($('#paleta').hidden) abrirPaleta(); else fecharPaleta(); return; }
   if (!$('#paleta').hidden || digitando(ev.target) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
   if (ev.key === '/') { ev.preventDefault(); irPara('inicio'); $('#pedido').focus(); }
@@ -1358,17 +1625,18 @@ $('#perguntarBotao').addEventListener('click', () => perguntar(false));
 $('#agoraBotao').addEventListener('click', responderAgora);
 $('#pergunta').addEventListener('keydown', ev => { if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) perguntar(false); });
 $('#pararTudo').addEventListener('click', pararTudo);
-$('#entrarJogo').addEventListener('click', entrarModoJogo);
+$('#jogoInterruptor').addEventListener('click', alternarModoJogo);
 $('#sairJogo').addEventListener('click', sairModoJogo);
 $('#copiarChave').addEventListener('click', copiarChave);
-$('#vigiaBotao').addEventListener('click', alternarVigia);
+$('#vigiaInterruptor').addEventListener('click', alternarVigia);
 
 if (CENTRAL) {
   document.addEventListener('visibilitychange', () => { if (!document.hidden) verificar(); else clearTimeout(relogio); });
   verificar();
+  carregarRecentes();
 } else {
   $('#avisoDisco').hidden = false;
-  $('#medidor').hidden = true;
+  $('#blocoAgora').hidden = true;
   $('#copiarChave').hidden = true;
   for (const s of SERVICOS) s.estado.hidden = true;
   $('#acervo').replaceChildren(el('p', { class: 'vazio', texto: 'O acervo aparece aqui com a Central aberta.' }));
