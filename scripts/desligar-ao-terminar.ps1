@@ -8,7 +8,9 @@
   Com os tres, agenda o desligamento com -Aviso segundos de aviso na tela. Se voce mexer no PC durante
   o aviso, ele e cancelado sozinho; para cancelar na mao: Win+R, "shutdown /a".
   Vale so enquanto esta vigia estiver aberta. Com -Agendar, ela roda como tarefa agendada do Windows
-  (uma vez, na sua sessao): continua vigiando mesmo se o app do Claude fechar.
+  (na sua sessao): continua vigiando mesmo se o app do Claude fechar. A tarefa confere a cada 10 min,
+  por -HorasAgendada horas, se a vigia ainda esta viva e a abre de novo se algo a tiver fechado; ao
+  agendar o desligamento (ou com -Parar) a tarefa se desativa, para nao voltar sozinha depois.
 .EXAMPLE
   .\desligar-ao-terminar.ps1              # vigia com os padroes (20 min sem Claude, 15 min parado)
   .\desligar-ao-terminar.ps1 -Agendar     # a mesma vigia, mas pela tarefa agendada (fora do Claude)
@@ -22,13 +24,23 @@ param(
     [int]$Aviso = 300,
     [switch]$Status,
     [switch]$Parar,
-    [switch]$Agendar
+    [switch]$Agendar,
+    [int]$HorasAgendada = 12
 )
 . "$PSScriptRoot\comum.ps1"
 $ErrorActionPreference = 'Continue'
 New-Item -ItemType Directory -Force -Path $PastaLogs | Out-Null
 $arquivoPid = Join-Path $PastaLogs 'vigia-desligar.pid'
 $log = Join-Path $PastaLogs 'vigia-desligar.log'
+$nomeTarefa = 'SSD-IA - vigia de desligar'
+
+# A tarefa agendada (-Agendar) reabre a vigia se algo a fechar. Desativada, ela nao volta sozinha:
+# depois do desligamento (o PC religado nao deve desligar de novo) e depois de -Parar.
+function Tarefa-Vigia([bool]$ativa) {
+    if (-not (Get-ScheduledTask -TaskName $nomeTarefa -ErrorAction SilentlyContinue)) { return }
+    if ($ativa) { Enable-ScheduledTask -TaskName $nomeTarefa -ErrorAction SilentlyContinue | Out-Null }
+    else { Disable-ScheduledTask -TaskName $nomeTarefa -ErrorAction SilentlyContinue | Out-Null }
+}
 $conversas = Join-Path $env:USERPROFILE '.claude\projects'
 
 if (-not ('SsdIa.Ocioso' -as [type])) {
@@ -109,6 +121,7 @@ function Texto-Sinais($s) {
 
 if ($Parar) {
     $v = Vigia-Aberta
+    Tarefa-Vigia $false  # antes de fechar: senao a tarefa agendada a reabriria em ate 10 min
     if ($v) { Stop-Process -Id $v.Id -Force; Ok 'Vigia parada.' } else { Info 'A vigia nao estava aberta.' }
     Remove-Item -LiteralPath $arquivoPid -ErrorAction SilentlyContinue
     & shutdown.exe /a 2>$null | Out-Null
@@ -128,13 +141,15 @@ if ($Agendar) {
     # Tarefa de uma vez so, daqui a 15 s, na sessao de quem esta usando o PC (para ler teclado, mouse e controle).
     # Fora do processo do Claude: quando a sessao dele acaba, a vigia continua. Sem limite de tempo de execucao.
     if (Vigia-Aberta) { Ok 'A vigia ja esta ligada. Para ver: -Status. Para parar: -Parar.'; return }
-    $nome = 'SSD-IA - vigia de desligar'
+    $nome = $nomeTarefa
     $acao = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$PSCommandPath`" -MinutosSemClaude $MinutosSemClaude -MinutosParado $MinutosParado -GpuOcupada $GpuOcupada -Aviso $Aviso"
-    $gatilho = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(15)
+    # Repete a cada 10 min por $HorasAgendada h: com a vigia viva o Windows ignora (IgnoreNew); se algo a
+    # fechou (em 06/11 ela foi encerrada de fora, codigo 0x40010004), a proxima repeticao a abre de novo.
+    $gatilho = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(15) -RepetitionInterval (New-TimeSpan -Minutes 10) -RepetitionDuration (New-TimeSpan -Hours ([math]::Max(1, $HorasAgendada)))
     $config = New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -MultipleInstances IgnoreNew
     $quem = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive -RunLevel Limited
     Register-ScheduledTask -TaskName $nome -Action $acao -Trigger $gatilho -Settings $config -Principal $quem -Force | Out-Null
-    Ok "Tarefa '$nome' agendada: a vigia comeca em 15 s e segue mesmo se o Claude fechar."
+    Ok "Tarefa '$nome' agendada: a vigia comeca em 15 s e segue mesmo se o Claude fechar (reaberta se cair, por $HorasAgendada h)."
     Info 'Para ver: .\desligar-ao-terminar.ps1 -Status   Para parar: .\desligar-ao-terminar.ps1 -Parar'
     return
 }
@@ -157,6 +172,7 @@ try {
             if ($usando -or $s.SemClaude -lt 1 -or $s.Ocupado) {
                 & shutdown.exe /a 2>$null | Out-Null
                 $agendado = $false
+                Tarefa-Vigia $true  # cancelado: a tarefa volta a proteger a vigia
                 $motivo = if ($usando) { 'voce voltou a usar o PC' } elseif ($s.Ocupado) { $s.Ocupado } else { 'o Claude voltou a trabalhar' }
                 Anotar "desligamento cancelado: $motivo"
             }
@@ -165,6 +181,7 @@ try {
             & shutdown.exe /s /t $Aviso /c $msg 2>$null | Out-Null
             if ($LASTEXITCODE -eq 0) {
                 $agendado = $true
+                Tarefa-Vigia $false  # o PC religado depois nao deve ser desligado de novo pela tarefa
                 Anotar "desligamento agendado ($(Texto-Sinais $s))"
                 Notificar 'Cofre de IAs' "O PC desliga em $([math]::Round($Aviso / 60)) min. Mexa no mouse para cancelar."
             } else {
