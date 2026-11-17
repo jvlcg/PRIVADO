@@ -517,9 +517,64 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
   .avisos { top: auto; bottom: 84px; right: 16px; }
   .grupo .lado .estado-texto { display: none; }
 }
+/* ---------- Navegacao no estilo do iOS ---------- */
+/* Ir para uma secao mais abaixo empurra a tela para a esquerda; voltar, para a direita (como no iPhone). */
+html[data-direcao="frente"]::view-transition-old(conteudo) { animation: .22s var(--suave) both sair-esq; }
+html[data-direcao="frente"]::view-transition-new(conteudo) { animation: .4s var(--mola) both entrar-dir; }
+html[data-direcao="tras"]::view-transition-old(conteudo) { animation: .22s var(--suave) both sair-dir; }
+html[data-direcao="tras"]::view-transition-new(conteudo) { animation: .4s var(--mola) both entrar-esq; }
+@keyframes entrar-dir { from { opacity: 0; transform: translateX(34px); } }
+@keyframes entrar-esq { from { opacity: 0; transform: translateX(-34px); } }
+@keyframes sair-esq { to { opacity: 0; transform: translateX(-20px); } }
+@keyframes sair-dir { to { opacity: 0; transform: translateX(20px); } }
+@keyframes subir-folha { from { transform: translateY(100%); } }
+/* Tamanho do texto (como o Tamanho do Texto do iPhone): o conteudo cresce e se reorganiza; a barra fica igual */
+main, dialog, .spotlight-caixa, .avisos { zoom: var(--zoom, 1); }
+/* Emblemas, como os numeros dos apps */
+.emblema { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--laranja); color: #fff; font-size: 11px; font-weight: 700; font-style: normal; line-height: 1; }
+.secoes a[aria-current="page"] .emblema { background: #fff; color: var(--laranja); }
+.secoes li.so-celular { display: none; }
+/* Ajustes, Mais e Novidades: folhas no estilo dos Ajustes do iPhone */
+dialog.folha-ajustes { border: 0; padding: 0; width: min(560px, calc(100% - 24px)); max-height: calc(100vh - 32px); overflow-y: auto;
+  border-radius: 20px; background: var(--fundo); color: var(--texto); box-shadow: var(--sombra-alta); }
+dialog.folha-ajustes[open] { animation: subir .3s var(--mola); }
+dialog.folha-ajustes::backdrop { background: rgba(0, 0, 0, .3); }
+.folha-topo { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px 8px; background: var(--fundo); }
+.folha-topo h2 { margin: 0; font-size: 20px; }
+.folha-topo .ok { border: 0; background: none; color: var(--azul); font-weight: 600; font-size: 16px; cursor: pointer; padding: 4px 2px; }
+.folha-corpo { padding: 0 16px 20px; }
+.folha-corpo .rotulo-grupo { margin: 18px 12px 8px; }
+.folha-corpo .grupo > li { flex-wrap: wrap; row-gap: 8px; }
+.novidades { list-style: none; margin: 18px 0 0; padding: 0 6px; display: grid; gap: 20px; }
+.novidades li { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; }
+.novidades .icone-app { width: 44px; height: 44px; border-radius: 11px; }
+.novidades .icone-app .ic { width: 24px; height: 24px; }
+.novidades .texto-nov b { display: block; font-size: 15px; }
+.novidades .texto-nov span { color: var(--texto-2); font-size: 14px; line-height: 1.4; }
+.novidades-titulo { text-align: center; font-size: 28px; margin: 4px 0 6px; }
+.botao.largo { width: 100%; padding: 13px 18px; font-size: 16px; border-radius: 14px; }
+/* Procurar: resultados em grupos com titulo, como no Spotlight */
+.spotlight li.cabecalho { cursor: default; padding: 10px 12px 3px; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--texto-3); background: none !important; }
+@media (max-width: 1080px) {
+  .secoes a { position: relative; }
+  .secoes .emblema { position: absolute; top: 3px; right: 8px; min-width: 16px; height: 16px; font-size: 10px; }
+}
+@media (max-width: 720px) {
+  /* Barra de abas com 5 itens e "Mais", como recomenda a Apple */
+  .secoes li.fora-do-celular { display: none; }
+  .secoes li.so-celular { display: block; }
+  .secoes .emblema { top: 0; right: auto; left: calc(50% + 4px); }
+  /* Folhas sobem de baixo, com a alcinha para arrastar e fechar */
+  dialog.sos, dialog.folha-ajustes, dialog.alerta-sheet.folha { margin: auto 0 0; width: 100%; max-width: 100%; max-height: 92vh; border-radius: 22px 22px 0 0; }
+  dialog.sos[open], dialog.folha-ajustes[open], dialog.alerta-sheet.folha[open] { animation: subir-folha .42s var(--mola); }
+  dialog.sos::before, dialog.folha-ajustes::before, dialog.alerta-sheet.folha::before { content: ""; display: block; width: 36px; height: 5px;
+    border-radius: 3px; margin: 8px auto 0; background: var(--texto-3); opacity: .45; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+html.sem-movimento *, html.sem-movimento *::before, html.sem-movimento *::after { transition: none !important; animation: none !important; }
 </style>
 </head>
 <body>
@@ -546,6 +601,8 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
   <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 3.5 5 6v5.5c0 4.2 3 7.8 7 9 4-1.2 7-4.8 7-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
   <symbol id="i-nuvem" viewBox="0 0 24 24"><path d="M7.5 18.5h9.5a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.6a4.5 4.5 0 0 0 1.4 8.9z"/><path d="M12 10.5v5.5M9.8 13.8 12 16l2.2-2.2"/></symbol>
   <symbol id="i-lista" viewBox="0 0 24 24"><path d="M10 6.5h10M10 12h10M10 17.5h10"/><path d="m3.5 6.5 1.3 1.3 2.2-2.4M3.5 12l1.3 1.3L7 10.9M3.5 17.5l1.3 1.3 2.2-2.4"/></symbol>
+  <symbol id="i-ajustes" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6M18.4 18.4l-1.6-1.6M7.2 7.2 5.6 5.6"/><circle cx="12" cy="12" r="6.2"/></symbol>
+  <symbol id="i-mais" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="18.5" cy="12" r="1.7" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-disco" viewBox="0 0 24 24"><rect x="3.5" y="6" width="17" height="12" rx="2.5"/><path d="M7 14.5h.1M10 14.5h7"/></symbol>
 </svg>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -566,7 +623,7 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
     <ul class="secoes" id="secoes"></ul>
     <div class="lateral-pe">
       <button type="button" class="sos-lateral" id="sosLateral" title="Emergência: números, o que fazer agora e a ficha médica"><svg class="ic"><use href="#i-cruz"/></svg><span>SOS e ficha médica</span></button>
-      <button type="button" id="tema" title="Mudar o tema"><svg class="ic"><use href="#i-tema"/></svg><span id="temaNome">Tema automático</span></button>
+      <button type="button" id="ajustesBotao" title="Ajustes: tema, tamanho do texto, idioma e teto (Ctrl+,)"><svg class="ic"><use href="#i-ajustes"/></svg><span>Ajustes</span></button>
       <p class="tarifa" id="tarifa"></p>
     </div>
   </nav>
@@ -769,7 +826,8 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
         <dt><kbd>/</kbd></dt><dd>escrever o que você precisa (no Início)</dd>
         <dt><kbd>1</kbd> a <kbd>7</kbd></dt><dd>ir para cada seção, na ordem da barra lateral</dd>
         <dt><kbd>Ctrl</kbd> <kbd>Enter</kbd></dt><dd>perguntar</dd>
-        <dt><kbd>Esc</kbd></dt><dd>fechar a procura ou um alerta</dd>
+        <dt><kbd>Ctrl</kbd> <kbd>,</kbd></dt><dd>ajustes: tema, tamanho do texto, idioma, teto de gasto</dd>
+        <dt><kbd>Esc</kbd></dt><dd>fechar a procura, um alerta ou uma folha (no celular, arraste a folha para baixo)</dd>
       </dl>
       </div>
       <h2>Bom saber</h2>
@@ -846,6 +904,41 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
     <div class="alerta-botoes"><button type="button" id="fichaCancelar">Cancelar</button><button value="sim">Salvar</button></div>
   </form>
 </dialog>
+<dialog class="folha-ajustes" id="ajustes" aria-labelledby="ajustesTitulo">
+  <div class="folha-topo"><h2 id="ajustesTitulo">Ajustes</h2><button class="ok" type="button" data-fechar>OK</button></div>
+  <div class="folha-corpo">
+    <p class="rotulo-grupo">Aparência</p>
+    <ul class="grupo simples">
+      <li><span class="textos"><b>Tema</b></span><span class="segmentado" id="ajTema" role="group" aria-label="Tema"></span></li>
+      <li><span class="textos"><b>Tamanho do texto</b><small>a Central inteira cresce, como no iPhone</small></span><span class="segmentado" id="ajTexto" role="group" aria-label="Tamanho do texto"></span></li>
+      <li><span class="textos"><b>Reduzir movimento</b><small>troca de tela sem animação</small></span><button class="interruptor" id="ajMovimento" role="switch" aria-checked="false" aria-label="Reduzir movimento" type="button"></button></li>
+    </ul>
+    <p class="rotulo-grupo">Perguntas</p>
+    <ul class="grupo simples">
+      <li><span class="textos"><b>Idioma da biblioteca</b><small>nas buscas e na emergência</small></span><span class="segmentado" id="ajIdioma" role="group" aria-label="Idioma"></span></li>
+      <li><span class="textos"><b>Teto de gasto</b><small>ao chegar nele, a IA responde na hora</small></span><span class="segmentado" id="ajTeto" role="group" aria-label="Teto de gasto"></span></li>
+    </ul>
+    <p class="rotulo-grupo">Cofre</p>
+    <ul class="grupo simples">
+      <li class="linha-botao"><button class="linha" type="button" data-ir="servicos"><span class="textos"><b>Serviços e saúde do cofre</b></span><span class="seta" aria-hidden="true">›</span></button></li>
+      <li class="linha-botao"><button class="linha" type="button" id="ajFicha"><span class="textos"><b>Ficha médica da família</b></span><span class="seta" aria-hidden="true">›</span></button></li>
+      <li class="linha-botao"><button class="linha" type="button" id="ajNovidades"><span class="textos"><b>Novidades da Central</b></span><span class="seta" aria-hidden="true">›</span></button></li>
+    </ul>
+    <p class="dica" id="ajTarifa"></p>
+  </div>
+</dialog>
+<dialog class="folha-ajustes" id="mais" aria-labelledby="maisTitulo">
+  <div class="folha-topo"><h2 id="maisTitulo">Mais</h2><button class="ok" type="button" data-fechar>OK</button></div>
+  <div class="folha-corpo"><ul class="grupo" id="maisLista"></ul></div>
+</dialog>
+<dialog class="folha-ajustes" id="novidades" aria-labelledby="novTitulo">
+  <div class="folha-corpo" style="padding:26px 24px 24px">
+    <h2 class="novidades-titulo" id="novTitulo">Novidades na Central</h2>
+    <p class="secundario" style="text-align:center;margin:0">Para resolver mais rápido, com mais segurança e gastando menos.</p>
+    <ul class="novidades" id="novLista"></ul>
+    <button class="botao largo" type="button" data-fechar style="margin-top:24px">Continuar</button>
+  </div>
+</dialog>
 <div id="impressao"></div>
 <div class="avisos" id="avisos" role="status" aria-live="polite"></div>
 
@@ -909,6 +1002,16 @@ const TAREFAS_SIMULADO = [
   ['religar', 'Religue a internet.'],
 ];
 const ICONE_CUIDADO = { integridade: 'escudo', novidades: 'nuvem', sincronizar: 'nuvem', simulado: 'lista' };
+const NO_MAIS = ['servicos', 'historico', 'ajuda'];  // no celular, ficam na folha "Mais"
+const TAMANHOS = [['1', 'Normal'], ['1.12', 'Grande'], ['1.25', 'Maior']];
+const NOVIDADES = '2026-11-17';
+const ITENS_NOVIDADES = [
+  ['cruz', 'vermelho', 'SOS e ficha médica', 'Números de emergência, o que fazer agora e as alergias e os remédios da família, num toque.'],
+  ['escudo', 'verde', 'Respostas conferidas', 'Cada citação é conferida contra o que a IA leu; regras de segurança em toda resposta.'],
+  ['energia', 'laranja', 'Teto de gasto e falta de luz', 'Um limite em Wh por pergunta e quanto o cofre aguenta numa bateria.'],
+  ['lista', 'azul', 'Saúde do cofre', 'O que conferir e quando, o simulado sem internet e o espaço livre nos discos.'],
+  ['procurar', 'roxo', 'Procurar tudo (Ctrl+K)', 'Seções, ações, emergências e respostas guardadas num só lugar.'],
+];
 // SOS: os casos em que cada minuto conta. Abrem os artigos da biblioteca, sem IA (portugues e ingles).
 const SOS_TOPICOS = [
   { nome: 'Parada cardíaca (RCP)', pt: 'reanimação cardiopulmonar', en: 'cardiopulmonary resuscitation' },
@@ -1022,7 +1125,7 @@ function trocarVista(focar) {
   const v = vistaAtual();
   for (const s of document.querySelectorAll('.vista')) s.hidden = s.dataset.vista !== v;
   for (const a of document.querySelectorAll('#secoes a')) {
-    if (a.dataset.vista === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    if (a.dataset.vista === v || ('mais' in a.dataset && NO_MAIS.includes(v))) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   }
   const info = VISTAS.find(x => x.id === v);
   document.title = v === 'inicio' ? 'Central do Cofre' : `${info.nome}: Central do Cofre`;
@@ -1034,8 +1137,14 @@ function trocarVista(focar) {
   if (v === 'biblioteca') carregarAcervo();
   if (v === 'servicos') carregarSaude();
 }
+let vistaAntes = null;
 function mostrarVista(focar) {
-  if (focar && document.startViewTransition && !document.hidden && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  // Como no iPhone: ir para uma secao mais abaixo empurra a tela para a esquerda; voltar, para a direita.
+  const nova = vistaAtual(), i = VISTAS.findIndex(v => v.id === nova), j = VISTAS.findIndex(v => v.id === vistaAntes);
+  document.documentElement.dataset.direcao = j < 0 || i === j ? 'mesma' : i > j ? 'frente' : 'tras';
+  vistaAntes = nova;
+  const semMovimento = document.documentElement.classList.contains('sem-movimento') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (focar && document.startViewTransition && !document.hidden && !semMovimento) {
     // Transicao pulada (cliques rapidos, aba escondida): a secao troca do mesmo jeito, sem erro no console.
     document.startViewTransition(() => trocarVista(focar)).ready.catch(() => {});
   } else trocarVista(focar);
@@ -1045,8 +1154,12 @@ function irPara(v) { if (location.hash.slice(1) === v) mostrarVista(true); else 
 // ---------- Montagem ----------
 function montar() {
   const secoes = $('#secoes');
-  VISTAS.forEach((v, i) => secoes.append(el('li', {}, el('a', { href: '#' + v.id, 'data-vista': v.id, title: v.nome },
-    icone(v.icone), el('span', { texto: v.nome }), el('kbd', { texto: String(i + 1) })))));
+  // No celular a barra de abas mostra 5 itens e "Mais" (como recomenda a Apple); o resto vai para a folha Mais.
+  VISTAS.forEach((v, i) => secoes.append(el('li', { class: NO_MAIS.includes(v.id) ? 'fora-do-celular' : null },
+    el('a', { href: '#' + v.id, 'data-vista': v.id, title: v.nome },
+      icone(v.icone), el('span', { texto: v.nome }), el('i', { class: 'emblema', 'data-emblema': v.id, hidden: true }), el('kbd', { texto: String(i + 1) })))));
+  secoes.append(el('li', { class: 'so-celular' }, el('a', { href: '#', 'data-mais': '', title: 'Mais', onclick: ev => { ev.preventDefault(); abrirMais(); } },
+    icone('mais'), el('span', { texto: 'Mais' }), el('i', { class: 'emblema', 'data-emblema': 'mais', hidden: true }))));
 
   const hora = new Date().getHours();
   $('#saudacao').textContent = hora < 5 ? 'Boa noite' : hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
@@ -1452,6 +1565,7 @@ async function carregarSaude() {
   $('#saudeDiscos').textContent = r.discos.length
     ? 'Espaço livre: ' + r.discos.map(d => `${d.nome}, ${tamanho(d.livre_gb)} de ${tamanho(d.total_gb)}`).join('; ') + '.' : '';
   $('#saudeResumo').hidden = !r.pendentes.length;
+  for (const e of document.querySelectorAll('[data-emblema="servicos"], [data-emblema="mais"]')) { e.textContent = r.pendentes.length; e.hidden = !r.pendentes.length; }
   $('#saudeResumoTexto').textContent = `Para o cofre seguir confiável: ${juntar(r.pendentes.map(p => p.toLowerCase()))}.`;
 }
 
@@ -1916,23 +2030,63 @@ function acoesPaleta(q) {
     lista.push({ titulo: 'SOS: números de emergência e ficha médica', icone: 'cruz', cor: 'vermelho', chaves: 'sos socorro samu bombeiros ficha alergia', fazer: abrirSos });
     lista.push({ titulo: 'Editar a ficha médica da família', icone: 'cruz', cor: 'rosa', chaves: 'ficha alergia remedio sangue contato', fazer: abrirEditorFicha });
   }
+  lista.push({ titulo: 'Ajustes: tema, tamanho do texto, idioma, teto', dica: 'Ctrl+,', icone: 'ajustes', cor: 'cinza', chaves: 'preferencias configuracoes aparencia letra fonte', fazer: abrirAjustes });
   lista.push({ titulo: 'Mudar o tema (claro, escuro, automático)', icone: 'tema', cor: 'cinza', chaves: 'cor noite escuro claro', fazer: trocarTema });
-  for (const a of ATALHOS) lista.push({ titulo: `Emergência: ${a.pt}`, dica: 'abre os artigos', icone: 'cruz', cor: 'vermelho', chaves: a.en, fazer: () => abrirEmergencia(a) });
+  for (const a of ATALHOS) lista.push({ titulo: `Emergência: ${a.pt}`, dica: 'abre os artigos', icone: 'cruz', cor: 'vermelho', chaves: a.en, grupo: 'Emergência', fazer: () => abrirEmergencia(a) });
+  lista.push(...paletaGuardadas);
   const termos = semAcento(q).split(/\s+/).filter(Boolean);
-  const achados = lista.filter(a => termos.every(t => semAcento(`${a.titulo} ${a.chaves || ''}`).includes(t)));
+  const achados = lista.map(a => ({ ...a, grupo: a.grupo || (a.titulo.startsWith('Ir para') ? 'Ir para' : 'Ações'), nota: notaBusca(a, termos) }))
+    .filter(a => a.nota > 0)
+    .sort((a, b) => ORDEM_GRUPOS.indexOf(a.grupo) - ORDEM_GRUPOS.indexOf(b.grupo) || b.nota - a.nota);
+  // Como no Spotlight: o melhor resultado vai sozinho para o topo.
+  if (termos.length && achados.length) {
+    const melhor = achados.reduce((m, a) => a.nota > m.nota ? a : m);
+    achados.splice(achados.indexOf(melhor), 1);
+    achados.unshift({ ...melhor, grupo: 'Melhor resultado' });
+  }
   if (q.trim()) {
     const texto = q.trim();
-    achados.push({ titulo: `Perguntar com fonte: “${texto}”`, dica: gastoModo('fonte'), icone: 'perguntar', cor: 'laranja', fazer: () => irPerguntar(texto, 'fonte') });
-    achados.push({ titulo: `Só buscar: “${texto}”`, dica: 'sem IA', icone: 'procurar', cor: 'verde', fazer: () => irPerguntar(texto, 'buscar') });
-    achados.push({ titulo: `O que usar para “${texto}”`, dica: 'sugestão no Início', icone: 'inicio', cor: 'azul', fazer: () => { irPara('inicio'); $('#pedido').value = texto; buscarSugestao(); } });
+    achados.push({ grupo: 'Perguntar', titulo: `Perguntar com fonte: “${texto}”`, dica: gastoModo('fonte'), icone: 'perguntar', cor: 'laranja', fazer: () => irPerguntar(texto, 'fonte') });
+    achados.push({ grupo: 'Perguntar', titulo: `Só buscar: “${texto}”`, dica: 'sem IA', icone: 'procurar', cor: 'verde', fazer: () => irPerguntar(texto, 'buscar') });
+    achados.push({ grupo: 'Perguntar', titulo: `O que usar para “${texto}”`, dica: 'sugestão no Início', icone: 'inicio', cor: 'azul', fazer: () => { irPara('inicio'); $('#pedido').value = texto; buscarSugestao(); } });
   }
   return achados;
+}
+// Nota de cada resultado: comeco do titulo vale mais que comeco de palavra, que vale mais que o meio.
+function notaBusca(a, termos) {
+  if (!termos.length) return 1;
+  const titulo = semAcento(a.titulo), alvo = `${titulo} ${semAcento(a.chaves || '')}`;
+  let nota = 0;
+  for (const t of termos) {
+    const i = alvo.indexOf(t);
+    if (i < 0) return 0;
+    nota += titulo.startsWith(t) ? 4 : (i === 0 || /[\s“(:]/.test(alvo[i - 1])) ? 2 : 1;
+  }
+  return nota;
+}
+const ORDEM_GRUPOS = ['Melhor resultado', 'Ir para', 'Ações', 'Emergência', 'Respostas guardadas', 'Perguntar'];
+let paletaGuardadas = [], esperaPaleta = null, paletaSeq = 0;
+// As respostas guardadas entram na procura: abrir uma nao liga nada (0 Wh).
+function buscarGuardadasPaleta() {
+  clearTimeout(esperaPaleta);
+  const q = $('#paletaBusca').value.trim(), seq = ++paletaSeq;
+  if (!CENTRAL || q.length < 3) { paletaGuardadas = []; return; }
+  esperaPaleta = setTimeout(async () => {
+    try {
+      const r = await api('/api/historico?limite=4&busca=' + encodeURIComponent(q));
+      if (seq !== paletaSeq || $('#paleta').hidden) return;
+      paletaGuardadas = r.itens.map(x => ({ grupo: 'Respostas guardadas', titulo: x.pergunta, dica: `${x.quando_br}, 0 Wh`,
+        icone: 'historico', cor: 'cinza', chaves: x.trecho, fazer: () => verGuardada(x.id) }));
+      desenharPaleta();
+    } catch { /* sem historico: a procura segue sem ele */ }
+  }, 160);
 }
 function abrirPaleta() {
   focoAntes = document.activeElement;
   $('#paleta').hidden = false;
   $('#paletaBusca').value = '';
   paletaSel = 0;
+  paletaGuardadas = [];
   desenharPaleta();
   $('#paletaBusca').focus();
 }
@@ -1942,13 +2096,17 @@ function desenharPaleta() {
   paletaSel = Math.min(paletaSel, Math.max(0, paletaItens.length - 1));
   const ul = $('#paletaLista');
   ul.replaceChildren();
-  paletaItens.forEach((a, i) => ul.append(el('li', { role: 'option', id: 'acao-' + i, 'aria-selected': String(i === paletaSel),
-    onmousemove: () => { if (paletaSel !== i) { paletaSel = i; marcarPaleta(); } }, onclick: () => fazerPaleta(i) },
-    iconeApp(a.icone || 'procurar', a.cor || 'cinza'), el('span', { class: 'texto', texto: a.titulo }), a.dica ? el('small', { texto: a.dica }) : null)));
+  let grupo = null;
+  paletaItens.forEach((a, i) => {
+    if (a.grupo !== grupo) { grupo = a.grupo; ul.append(el('li', { class: 'cabecalho', role: 'presentation', texto: grupo })); }
+    ul.append(el('li', { role: 'option', id: 'acao-' + i, 'aria-selected': String(i === paletaSel),
+      onmousemove: () => { if (paletaSel !== i) { paletaSel = i; marcarPaleta(); } }, onclick: () => fazerPaleta(i) },
+      iconeApp(a.icone || 'procurar', a.cor || 'cinza'), el('span', { class: 'texto', texto: a.titulo }), a.dica ? el('small', { texto: a.dica }) : null));
+  });
   marcarPaleta();
 }
 function marcarPaleta() {
-  [...$('#paletaLista').children].forEach((li, i) => li.setAttribute('aria-selected', String(i === paletaSel)));
+  $('#paletaLista').querySelectorAll('li[role="option"]').forEach((li, i) => li.setAttribute('aria-selected', String(i === paletaSel)));
   $('#paletaBusca').setAttribute('aria-activedescendant', 'acao-' + paletaSel);
   const atual = $('#acao-' + paletaSel);
   if (atual) atual.scrollIntoView({ block: 'nearest' });
@@ -1960,7 +2118,60 @@ const TEMAS = ['auto', 'claro', 'escuro'];
 const NOME_TEMA = { auto: 'Tema automático', claro: 'Tema claro', escuro: 'Tema escuro' };
 function aplicarTema(t) {
   if (t === 'auto') delete document.documentElement.dataset.tema; else document.documentElement.dataset.tema = t;
-  $('#temaNome').textContent = NOME_TEMA[t];
+}
+function aplicarTamanho(z) { document.documentElement.style.setProperty('--zoom', z); }
+function aplicarMovimento(reduzido) { document.documentElement.classList.toggle('sem-movimento', reduzido); }
+
+// ---------- Ajustes (Ctrl+,), como os Ajustes do iPhone: tudo o que se escolhe, num lugar so ----------
+function segmentos(caixa, opcoes, atual, escolher) {
+  caixa.replaceChildren(...opcoes.map(([valor, nome]) => el('button', { type: 'button', 'aria-pressed': String(String(valor) === String(atual)), texto: nome,
+    onclick: () => { escolher(valor); montarAjustes(); } })));
+}
+function montarAjustes() {
+  segmentos($('#ajTema'), [['auto', 'Automático'], ['claro', 'Claro'], ['escuro', 'Escuro']], lerPref('tema', 'auto'), v => { salvarPref('tema', v); aplicarTema(v); });
+  segmentos($('#ajTexto'), TAMANHOS, lerPref('texto', '1'), v => { salvarPref('texto', v); aplicarTamanho(v); });
+  segmentos($('#ajIdioma'), [['por', 'Português'], ['eng', 'Inglês']], lerPref('idioma', 'por'), v => { salvarPref('idioma', v); montarIdioma(); });
+  segmentos($('#ajTeto'), TETOS, lerPref('teto', '0'), v => { salvarPref('teto', String(v)); montarTeto(); });
+  $('#ajMovimento').setAttribute('aria-checked', String(lerPref('movimento', 'normal') === 'reduzido'));
+  $('#ajTarifa').textContent = $('#tarifa').textContent;
+}
+function abrirAjustes() { montarAjustes(); const d = $('#ajustes'); if (!d.open) d.showModal(); }
+
+// ---------- Mais (no celular): o que nao coube na barra de abas ----------
+function abrirMais() {
+  const itens = [['Serviços', 'servicos', 'azul', () => irPara('servicos')], ['Histórico', 'historico', 'cinza', () => irPara('historico')],
+    ['Ajuda', 'ajuda', 'cinza', () => irPara('ajuda')], ['SOS e ficha médica', 'cruz', 'vermelho', abrirSos],
+    ['Procurar', 'procurar', 'roxo', abrirPaleta], ['Ajustes', 'ajustes', 'cinza', abrirAjustes]];
+  $('#maisLista').replaceChildren(...itens.map(([nome, ic, cor, fazer]) => el('li', { class: 'linha-botao' },
+    el('button', { type: 'button', class: 'linha', onclick: () => { $('#mais').close(); fazer(); } },
+      iconeApp(ic, cor), el('span', { class: 'textos' }, el('b', { texto: nome })), el('span', { class: 'seta', 'aria-hidden': 'true', texto: '›' })))));
+  $('#mais').showModal();
+}
+
+// ---------- Novidades, como a tela "O que ha de novo" dos apps da Apple ----------
+function abrirNovidades() {
+  $('#novLista').replaceChildren(...ITENS_NOVIDADES.map(([ic, cor, titulo, texto]) => el('li', {}, iconeApp(ic, cor),
+    el('div', { class: 'texto-nov' }, el('b', { texto: titulo }), el('span', { texto })))));
+  salvarPref('novidades', NOVIDADES);
+  $('#novidades').showModal();
+}
+
+// No celular, as folhas fecham arrastando para baixo pela alcinha (como no iPhone).
+function arrastarParaFechar(d) {
+  let inicio = null, dy = 0;
+  d.addEventListener('pointerdown', ev => {
+    if (!matchMedia('(max-width: 720px)').matches || d.scrollTop > 0) return;
+    if (ev.clientY - d.getBoundingClientRect().top > 56 || ev.target.closest('button, input, select, textarea, a')) return;
+    inicio = ev.clientY; dy = 0; d.style.transition = 'none';
+  });
+  window.addEventListener('pointermove', ev => { if (inicio === null) return; dy = Math.max(0, ev.clientY - inicio); d.style.transform = `translateY(${dy}px)`; });
+  window.addEventListener('pointerup', () => {
+    if (inicio === null) return;
+    inicio = null;
+    d.style.transition = 'transform .3s cubic-bezier(.2, .9, .25, 1.05)';
+    if (dy > 110) { d.style.transform = 'translateY(100%)'; setTimeout(() => { d.close(); d.style.transform = d.style.transition = ''; }, 230); }
+    else d.style.transform = '';
+  });
 }
 function trocarTema() {
   const t = TEMAS[(TEMAS.indexOf(lerPref('tema', 'auto')) + 1) % TEMAS.length];
@@ -1971,6 +2182,8 @@ function trocarTema() {
 
 // ---------- Ligacoes ----------
 aplicarTema(lerPref('tema', 'auto'));
+aplicarTamanho(lerPref('texto', '1'));
+aplicarMovimento(lerPref('movimento', 'normal') === 'reduzido');
 montar();
 mostrarVista(false);
 atualizarIlha();
@@ -1983,9 +2196,25 @@ window.addEventListener('scroll', () => {
 $('#ilhaIr').addEventListener('click', () => irPara($('#ilhaIr').dataset.ir || 'inicio'));
 $('#ilhaAgora').addEventListener('click', responderAgora);
 $('#abrirPaleta').addEventListener('click', abrirPaleta);
-$('#tema').addEventListener('click', trocarTema);
+$('#ajustesBotao').addEventListener('click', abrirAjustes);
+$('#ajMovimento').addEventListener('click', () => {
+  const reduzido = lerPref('movimento', 'normal') !== 'reduzido';
+  salvarPref('movimento', reduzido ? 'reduzido' : 'normal');
+  aplicarMovimento(reduzido);
+  montarAjustes();
+});
+$('#ajFicha').addEventListener('click', () => { $('#ajustes').close(); abrirEditorFicha(); });
+$('#ajNovidades').addEventListener('click', () => { $('#ajustes').close(); abrirNovidades(); });
+// Botoes "OK" e "Continuar" fecham a folha; "data-ir" dentro de uma folha fecha e vai para a secao.
+document.addEventListener('click', ev => {
+  const fechar = ev.target.closest('[data-fechar]');
+  if (fechar) { fechar.closest('dialog').close(); return; }
+  const ir = ev.target.closest('dialog [data-ir]');
+  if (ir) { ir.closest('dialog').close(); irPara(ir.dataset.ir); }
+});
+for (const id of ['#sos', '#ajustes', '#mais', '#novidades', '#simulado', '#fichaEditor']) arrastarParaFechar($(id));
 $('#paleta').addEventListener('click', ev => { if (ev.target === $('#paleta')) fecharPaleta(); });
-$('#paletaBusca').addEventListener('input', () => { paletaSel = 0; desenharPaleta(); });
+$('#paletaBusca').addEventListener('input', () => { paletaSel = 0; buscarGuardadasPaleta(); desenharPaleta(); });
 $('#paletaBusca').addEventListener('keydown', ev => {
   if (ev.key === 'ArrowDown') { ev.preventDefault(); paletaSel = Math.min(paletaItens.length - 1, paletaSel + 1); marcarPaleta(); }
   else if (ev.key === 'ArrowUp') { ev.preventDefault(); paletaSel = Math.max(0, paletaSel - 1); marcarPaleta(); }
@@ -1995,6 +2224,7 @@ $('#paletaBusca').addEventListener('keydown', ev => {
 });
 document.addEventListener('keydown', ev => {
   if (document.querySelector('dialog[open]')) return;
+  if ((ev.ctrlKey || ev.metaKey) && ev.key === ',') { ev.preventDefault(); abrirAjustes(); return; }
   if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'k') { ev.preventDefault(); if ($('#paleta').hidden) abrirPaleta(); else fecharPaleta(); return; }
   if (!$('#paleta').hidden || digitando(ev.target) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
   if (ev.key === '/') { ev.preventDefault(); irPara('inicio'); $('#pedido').focus(); }
@@ -2044,6 +2274,8 @@ if (CENTRAL) {
   verificar();
   carregarRecentes();
   carregarSaude();
+  // Primeira vez depois de uma atualizacao: a tela de novidades, uma vez so.
+  if (lerPref('novidades', '') !== NOVIDADES) setTimeout(() => { if (!document.querySelector('dialog[open]')) abrirNovidades(); }, 900);
 } else {
   $('#avisoDisco').hidden = false;
   $('#blocoAgora').hidden = true;

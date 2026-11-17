@@ -137,6 +137,8 @@ O que mudou:
 
 Ficaram para depois, porque precisam de download grande ou dos modelos ligados: cursos do Khan Academy em português pelo Kolibri; um piso de relevância no reordenador (falta medir as notas dele aqui); e um conjunto de perguntas de emergência para avaliar os modelos.
 
+**Na mesma leva, com ideias próprias** (inspiradas, não copiadas, e com os modelos do cofre, mais fortes que os desses projetos): a ficha médica com o botão SOS, a autonomia na falta de luz e a navegação no estilo do iPhone, com abas e Mais no celular, folhas que sobem de baixo, Ajustes com tamanho do texto, emblemas, Novidades e a procura em grupos.
+
 ## Seu hardware e o sistema
 
 O PC roda bem modelos de até cerca de 45 GB: a placa de vídeo segura 12 GB e o resto fica nos 64 GB de RAM. O Nemotron 74B (48 GB) ainda funciona bem; o gpt-oss-120b (59 GB) funciona, mas ocupa toda a RAM: feche os outros programas antes de usá-lo.
@@ -179,13 +181,14 @@ Modelos no HD carregam mais devagar (~150 MB/s contra ~3 GB/s do SSD), mas funci
 
 Tudo começa com dois cliques em **`A:\IA.cmd`**, que abre o menu. Nada foi instalado no Windows: os programas rodam de dentro do SSD.
 
-Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofre** no navegador (http://127.0.0.1:8070). O visual segue o estilo da Apple: barra lateral de vidro fosco, cartões arredondados, títulos grandes e modo claro e escuro de verdade. Três peças guiam o uso:
+Mais fácil ainda: dois cliques em **`A:\Painel.cmd`** abrem a **Central do Cofre** no navegador (http://127.0.0.1:8070). O visual segue o estilo da Apple: barra lateral de vidro fosco, cartões arredondados, títulos grandes e modo claro e escuro de verdade. Quatro peças guiam o uso:
 
 - **A ilha**, no topo, como a Dynamic Island do iPhone, mostra o que está acontecendo agora: "Respondendo, 12 s, 0,6 Wh" com o botão **Responder agora**, um serviço ligando, o modo jogo ou, em repouso, quanto o PC gasta. Clique nela para ir até lá.
 - **Os anéis**, no Início, como os do Apple Watch, mostram ao vivo a potência do PC (até 450 W), a memória da placa de vídeo em uso e a memória do sistema em uso. Ao lado ficam o gasto do cofre no mês e os interruptores do modo jogo e da vigia.
 - **As listas dos serviços** seguem os Ajustes do iPhone: um ícone colorido para cada serviço e o estado, o gasto e os botões ao lado.
+- **SOS e ficha médica** (botão vermelho no Início e na barra lateral): os números 192, 193, 190 e 199, oito casos urgentes que abrem a biblioteca na hora (saindo do modo jogo, se preciso) e a ficha médica da família, inspirada na Ficha Médica do iPhone: alergias, remédios de uso contínuo, tipo sanguíneo, contatos e ponto de encontro. A ficha fica só neste PC (em `A:\dev\historico`, fora do GitHub), imprime numa folha e a IA a usa quando a pergunta cita a pessoa pelo nome: "posso dar dipirona para a Ana?" leva em conta a alergia da Ana.
 
-Numa janela estreita a barra lateral vira uma coluna de ícones; no celular, uma barra de abas embaixo. As seções:
+Numa janela estreita a barra lateral vira uma coluna de ícones. No celular, a barra de abas mostra Início, Perguntar, Biblioteca, Energia e **Mais** (o resto), e as folhas sobem de baixo e fecham arrastando para baixo, como no iPhone. Trocar de seção desliza a tela para o lado certo, e a primeira abertura depois de uma atualização mostra as **Novidades**. As seções:
 
 | Seção | Para quê |
 | --- | --- |
@@ -193,11 +196,11 @@ Numa janela estreita a barra lateral vira uma coluna de ícones; no celular, uma
 | Perguntar | Escolha na escada quanto esforço a resposta merece. Respostas citam as fontes com links e têm o botão **Responder agora**. As citações são conferidas (cada fonte diz se foi citada ou só lida), e o **teto de gasto** faz a IA responder na hora ao chegar em 1 ou 3 Wh. |
 | Serviços | Liga e abre o chat, a biblioteca, o conselho e o ComfyUI, com o estado e o gasto de cada um. Mostra os modelos na memória (com botão para descarregar) e copia a chave do chat. Também mostra a **saúde do cofre**: o que conferir e quando, o simulado sem internet e o espaço livre nos discos. |
 | Biblioteca | Busca nas bibliotecas, emergência e o acervo inteiro (68 bibliotecas), com filtro, onde cada uma está e o link para abrir. |
-| Energia | Gasto do mês por tarefa, os últimos 6 meses e quanto custa o PC parado ligado. |
+| Energia | Gasto do mês por tarefa, os últimos 6 meses e quanto custa o PC parado ligado. **Na falta de luz** mostra quanto o cofre aguenta num nobreak, numa bateria de carro ou numa estação de 1.000 Wh, pelo consumo medido deste PC. |
 | Histórico | As perguntas já respondidas, com busca. Abrir uma resposta guardada não gasta nada; dá para esquecer as que não quiser. |
 | Ajuda | Qual IA usar, os atalhos de teclado e onde está o resto. |
 
-Atalhos: **Ctrl+K** abre a procura, como o Spotlight: ligar, abrir, emergência, modo jogo ou perguntar o que você digitou; **/** vai para a caixa do Início; as teclas **1 a 7** trocam de seção. O que fecha ou apaga algo (fechar tudo, modo jogo, vigia, esquecer uma resposta) pede confirmação num alerta como o do sistema, e Esc cancela. O botão no pé da barra lateral troca o tema (claro, escuro ou automático). Abrir um serviço desligado o liga e avisa com o link quando estiver pronto. A Central só atende este PC e recusa pedidos vindos de outros sites. O painel funciona sem internet: não carrega nada de fora, nem fontes de letra.
+Atalhos: **Ctrl+K** abre a procura, como o Spotlight: os resultados vêm em grupos, com o melhor no topo, e incluem as respostas guardadas; **Ctrl+,** abre os **Ajustes** (tema, tamanho do texto, reduzir movimento, idioma e teto de gasto); **/** vai para a caixa do Início; as teclas **1 a 7** trocam de seção. O que fecha ou apaga algo (fechar tudo, modo jogo, vigia, esquecer uma resposta) pede confirmação num alerta como o do sistema, e Esc cancela. Abrir um serviço desligado o liga e avisa com o link quando estiver pronto. A Central só atende este PC e recusa pedidos vindos de outros sites. O painel funciona sem internet: não carrega nada de fora, nem fontes de letra.
 
 Para imprimir e guardar junto do PC: **`A:\docs\cartao-emergencia.html`** (abra e use Ctrl+P). Numa folha A4: como ligar tudo, os endereços, onde achar cada assunto de emergência, quanto tempo o PC aguenta numa bateria e o que fazer se este PC quebrar.
 
@@ -302,6 +305,7 @@ Testado neste PC de 25/10 a 17/11/2026:
 | Central no estilo da Apple (06/11) | conferida no navegador nas sete seções, em tela grande (1440 px), janela estreita e celular (375 px, sem rolagem lateral), nos temas claro e escuro; procura (Ctrl+K), alertas de confirmação, ilha e anéis com as leituras reais; 47 testes automáticos passando | na hora |
 | Vigia que se recupera (06/11) | encerrada de fora de propósito, foi reaberta pela tarefa agendada na repetição seguinte; `-Parar` deixou a tarefa desativada | 600 s |
 | Ideias de projetos parecidos (17/11) | um modelo falso repetindo a mesma frase 400 vezes foi cortado em menos de 4 voltas, e o servidor parou de gerar; citações inventadas saíram; o teto de 1 Wh disparou o Responder agora uma vez; saúde do cofre com as datas reais dos registros; 59 testes passando | na hora |
+| Ficha médica, SOS e navegação do iPhone (17/11) | a IA recebeu a alergia da Ana ("banana" não puxou a Ana); SOS e ficha conferidos sem gravar nada de teste; 5 abas e Mais no celular; folha fechada arrastando para baixo; Ctrl+, abriu os Ajustes; texto Maior sem rolagem lateral; procura em grupos; 62 testes passando | na hora |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 7). Exemplos em `A:\dev\midia-gerada`.
 
