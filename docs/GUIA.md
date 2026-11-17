@@ -111,7 +111,7 @@ O plano, do que rende mais para o que custa menos:
 | 8 | **Feito em 05/11:** Ornith 1.5 35B-A3B, no SSD desde 06/11 (o opencode ainda falta) | medido 58 palavras/s | 21 GB | instalar o opencode |
 | 9 | **ComfyUI feito em 05/11:** v0.44.0, sem internet (`--offline`) e sem os nós pagos; falta o FLUX 3 klein | o FLUX 3 | ~18 GB | login no Hugging Face (FLUX 3) |
 | 10 | **Feito em 05/11:** 27 bibliotecas novas (saúde, emergência, conserto, rádio amador, ciência, Linux) e 2 atualizadas | fontes mais novas e mais assuntos | 16 GB | |
-| 11 | **Feito em 06/11:** só a nata. Saíram os mapas, as bibliotecas em outros idiomas, as versões de reserva e o espelho do SSD no HD; a Central ganhou o visual no estilo da Apple | ~530 GB livres e um painel mais claro | libera ~48 GB no SSD e ~483 GB no HD | apagar as duas pastas `_para-apagar` |
+| 11 | **Feito em 06/11:** só a nata. Saíram os mapas, as bibliotecas em outros idiomas, as versões de reserva e o espelho do SSD no HD; a Central ganhou o visual no estilo da Apple | ~530 GB livres e um painel mais claro | liberou ~48 GB no SSD e ~483 GB no HD (pastas `_para-apagar` apagadas em 17/11: SSD com 73,5 GB livres, HD com 2,1 TB) | |
 
 Ficam em observação no catálogo, sem baixar: Ornith 1.5 9B, Harrier (embeddings), Granite Speech 5.0, VoxCPM2 e LTX-2.5. Não valem para esta placa, porque exigem placas mais novas (Blackwell) ou bem maiores: arquivos NVFP4, Nemotron 3.5 Transcribe, MiniMax H3 e Wan 2.7/3.0.
 
