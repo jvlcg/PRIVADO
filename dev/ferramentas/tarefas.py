@@ -287,3 +287,86 @@ def quando_br(iso: str) -> str:
         return iso or ""
     data = time.strftime("%d/%m" if t.tm_year == time.localtime().tm_year else "%d/%m/%Y", t)
     return f"{data} às {time.strftime('%H:%M', t)}"
+
+
+# ---------- Ficha medica da familia ----------
+# Inspirada na Ficha Medica do iPhone (e nas notas do N.O.M.A.D.): alergias, remedios de uso continuo, tipo
+# sanguineo e contatos, para a hora do aperto. Fica so neste PC, junto do historico (fora do GitHub). A IA usa a
+# ficha de quem a pergunta cita pelo nome: "posso dar dipirona pra Ana?" leva em conta a alergia da Ana.
+ARQUIVO_FICHA = ARQUIVO_HISTORICO.parent / "ficha-medica.json"
+CAMPOS_PESSOA = {"nome": 60, "nascimento": 40, "sangue": 10, "alergias": 300, "remedios": 400, "condicoes": 300, "observacoes": 400}
+CAMPOS_CONTATO = {"nome": 60, "telefone": 30, "relacao": 40}
+TIPOS_SANGUE = ("", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", "não sei")
+
+
+def _limpo(valor, tamanho: int) -> str:
+    return re.sub(r"[\x00-\x1f\x7f]+", " ", str(valor or "")).strip()[:tamanho]
+
+
+def ler_ficha() -> dict:
+    try:
+        f = json.loads(ARQUIVO_FICHA.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        f = {}
+    return {"pessoas": f.get("pessoas") or [], "contatos": f.get("contatos") or [],
+            "ponto_encontro": f.get("ponto_encontro") or "", "atualizada": f.get("atualizada")}
+
+
+def salvar_ficha(dados: dict) -> dict:
+    """Guarda a ficha so com os campos conhecidos, com tamanho limitado (o que vem do navegador nao e confiavel)."""
+    pessoas = [{c: _limpo(p.get(c), n) for c, n in CAMPOS_PESSOA.items()}
+               for p in (dados.get("pessoas") or [])[:12] if isinstance(p, dict) and _limpo(p.get("nome"), 60)]
+    for p in pessoas:
+        if p["sangue"] not in TIPOS_SANGUE:
+            p["sangue"] = ""
+    contatos = [{c: _limpo(x.get(c), n) for c, n in CAMPOS_CONTATO.items()}
+                for x in (dados.get("contatos") or [])[:8]
+                if isinstance(x, dict) and (_limpo(x.get("nome"), 60) or _limpo(x.get("telefone"), 30))]
+    ficha = {"pessoas": pessoas, "contatos": contatos, "ponto_encontro": _limpo(dados.get("ponto_encontro"), 300),
+             "atualizada": time.strftime("%Y-%m-%dT%H:%M:%S")}
+    ARQUIVO_FICHA.parent.mkdir(parents=True, exist_ok=True)
+    temporario = ARQUIVO_FICHA.with_suffix(".tmp")
+    temporario.write_text(json.dumps(ficha, ensure_ascii=False, indent=1), encoding="utf-8")
+    temporario.replace(ARQUIVO_FICHA)  # troca de uma vez: uma queda de energia no meio nao estraga a ficha
+    return ficha
+
+
+def _linha_pessoa(p: dict) -> str:
+    partes = [p["nome"]]
+    if p.get("nascimento"):
+        partes.append(f"nascimento ou idade: {p['nascimento']}")
+    if p.get("sangue"):
+        partes.append(f"sangue {p['sangue']}")
+    partes.append(f"alergias: {p.get('alergias') or 'nenhuma anotada'}")
+    for campo, nome in (("remedios", "remédios de uso contínuo"), ("condicoes", "condições"), ("observacoes", "observações")):
+        if p.get(campo):
+            partes.append(f"{nome}: {p[campo]}")
+    return "; ".join(partes)
+
+
+def ficha_para(pergunta: str, ficha: dict | None = None) -> str:
+    """A ficha de quem a pergunta cita pelo primeiro nome (palavra inteira, sem acento; "Mãe" e "Pai" valem).
+    Vazio se a pergunta nao cita ninguem da ficha."""
+    ficha = ficha if ficha is not None else ler_ficha()
+    texto = f" {sem_acento(pergunta.lower())} "
+    linhas = []
+    for p in ficha.get("pessoas") or []:
+        nome = sem_acento(str(p.get("nome") or "").lower()).split()
+        if nome and len(nome[0]) >= 3 and re.search(rf"\b{re.escape(nome[0])}\b", texto):
+            linhas.append(_linha_pessoa(p))
+    return "\n".join(linhas)
+
+
+def texto_ficha(ficha: dict | None = None) -> str:
+    """A ficha inteira em texto, para os agentes (MCP) e para a resposta da IA."""
+    ficha = ficha if ficha is not None else ler_ficha()
+    if not ficha.get("pessoas") and not ficha.get("contatos"):
+        return "A ficha médica ainda está vazia. Ela é preenchida na Central (Início, botão SOS)."
+    partes = [_linha_pessoa(p) for p in ficha.get("pessoas") or []]
+    if ficha.get("contatos"):
+        partes.append("Contatos de emergência: " + "; ".join(
+            " ".join(x for x in (c.get("nome"), c.get("relacao") and f"({c['relacao']})", c.get("telefone")) if x)
+            for c in ficha["contatos"]))
+    if ficha.get("ponto_encontro"):
+        partes.append(f"Ponto de encontro: {ficha['ponto_encontro']}")
+    return "\n".join(partes)

@@ -24,6 +24,11 @@ import urllib.parse  # noqa: E402
 import central  # noqa: E402
 import sabio  # noqa: E402
 import tarefas  # noqa: E402
+import tempfile  # noqa: E402
+
+# Os testes nunca leem nem gravam a ficha medica de verdade da familia.
+_PASTA_DOS_TESTES = tempfile.TemporaryDirectory()
+tarefas.ARQUIVO_FICHA = Path(_PASTA_DOS_TESTES.name) / "ficha-medica.json"
 
 
 class PedidoLocal(unittest.TestCase):
@@ -664,7 +669,7 @@ class CentralSemModoJogo(unittest.TestCase):
     def test_responder_agora_nao_guarda_como_completa(self):
         import urllib.request
 
-        def resposta_cortada(pergunta, avisar=None, parar=None):
+        def resposta_cortada(pergunta, avisar=None, parar=None, **_):
             central.PEDIU_AGORA.set()   # a pessoa apertou "Responder agora"...
             parar.clear()               # ...e o sabio.responder() apaga o sinal ao refazer sem raciocinar
             return {"resposta": "Ferva a agua [1].", "termos": {}, "fontes": [{"titulo": "Agua", "link": "x"}]}
@@ -705,7 +710,8 @@ class AgenteDoCofre(unittest.TestCase):
         self.assertEqual([r["id"] for r in respostas], [1, 2, 3, 4])  # a notificacao nao tem resposta
         self.assertEqual(respostas[0]["result"]["serverInfo"]["name"], "cofre")
         nomes = {f["name"] for f in respostas[1]["result"]["tools"]}
-        self.assertEqual(nomes, {"buscar_bibliotecas", "ler_artigo", "trechos_com_fonte", "respostas_guardadas", "qual_ferramenta"})
+        self.assertEqual(nomes, {"buscar_bibliotecas", "ler_artigo", "trechos_com_fonte", "respostas_guardadas", "qual_ferramenta",
+                                 "ficha_medica"})
         self.assertIn("emergencia", respostas[2]["result"]["content"][0]["text"])
         self.assertIn("error", respostas[3])
 
@@ -719,6 +725,50 @@ class AgenteDoCofre(unittest.TestCase):
                                    "params": {"name": "ler_artigo", "arguments": {"link": "/content/wikipedia_pt/A/Agua"}}})
         self.assertIn("Ferva a agua", r["result"]["content"][0]["text"])
         self.assertTrue(falso.call_args.args[0].startswith(sabio.KIWIX + "/content/"))
+
+
+class FichaMedica(unittest.TestCase):
+    """Inspirada na Ficha Medica do iPhone: a IA leva em conta a ficha de quem a pergunta cita."""
+
+    def setUp(self):
+        import tempfile
+        self.pasta = tempfile.TemporaryDirectory()
+        self.troca = mock.patch.object(tarefas, "ARQUIVO_FICHA", Path(self.pasta.name) / "ficha-medica.json")
+        self.troca.start()
+        tarefas.salvar_ficha({"pessoas": [
+            {"nome": "Ana Souza", "nascimento": "2015", "sangue": "Z+", "alergias": "dipirona", "extra": "nao guarda"},
+            {"nome": "Mãe", "remedios": "losartana 50 mg", "condicoes": "pressão alta"},
+            {"nome": ""}],
+            "contatos": [{"nome": "Tia Rosa", "telefone": "62 99999-0000", "relacao": "tia"}, {"nome": ""}]})
+
+    def tearDown(self):
+        self.troca.stop()
+        self.pasta.cleanup()
+
+    def test_guarda_so_o_que_conhece_e_com_limite(self):
+        f = tarefas.ler_ficha()
+        self.assertEqual([p["nome"] for p in f["pessoas"]], ["Ana Souza", "Mãe"])
+        self.assertEqual(f["pessoas"][0]["sangue"], "")            # tipo invalido nao fica
+        self.assertNotIn("extra", f["pessoas"][0])
+        self.assertEqual(len(f["contatos"]), 1)
+
+    def test_pega_a_ficha_de_quem_a_pergunta_cita(self):
+        self.assertIn("alergias: dipirona", tarefas.ficha_para("Posso dar dipirona pra ana?"))
+        self.assertIn("losartana", tarefas.ficha_para("minha mae esta com dor de cabeca"))
+        self.assertEqual(tarefas.ficha_para("como purificar agua da chuva?"), "")
+        self.assertEqual(tarefas.ficha_para("a banana esta madura?"), "")  # "ana" so vale como palavra inteira
+
+    def test_a_ia_recebe_a_ficha_e_o_agente_tambem(self):
+        r = {"texto": "Nao de dipirona [1].", "timings": {}, "interrompido": False, "repetiu": None}
+        with mock.patch.object(sabio, "chat_em_fluxo", return_value=r) as falso:
+            sabio.responder("posso dar dipirona pra ana?", [("A", "http://x", "t")], "m", threading.Event(),
+                            tarefas.ficha_para("posso dar dipirona pra ana?"))
+        pedido = falso.call_args.args[0]["messages"][1]["content"]
+        self.assertIn("alergias: dipirona", pedido)
+        self.assertIn("nunca indique algo a que a pessoa seja alergica", pedido)
+        import cofre_mcp
+        r = cofre_mcp.atender({"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "ficha_medica", "arguments": {}}})
+        self.assertIn("Tia Rosa (tia) 62 99999-0000", r["result"]["content"][0]["text"])
 
 
 class ConselhoComPergunta(unittest.TestCase):

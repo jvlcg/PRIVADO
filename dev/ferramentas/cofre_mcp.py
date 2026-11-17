@@ -13,6 +13,7 @@ Ferramentas (todas sem o modelo de chat: quem pensa e a IA que chamou):
   trechos_com_fonte    os melhores trechos para uma pergunta, ja reordenados e numerados para citar
   respostas_guardadas  perguntas ja respondidas no cofre (Historico): 0 Wh
   qual_ferramenta      o jeito mais barato de resolver um pedido, com o gasto estimado
+  ficha_medica         alergias, remedios e contatos da familia (anotados na Central, so neste PC)
 
 Protocolo: JSON-RPC 2.0, uma mensagem por linha no stdin/stdout (transporte stdio do MCP). So a biblioteca
 padrao do Python, para rodar offline. Uso: uv run --offline --script cofre_mcp.py
@@ -32,7 +33,8 @@ INSTRUCOES = (
     "Ferramentas do Cofre de IAs: bibliotecas offline (Wikipedia, WikiMed, iFixit, manuais e outras 40). "
     "Para responder com fonte: chame trechos_com_fonte (ou buscar_bibliotecas e depois ler_artigo) e cite os "
     "artigos pelo numero [1], [2]. Se a busca so trouxer titulos, LEIA o artigo com ler_artigo antes de responder. "
-    "Antes de pesquisar, veja em respostas_guardadas se a pergunta ja foi respondida."
+    "Antes de pesquisar, veja em respostas_guardadas se a pergunta ja foi respondida. "
+    "Antes de sugerir remedio, dose ou cuidado para alguem da familia, veja ficha_medica (alergias e remedios)."
 )
 
 
@@ -105,6 +107,10 @@ def qual_ferramenta(pedido: str) -> str:
     return _texto(tarefas.sugerir(pedido))
 
 
+def ficha_medica() -> str:
+    return tarefas.texto_ficha()
+
+
 FERRAMENTAS = {
     "buscar_bibliotecas": (buscar_bibliotecas, "Busca artigos nas bibliotecas offline do cofre (Wikipedia, WikiMed, iFixit, manuais) pelas palavras da consulta. Devolve titulo, link e o trecho onde aparecem. Nao usa IA.",
                            {"consulta": {"type": "string", "description": "palavras ou pergunta, em portugues ou ingles"},
@@ -119,6 +125,8 @@ FERRAMENTAS = {
                              "quantas": {"type": "integer", "default": 5}}, []),
     "qual_ferramenta": (qual_ferramenta, "Diz o jeito mais barato de resolver um pedido no cofre (so buscar, resposta rapida, com fonte, conselho, chat com um modelo especifico, ComfyUI), com o gasto estimado e avisos de emergencia ou saude.",
                         {"pedido": {"type": "string"}}, ["pedido"]),
+    "ficha_medica": (ficha_medica, "A ficha medica da familia, anotada pelo usuario: alergias, remedios de uso continuo, tipo sanguineo, condicoes e contatos de emergencia. Consulte antes de sugerir remedio, dose ou cuidado para alguem da familia.",
+                     {}, []),
 }
 
 

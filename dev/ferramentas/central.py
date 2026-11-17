@@ -480,6 +480,11 @@ class Central(BaseHTTPRequestHandler):
             self._json(200, painel_energia())
         elif rota == "/api/saude":
             self._json(200, saude_do_cofre())
+        elif rota == "/api/ficha":
+            # Dado de saude da familia: mesma barreira da chave (so esta pagina le, nunca outro site).
+            if self.headers.get("Sec-Fetch-Site") == "cross-site":
+                return self._json(403, {"erro": "pedido de outro site bloqueado"})
+            self._json(200, tarefas.ler_ficha() | {"tipos_sangue": list(tarefas.TIPOS_SANGUE)})
         elif rota == "/api/chave":
             # So esta pagina le a resposta: a Central nao libera CORS, barra nomes de dominio (DNS rebinding)
             # e recusa o que o navegador marca como vindo de outro site, mesmo sem Origin.
@@ -514,6 +519,8 @@ class Central(BaseHTTPRequestHandler):
                 self._json(200, vigia(bool(corpo.get("ligar"))))
             elif self.path == "/api/esquecer" and corpo.get("id"):
                 self._json(200, {"ok": HISTORICO.esquecer(str(corpo["id"]))})
+            elif self.path == "/api/ficha" and isinstance(corpo.get("pessoas"), list):
+                self._json(200, tarefas.salvar_ficha(corpo))
             elif self.path == "/api/simulado" and isinstance(corpo.get("feitos"), list):
                 self._json(200, registrar_simulado(corpo["feitos"], int(corpo.get("total") or 0)))
             elif self.path == "/api/agora":
@@ -553,8 +560,10 @@ class Central(BaseHTTPRequestHandler):
         def avisar(texto: str) -> None:
             evento({"tipo": "etapa", "texto": texto})
 
+        # Pergunta que cita alguem da ficha medica responde sempre de novo: a ficha pode ter mudado (alergia nova).
+        nota = tarefas.ficha_para(pergunta) if modo != "buscar" else ""
         # A resposta guardada vem antes do modo jogo: mostra-la nao liga nada.
-        if modo != "buscar" and not de_novo:
+        if modo != "buscar" and not de_novo and not nota:
             guardada = HISTORICO.procurar(pergunta, modo)
             if guardada:
                 return evento({"tipo": "final", "modo": guardada["modo"], "resposta": guardada["resposta"], "fontes": guardada["fontes"],
@@ -575,7 +584,7 @@ class Central(BaseHTTPRequestHandler):
             avisar("Outra pergunta está sendo respondida; aguardando a vez...")
             TRAVA_PERGUNTA.acquire()
             # Esperou a vez: se era a mesma pergunta, a resposta dela acabou de ser guardada.
-            guardada = None if de_novo else HISTORICO.procurar(pergunta, modo)
+            guardada = None if de_novo or nota else HISTORICO.procurar(pergunta, modo)
             if guardada:
                 TRAVA_PERGUNTA.release()
                 return evento({"tipo": "final", "modo": guardada["modo"], "resposta": guardada["resposta"], "fontes": guardada["fontes"],
@@ -586,19 +595,22 @@ class Central(BaseHTTPRequestHandler):
             PEDIU_AGORA.clear()
             tarefa = "rapida" if modo == "rapida" else "perguntar"
             watts = float(((energia().get("tarefas") or {}).get(tarefa) or {}).get("watts") or 170)
+            if nota:
+                nomes = [linha.split(";")[0] for linha in nota.splitlines()]
+                avisar("Levando em conta a ficha médica de " + " e ".join(nomes) + " (alergias, remédios e condições)")
             if modo == "rapida":
                 garantir_ligados(["chat"], avisar)
                 # O botao "Responder agora" so aparece quando ja ha o que responder: o modelo esta ligado.
                 evento({"tipo": "inicio", "watts": watts})
                 inicio = time.time()
                 avisar(f"Respondendo com {tarefas.MODELO_RAPIDO}, sem consultar a biblioteca")
-                r = {"resposta": sabio.responder_direto(pergunta, tarefas.MODELO_RAPIDO, parar=AGORA), "fontes": [],
+                r = {"resposta": sabio.responder_direto(pergunta, tarefas.MODELO_RAPIDO, parar=AGORA, nota_pessoal=nota), "fontes": [],
                      "modelo": tarefas.MODELO_RAPIDO}
             else:
                 evento({"tipo": "inicio", "watts": watts})
                 garantir_ligados(["chat", "biblioteca"], avisar)
                 inicio = time.time()
-                r = sabio.perguntar_com_fonte(pergunta, avisar=avisar, parar=AGORA) | {"modelo": sabio.MODELO_CHAT}
+                r = sabio.perguntar_com_fonte(pergunta, avisar=avisar, parar=AGORA, nota_pessoal=nota) | {"modelo": sabio.MODELO_CHAT}
             segundos = time.time() - inicio
             wh = watts * segundos / 3600
             sabio.registrar_gasto(tarefa, segundos, watts)

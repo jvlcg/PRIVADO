@@ -379,7 +379,17 @@ REGRAS_SEGURANCA = (
 )
 
 
-def responder(pergunta: str, fontes: list[tuple[str, str, str]], modelo: str, parar: threading.Event | None = None) -> str:
+def com_ficha(nota_pessoal: str) -> str:
+    """O trecho da ficha medica da familia que vai antes da pergunta (vazio se a pergunta nao cita ninguem)."""
+    if not nota_pessoal:
+        return ""
+    return ("Ficha medica de quem a pergunta cita (anotada pela familia, nao e fonte da biblioteca): leve em conta "
+            "alergias, remedios de uso continuo e condicoes, avise de interacoes e nunca indique algo a que a pessoa "
+            f"seja alergica.\n{nota_pessoal}\n\n")
+
+
+def responder(pergunta: str, fontes: list[tuple[str, str, str]], modelo: str, parar: threading.Event | None = None,
+              nota_pessoal: str = "") -> str:
     contexto = "\n\n".join(f"[{i}] {titulo}\n{trecho}" for i, (titulo, _, trecho) in enumerate(fontes, 1))
     sistema = (
         "Voce responde em portugues do Brasil usando SOMENTE as fontes fornecidas. "
@@ -391,7 +401,7 @@ def responder(pergunta: str, fontes: list[tuple[str, str, str]], modelo: str, pa
         "model": modelo,
         "messages": [
             {"role": "system", "content": sistema},
-            {"role": "user", "content": f"Fontes:\n{contexto}\n\nPergunta: {pergunta}"},
+            {"role": "user", "content": f"{com_ficha(nota_pessoal)}Fontes:\n{contexto}\n\nPergunta: {pergunta}"},
         ],
         "max_tokens": 4000,
         # Raciocinio curto: as fontes ja estao na mesa (mais rapido e gasta menos energia).
@@ -562,7 +572,7 @@ def buscar_sem_ia(pergunta: str, maximo: int = 10) -> dict:
     return {"artigos": artigos[:maximo], "termos": usadas or " ".join(palavras)}
 
 
-def responder_direto(pergunta: str, modelo: str, parar: threading.Event | None = None) -> str:
+def responder_direto(pergunta: str, modelo: str, parar: threading.Event | None = None, nota_pessoal: str = "") -> str:
     """Sem fontes e sem raciocinio: a "Resposta rapida" e o que sai quando pedem "Responder agora" antes
     de a busca terminar. `parar` corta a geracao e fica o texto que ja veio."""
     corpo = {"model": modelo, "max_tokens": 1500,
@@ -570,7 +580,7 @@ def responder_direto(pergunta: str, modelo: str, parar: threading.Event | None =
              "messages": [{"role": "system", "content": "Responda em portugues do Brasil, de forma curta e pratica. "
                            "Em temas de saude ou seguranca, inclua sinais de alerta e quando procurar ajuda. "
                            + REGRAS_SEGURANCA},
-                          {"role": "user", "content": pergunta}]}
+                          {"role": "user", "content": com_ficha(nota_pessoal) + pergunta}]}
     r = chat_em_fluxo(corpo, parar)
     if r["interrompido"] and len(r["texto"]) < 80:
         # Pediram "Responder agora" antes de sair quase nada: uma resposta bem curta, sem esperar mais.
@@ -623,7 +633,8 @@ def conferir_resposta(texto: str, n_fontes: int) -> tuple[str, list[int]]:
 
 
 def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int = 3, maximo: int = 12, n_trechos: int = 6,
-                        livros_escolhidos: str | None = None, avisar=None, parar: threading.Event | None = None) -> dict:
+                        livros_escolhidos: str | None = None, avisar=None, parar: threading.Event | None = None,
+                        nota_pessoal: str = "") -> dict:
     """Busca nas bibliotecas, escolhe os melhores trechos e o modelo responde citando [1], [2]...
     `avisar(texto)` recebe o andamento. `parar` acende com "Responder agora": cada etapa para e o modelo
     responde com o que ja foi achado. Problemas que a pessoa pode resolver viram RuntimeError com a explicacao."""
@@ -642,7 +653,7 @@ def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int =
         raise RuntimeError("Nenhuma biblioteca disponivel no kiwix-serve.")
     def direto(motivo: str) -> dict:
         avisar(f"Respondendo agora, {motivo}")
-        return {"resposta": responder_direto(pergunta, modelo), "termos": {}, "fontes": []}
+        return {"resposta": responder_direto(pergunta, modelo, nota_pessoal=nota_pessoal), "termos": {}, "fontes": []}
 
     avisar("Escolhendo as palavras de busca")
     termos = palavras_chave(pergunta, modelo)
@@ -683,7 +694,7 @@ def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int =
         melhores = reordenar(pergunta, [f"{origem[i][0]}\n{t}" for i, t in enumerate(trechos)], n_trechos)
     fontes = [(origem[i][0], origem[i][1], trechos[i]) for i in melhores]
     avisar(f"Escrevendo a resposta com {modelo}" + (" (direto, sem raciocinar)" if parar.is_set() else ""))
-    resposta, citadas = conferir_resposta(responder(pergunta, fontes, modelo, parar), len(fontes))
+    resposta, citadas = conferir_resposta(responder(pergunta, fontes, modelo, parar, nota_pessoal), len(fontes))
     return {"resposta": resposta, "termos": termos,
             "fontes": [{"titulo": t, "link": l, "citada": i in citadas} for i, (t, l, _) in enumerate(fontes, 1)]}
 

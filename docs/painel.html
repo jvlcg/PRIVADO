@@ -320,6 +320,70 @@ dialog.alerta-sheet.folha p { padding: 0 22px 10px; font-size: 14px; }
 .marcador:checked { background: var(--azul); border-color: var(--azul); }
 .marcador:checked::after { content: ""; width: 5px; height: 10px; border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: translateY(-1px) rotate(45deg); }
 .marcador:checked + span { color: var(--texto-2); text-decoration: line-through; text-decoration-color: var(--texto-3); }
+/* SOS: folha de emergencia (como o SOS de Emergencia e a Ficha Medica do iPhone): numeros grandes, poucas escolhas */
+.botao.sos-botao { background: var(--vermelho); color: #fff; letter-spacing: .04em; }
+.lateral-pe .sos-lateral { color: var(--vermelho); font-weight: 600; }
+.lateral-pe .sos-lateral:hover { color: var(--vermelho); background: var(--vermelho-suave); }
+dialog.sos { border: 0; padding: 0; width: min(780px, calc(100% - 24px)); max-height: calc(100vh - 24px); border-radius: 22px;
+  background: var(--fundo); color: var(--texto); box-shadow: var(--sombra-alta); overflow-y: auto; }
+dialog.sos[open] { animation: subir .3s var(--mola); }
+dialog.sos::backdrop { background: rgba(0, 0, 0, .45); backdrop-filter: blur(6px); }
+.sos-topo { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 12px; padding: 18px 22px 8px; background: var(--fundo); }
+.sos-topo h2 { margin: 0; flex: 1; font-size: 28px; color: var(--vermelho); }
+.sos-fechar { width: 32px; height: 32px; border: 0; border-radius: 50%; cursor: pointer; font-size: 20px; line-height: 1;
+  background: color-mix(in srgb, var(--texto) 8%, transparent); color: var(--texto-2); }
+.sos-ligar, .sos-agora { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 8px 22px; }
+.sos-numero { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 14px 8px; border-radius: 16px; background: var(--vermelho); color: #fff; }
+.sos-numero:hover { text-decoration: none; filter: brightness(1.07); }
+.sos-numero b { font-family: var(--fonte-titulo); font-size: 30px; font-weight: 800; letter-spacing: -.02em; line-height: 1; }
+.sos-numero span { font-size: 12px; font-weight: 600; opacity: .92; }
+.sos-dica { margin: 8px 22px 0; font-size: 13px; color: var(--texto-2); }
+.sos-agora button { border: 0; border-radius: 14px; padding: 14px 10px; background: var(--cartao); box-shadow: var(--sombra); color: var(--texto);
+  font-size: 14px; font-weight: 600; cursor: pointer; transition: transform .15s, color .15s; }
+.sos-agora button:hover { color: var(--vermelho); }
+.sos-agora button:active { transform: scale(.97); }
+.sos-ficha { padding: 6px 22px 22px; }
+.sos-ficha-topo { display: flex; align-items: center; gap: 8px; margin: 16px 0 10px; }
+.sos-ficha-topo h3 { flex: 1; display: flex; align-items: center; gap: 8px; }
+.sos-ficha-topo h3 .ic { color: var(--vermelho); }
+.ficha-pessoa { background: var(--cartao); border-radius: 16px; box-shadow: var(--sombra); padding: 14px 16px; margin-bottom: 10px; }
+.ficha-pessoa h4 { margin: 0 0 8px; font-family: var(--fonte-titulo); font-size: 18px; letter-spacing: -.01em; }
+.ficha-pessoa dl { display: grid; grid-template-columns: 160px 1fr; gap: 5px 14px; margin: 0; font-size: 14px; }
+.ficha-pessoa dt { color: var(--texto-2); }
+.ficha-pessoa dd { margin: 0; }
+.ficha-pessoa .alergia { color: var(--vermelho); font-weight: 600; }
+.ficha-pessoa a { font-weight: 600; }
+dialog.alerta-sheet.folha.ficha-editor { width: min(680px, calc(100% - 24px)); }
+.ficha-editor .corpo { max-height: 64vh; overflow-y: auto; }
+.ficha-editor h4 { margin: 0; padding: 14px 22px 6px; font-size: 13px; color: var(--texto-2); }
+.ficha-editor .campos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; padding: 12px 22px; border-top: 1px solid var(--separador); }
+.ficha-editor label { display: grid; gap: 4px; font-size: 12px; font-weight: 600; color: var(--texto-2); }
+.ficha-editor .largo { grid-column: 1 / -1; }
+.ficha-editor input, .ficha-editor select, .ficha-editor textarea { border: 1px solid var(--separador); border-radius: 10px; padding: 8px 10px;
+  font-size: 14px; font-weight: 400; background: var(--cartao); color: var(--texto); }
+.ficha-editor textarea { min-height: 46px; resize: vertical; }
+.ficha-editor .mais { padding: 4px 22px 10px; }
+#impressao { display: none; }
+@media print {
+  body > *:not(#impressao) { display: none !important; }
+  #impressao { display: block !important; color: #000; background: #fff; font: 11pt/1.45 var(--fonte); }
+  #impressao h1 { font-size: 20pt; margin: 0 0 4pt; }
+  #impressao h2 { font-size: 13pt; margin: 14pt 0 4pt; border-bottom: 1pt solid #999; }
+  #impressao p { margin: 2pt 0; }
+}
+/* Autonomia na falta de luz */
+#baterias { flex-wrap: wrap; max-width: 100%; }
+.autonomia { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.autonomia li { background: var(--cartao-2); border-radius: 14px; padding: 12px 14px; display: grid; gap: 2px; }
+.autonomia b { font-family: var(--fonte-titulo); font-size: 24px; font-weight: 700; letter-spacing: -.02em; color: var(--laranja); font-variant-numeric: tabular-nums; }
+.autonomia span { font-size: 13px; font-weight: 600; }
+.autonomia small { font-size: 12px; color: var(--texto-2); }
+@media (max-width: 720px) {
+  .sos-ligar, .sos-agora { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ficha-pessoa dl { grid-template-columns: 1fr; gap: 0 0; }
+  .ficha-pessoa dd { margin-bottom: 6px; }
+  .ficha-editor .campos { grid-template-columns: 1fr; }
+}
 .resposta .acoes { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--separador); }
 .falha { display: flex; gap: 10px; align-items: center; color: var(--vermelho); font-weight: 600; margin-top: 16px; }
 .artigos { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
@@ -501,6 +565,7 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
     <button class="procurar" type="button" id="abrirPaleta" title="Procurar qualquer ação (Ctrl+K)"><svg class="ic"><use href="#i-procurar"/></svg><span>Procurar</span><kbd>Ctrl K</kbd></button>
     <ul class="secoes" id="secoes"></ul>
     <div class="lateral-pe">
+      <button type="button" class="sos-lateral" id="sosLateral" title="Emergência: números, o que fazer agora e a ficha médica"><svg class="ic"><use href="#i-cruz"/></svg><span>SOS e ficha médica</span></button>
       <button type="button" id="tema" title="Mudar o tema"><svg class="ic"><use href="#i-tema"/></svg><span id="temaNome">Tema automático</span></button>
       <p class="tarifa" id="tarifa"></p>
     </div>
@@ -532,7 +597,10 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
 
       <div class="titulo-linha">
         <h2>Emergência</h2>
-        <span class="segmentado" id="idiomaInicio" role="group" aria-label="Idioma da busca"></span>
+        <span style="display:flex;gap:10px;align-items:center">
+          <span class="segmentado" id="idiomaInicio" role="group" aria-label="Idioma da busca"></span>
+          <button class="botao sos-botao pequeno" id="abrirSos" type="button" title="Números de emergência, o que fazer agora e a ficha médica">SOS</button>
+        </span>
       </div>
       <div class="emergencia" id="emergenciaInicio" role="group" aria-label="Atalhos de emergência"></div>
       <p class="dica">Abre os artigos na hora, sem IA. Em inglês há mais conteúdo: WikiMed, medicina militar, remédios do NHS, Ready.gov.</p>
@@ -645,6 +713,13 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
       <h1 id="t-energia" tabindex="-1">Energia</h1>
       <p class="subtitulo" id="tarifaDetalhe"></p>
       <div class="numeros" id="energiaNumeros"></div>
+      <h2>Na falta de luz</h2>
+      <div class="cartao">
+        <p class="secundario" style="margin:0 0 12px">Quanto tempo o cofre aguenta numa bateria, pelo consumo medido deste PC.</p>
+        <span class="segmentado" id="baterias" role="group" aria-label="Tipo de bateria"></span>
+        <ul class="autonomia" id="autonomia"></ul>
+        <p class="dica" id="autonomiaNota"></p>
+      </div>
       <h2>Neste mês, por tarefa</h2>
       <div class="cartao" style="padding:0" id="porTarefa"><p class="vazio">Abra a Central para ver o gasto.</p></div>
       <h2>Últimos 6 meses</h2>
@@ -734,6 +809,44 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
     <div class="alerta-botoes"><button value="nao">Cancelar</button><button value="sim">Concluir</button></div>
   </form>
 </dialog>
+<dialog class="sos" id="sos" aria-labelledby="sosTitulo">
+  <div class="sos-topo">
+    <h2 id="sosTitulo">Emergência</h2>
+    <button class="botao cinza pequeno" type="button" id="fichaImprimir">Imprimir a ficha</button>
+    <button class="sos-fechar" type="button" id="sosFechar" aria-label="Fechar">×</button>
+  </div>
+  <div class="sos-ligar">
+    <a class="sos-numero" href="tel:192"><b>192</b><span>SAMU</span></a>
+    <a class="sos-numero" href="tel:193"><b>193</b><span>Bombeiros</span></a>
+    <a class="sos-numero" href="tel:190"><b>190</b><span>Polícia</span></a>
+    <a class="sos-numero" href="tel:199"><b>199</b><span>Defesa Civil</span></a>
+  </div>
+  <p class="sos-dica">O que fazer agora, direto da biblioteca e sem IA (no modo jogo, a Central sai dele sozinha):</p>
+  <div class="sos-agora" id="sosAgora"></div>
+  <section class="sos-ficha" aria-labelledby="fichaTitulo1">
+    <div class="sos-ficha-topo">
+      <h3 id="fichaTitulo1"><svg class="ic"><use href="#i-cruz"/></svg>Ficha médica</h3>
+      <button class="botao cinza pequeno" type="button" id="fichaEditar">Editar</button>
+    </div>
+    <div id="fichaVer"></div>
+  </section>
+</dialog>
+<dialog class="alerta-sheet folha ficha-editor" id="fichaEditor" aria-labelledby="fichaTitulo">
+  <form method="dialog">
+    <h3 id="fichaTitulo">Ficha médica da família</h3>
+    <p class="secundario">Fica só neste PC, fora do GitHub. A IA usa a ficha de quem a pergunta cita pelo nome: “posso dar dipirona para a Ana?” leva em conta a alergia da Ana.</p>
+    <div class="corpo">
+      <div id="fichaPessoas"></div>
+      <div class="mais"><button class="botao cinza pequeno" type="button" id="fichaMaisPessoa">+ Pessoa</button></div>
+      <h4>Contatos de emergência</h4>
+      <div id="fichaContatos"></div>
+      <div class="mais"><button class="botao cinza pequeno" type="button" id="fichaMaisContato">+ Contato</button></div>
+      <div class="campos"><label class="largo">Ponto de encontro da família<input id="fichaEncontro" autocomplete="off" placeholder="Ex.: praça da igreja matriz"></label></div>
+    </div>
+    <div class="alerta-botoes"><button type="button" id="fichaCancelar">Cancelar</button><button value="sim">Salvar</button></div>
+  </form>
+</dialog>
+<div id="impressao"></div>
 <div class="avisos" id="avisos" role="status" aria-live="polite"></div>
 
 <script>
@@ -796,6 +909,26 @@ const TAREFAS_SIMULADO = [
   ['religar', 'Religue a internet.'],
 ];
 const ICONE_CUIDADO = { integridade: 'escudo', novidades: 'nuvem', sincronizar: 'nuvem', simulado: 'lista' };
+// SOS: os casos em que cada minuto conta. Abrem os artigos da biblioteca, sem IA (portugues e ingles).
+const SOS_TOPICOS = [
+  { nome: 'Parada cardíaca (RCP)', pt: 'reanimação cardiopulmonar', en: 'cardiopulmonary resuscitation' },
+  { nome: 'Sangramento forte', pt: 'hemorragia', en: 'bleeding control' },
+  { nome: 'Engasgo', pt: 'manobra de Heimlich', en: 'choking first aid' },
+  { nome: 'AVC', pt: 'acidente vascular cerebral', en: 'stroke recognition' },
+  { nome: 'Convulsão', pt: 'convulsão', en: 'seizure first aid' },
+  { nome: 'Queimadura', pt: 'queimadura', en: 'burn treatment' },
+  { nome: 'Envenenamento', pt: 'intoxicação', en: 'poisoning first aid' },
+  { nome: 'Choque elétrico', pt: 'choque elétrico', en: 'electric shock first aid' },
+];
+// Na falta de luz: baterias comuns, quanto da carga da para usar sem estragar e o que tem dentro.
+const BATERIAS = [
+  { id: 'nobreak600', nome: 'Nobreak 600 VA', wh: 84, uso: 0.8, nota: 'uma bateria de 12 V e 7 Ah' },
+  { id: 'nobreak1500', nome: 'Nobreak 1.500 VA', wh: 216, uso: 0.8, nota: 'duas baterias de 12 V e 9 Ah' },
+  { id: 'carro', nome: 'Bateria de carro', wh: 720, uso: 0.5, nota: '60 Ah com inversor; use só metade da carga para não estragar a bateria' },
+  { id: 'estacao', nome: 'Estação de 1.000 Wh', wh: 1000, uso: 0.9, nota: 'bateria de lítio (LiFePO4) com tomada' },
+];
+const INVERSOR = 0.85;  // o inversor (ou o nobreak) perde uns 15% da energia no caminho
+let FICHA = null, ENERGIA_PAINEL = null;
 
 let E = null;                 // ultimo estado da Central
 let relogio = null;           // proxima verificacao do estado
@@ -922,6 +1055,7 @@ function montar() {
   for (const ex of EXEMPLOS) $('#exemplos').append(el('button', { type: 'button', texto: ex, onclick: () => { $('#pedido').value = ex; pedirSugestao(); $('#pedido').focus(); } }));
 
   montarIdioma();
+  for (const a of SOS_TOPICOS) $('#sosAgora').append(el('button', { type: 'button', texto: a.nome, onclick: () => sosEmergencia(a) }));
   for (const alvo of ['#emergenciaInicio', '#emergenciaBiblioteca']) {
     for (const a of ATALHOS) $(alvo).append(el('button', { type: 'button', texto: a.pt[0].toUpperCase() + a.pt.slice(1), onclick: () => abrirEmergencia(a) }));
   }
@@ -1338,6 +1472,141 @@ function abrirSimulado() {
   }, { once: true });
 }
 
+// ---------- SOS e ficha medica (inspirada no SOS de Emergencia e na Ficha Medica do iPhone) ----------
+function dataBr(iso) { const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(iso || ''); return m ? `${m[3]}/${m[2]}/${m[1]} às ${m[4]}:${m[5]}` : ''; }
+async function carregarFicha() {
+  if (!CENTRAL) return null;
+  try { FICHA = await api('/api/ficha'); } catch { FICHA = null; }
+  return FICHA;
+}
+async function abrirSos() {
+  const d = $('#sos');
+  if (!d.open) d.showModal();
+  mostrarFicha();
+  await carregarFicha();
+  mostrarFicha();
+}
+// Na emergencia a biblioteca vale mais que o jogo: no modo jogo, a Central sai dele antes de abrir.
+async function sosEmergencia(a) {
+  if (E && E.modo_jogo) {
+    try { await api('/api/modo-jogo', { ligar: false }); avisar('Emergência: saí do modo jogo para abrir a biblioteca.'); await verificar(); }
+    catch (erro) { avisar(`Não deu para sair do modo jogo: ${erro.message}. Menu, opção 12.`, null, 'erro'); return; }
+  }
+  abrirEmergencia(a);
+}
+function linhasFicha(pares) {
+  return el('dl', {}, pares.filter(([, v]) => v).flatMap(([k, v, classe]) => [el('dt', { texto: k }), el('dd', { class: classe || null }, v)]));
+}
+function mostrarFicha() {
+  const caixa = $('#fichaVer');
+  if (!CENTRAL) { caixa.replaceChildren(el('p', { class: 'secundario', texto: 'A ficha aparece com a Central aberta.' })); return; }
+  const f = FICHA || { pessoas: [], contatos: [] };
+  if (!f.pessoas.length && !f.contatos.length) {
+    caixa.replaceChildren(el('div', { class: 'ficha-pessoa' },
+      el('p', { texto: 'Nenhuma ficha ainda. Anote alergias, remédios e contatos da família: na hora do aperto, ninguém lembra.' }),
+      el('button', { class: 'botao pequeno', type: 'button', texto: 'Preencher agora', onclick: abrirEditorFicha })));
+    return;
+  }
+  caixa.replaceChildren(
+    ...f.pessoas.map(p => el('article', { class: 'ficha-pessoa' }, el('h4', { texto: p.nome }), linhasFicha([
+      ['Alergias', p.alergias || 'nenhuma anotada', p.alergias ? 'alergia' : null],
+      ['Remédios contínuos', p.remedios], ['Condições', p.condicoes], ['Tipo sanguíneo', p.sangue],
+      ['Nascimento ou idade', p.nascimento], ['Observações', p.observacoes]]))),
+    f.contatos.length ? el('article', { class: 'ficha-pessoa' }, el('h4', { texto: 'Contatos de emergência' }),
+      linhasFicha(f.contatos.map(c => [[c.nome, c.relacao].filter(Boolean).join(', ') || 'Contato',
+        c.telefone ? el('a', { href: 'tel:' + c.telefone.replace(/[^\d+]/g, ''), texto: c.telefone }) : '—']))) : null,
+    f.ponto_encontro ? el('article', { class: 'ficha-pessoa' }, el('h4', { texto: 'Ponto de encontro' }), el('p', { texto: f.ponto_encontro, style: 'margin:0' })) : null,
+    f.atualizada ? el('p', { class: 'dica', texto: `Atualizada em ${dataBr(f.atualizada)}. Fica só neste PC.` }) : null);
+}
+function campoFicha(nome, rotulo, valor, { largo, area, dica } = {}) {
+  return el('label', { class: largo ? 'largo' : null }, rotulo,
+    area ? el('textarea', { name: nome, rows: 2, placeholder: dica || null }, valor || '')
+         : el('input', { name: nome, value: valor || '', autocomplete: 'off', placeholder: dica || null }));
+}
+function blocoPessoa(p = {}) {
+  const tipos = (FICHA && FICHA.tipos_sangue) || ['', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'não sei'];
+  const bloco = el('div', { class: 'campos' },
+    campoFicha('nome', 'Nome', p.nome, { dica: 'Ana, ou Mãe, Pai, Vó' }),
+    campoFicha('nascimento', 'Nascimento ou idade', p.nascimento),
+    el('label', {}, 'Tipo sanguíneo', el('select', { name: 'sangue' }, tipos.map(t => el('option', { value: t, selected: t === (p.sangue || ''), texto: t || '—' })))),
+    el('span'),
+    campoFicha('alergias', 'Alergias', p.alergias, { largo: true, area: true, dica: 'remédios, alimentos, picadas de inseto' }),
+    campoFicha('remedios', 'Remédios de uso contínuo', p.remedios, { largo: true, area: true, dica: 'nome e dose, ex.: losartana 50 mg de manhã' }),
+    campoFicha('condicoes', 'Condições', p.condicoes, { largo: true, dica: 'asma, diabetes, pressão alta, gravidez...' }),
+    campoFicha('observacoes', 'Observações', p.observacoes, { largo: true }),
+    el('div', { class: 'largo' }, el('button', { class: 'botao perigo pequeno', type: 'button', texto: 'Tirar esta pessoa', onclick: () => bloco.remove() })));
+  return bloco;
+}
+function blocoContato(c = {}) {
+  const bloco = el('div', { class: 'campos' },
+    campoFicha('nome', 'Nome', c.nome), campoFicha('telefone', 'Telefone', c.telefone),
+    campoFicha('relacao', 'Quem é', c.relacao, { dica: 'tia, vizinho, médico' }),
+    el('div', { style: 'align-self:end' }, el('button', { class: 'botao perigo pequeno', type: 'button', texto: 'Tirar', onclick: () => bloco.remove() })));
+  return bloco;
+}
+async function abrirEditorFicha() {
+  if (!FICHA) await carregarFicha();
+  const f = FICHA || { pessoas: [], contatos: [], ponto_encontro: '' };
+  $('#fichaPessoas').replaceChildren(...(f.pessoas.length ? f.pessoas : [{}]).map(p => blocoPessoa(p)));
+  $('#fichaContatos').replaceChildren(...(f.contatos.length ? f.contatos : [{}]).map(c => blocoContato(c)));
+  $('#fichaEncontro').value = f.ponto_encontro || '';
+  const d = $('#fichaEditor');
+  d.returnValue = '';
+  d.showModal();
+  d.addEventListener('close', async () => {
+    if (d.returnValue !== 'sim') return;
+    const ler = (bloco, campos) => Object.fromEntries(campos.map(c => [c, (bloco.querySelector(`[name="${c}"]`) || { value: '' }).value.trim()]));
+    const dados = {
+      pessoas: [...$('#fichaPessoas').children].map(b => ler(b, ['nome', 'nascimento', 'sangue', 'alergias', 'remedios', 'condicoes', 'observacoes'])),
+      contatos: [...$('#fichaContatos').children].map(b => ler(b, ['nome', 'telefone', 'relacao'])),
+      ponto_encontro: $('#fichaEncontro').value.trim(),
+    };
+    try {
+      const tipos = FICHA && FICHA.tipos_sangue;
+      FICHA = { ...(await api('/api/ficha', dados)), tipos_sangue: tipos };
+      mostrarFicha();
+      avisar(`Ficha médica salva neste PC: ${FICHA.pessoas.length} pessoa(s).`);
+    } catch (erro) { avisar(`Não deu para salvar a ficha: ${erro.message}`, null, 'erro'); }
+  }, { once: true });
+}
+// Impressa, a ficha vale mesmo sem luz: uma folha com tudo, para guardar junto do kit.
+function imprimirFicha() {
+  const f = FICHA || { pessoas: [], contatos: [] };
+  const linha = (rotulo, valor) => valor ? el('p', {}, el('b', { texto: rotulo + ': ' }), valor) : null;
+  $('#impressao').replaceChildren(
+    el('h1', { texto: 'Ficha médica da família' }),
+    el('p', { texto: 'Emergência: 192 SAMU · 193 Bombeiros · 190 Polícia · 199 Defesa Civil' }),
+    ...f.pessoas.map(p => el('section', {}, el('h2', { texto: p.nome }),
+      linha('Alergias', p.alergias || 'nenhuma anotada'), linha('Remédios contínuos', p.remedios), linha('Condições', p.condicoes),
+      linha('Tipo sanguíneo', p.sangue), linha('Nascimento ou idade', p.nascimento), linha('Observações', p.observacoes))),
+    f.contatos.length ? el('section', {}, el('h2', { texto: 'Contatos de emergência' }),
+      ...f.contatos.map(c => el('p', { texto: [c.nome, c.relacao && `(${c.relacao})`, c.telefone].filter(Boolean).join(' ') }))) : null,
+    f.ponto_encontro ? el('section', {}, el('h2', { texto: 'Ponto de encontro' }), el('p', { texto: f.ponto_encontro })) : null,
+    el('p', { texto: `Impressa em ${new Date().toLocaleDateString('pt-BR')} pela Central do Cofre.`, style: 'margin-top:14pt;color:#555' }));
+  window.print();
+}
+
+// ---------- Na falta de luz: quanto o cofre aguenta numa bateria ----------
+function duracao(horas) { const m = Math.round(horas * 60); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h` + (m % 60 ? ` ${m % 60} min` : ''); }
+function mostrarAutonomia() {
+  if (!ENERGIA_PAINEL) return;
+  const atual = lerPref('bateria', 'estacao');
+  const b = BATERIAS.find(x => x.id === atual) || BATERIAS[BATERIAS.length - 1];
+  $('#baterias').replaceChildren(...BATERIAS.map(x => el('button', { type: 'button', 'aria-pressed': String(x.id === b.id), texto: x.nome,
+    onclick: () => { salvarPref('bateria', x.id); mostrarAutonomia(); } })));
+  const util = b.wh * b.uso * INVERSOR;
+  const parado = ENERGIA_PAINEL.pc_parado_w || 120;
+  const quantas = id => Math.floor(util / whModo(id)).toLocaleString('pt-BR');
+  const item = (titulo, valor, detalhe) => el('li', {}, el('span', { texto: titulo }), el('b', { texto: valor }), el('small', { texto: detalhe }));
+  $('#autonomia').replaceChildren(
+    item('PC ligado, parado', duracao(util / parado), `a ~${parado} W, lendo a biblioteca`),
+    item('Perguntas com fonte', `~${quantas('fonte')}`, `~${textoWh(whModo('fonte'))} cada, uma atrás da outra`),
+    item('Respostas rápidas', `~${quantas('rapida')}`, `~${textoWh(whModo('rapida'))} cada`),
+    item('Rodadas do conselho', `~${quantas('conselho')}`, `~${textoWh(whModo('conselho'))} cada`));
+  $('#autonomiaNota').textContent = `${b.nome}: ${b.nota}. Dá para usar ~${Math.round(util)} Wh dos ${b.wh} Wh (o inversor perde ~15%). `
+    + 'O monitor gasta à parte: desligue-o quando não estiver lendo. Contas estimadas pelo consumo deste PC.';
+}
+
 // ---------- Perguntar ----------
 function irPerguntar(texto, modo) {
   $('#pergunta').value = texto;
@@ -1566,6 +1835,8 @@ async function carregarEnergia() {
   let r;
   try { r = await api('/api/energia'); } catch (erro) { $('#porTarefa').replaceChildren(el('p', { class: 'vazio', texto: `Não deu para ler o gasto: ${erro.message}` })); return; }
   $('#tarifaDetalhe').textContent = r.tarifa_detalhe || '';
+  ENERGIA_PAINEL = r;
+  mostrarAutonomia();
   const totalMes = r.por_tarefa.reduce((s, t) => s + t.wh, 0);
   const widget = (rotulo, valor, sub) => el('div', { class: 'widget' }, el('span', { class: 'widget-rotulo' }, icone('energia'), rotulo), el('span', { class: 'numero-grande', texto: valor }), el('small', { class: 'sub', texto: sub }));
   $('#energiaNumeros').replaceChildren(
@@ -1642,6 +1913,8 @@ function acoesPaleta(q) {
     lista.push({ titulo: E && E.vigia ? 'Parar a vigia de desligar' : 'Ligar a vigia de desligar o PC parado', icone: 'desligar', cor: 'cinza', chaves: 'desligar vigia ocioso dormir', fazer: alternarVigia });
     lista.push({ titulo: 'Saúde do cofre: o que conferir', icone: 'escudo', cor: 'verde', chaves: 'integridade sincronizar manutencao espaco disco', fazer: () => irPara('servicos') });
     lista.push({ titulo: 'Fazer o simulado sem internet', icone: 'lista', cor: 'laranja', chaves: 'simulado treino teste offline', fazer: abrirSimulado });
+    lista.push({ titulo: 'SOS: números de emergência e ficha médica', icone: 'cruz', cor: 'vermelho', chaves: 'sos socorro samu bombeiros ficha alergia', fazer: abrirSos });
+    lista.push({ titulo: 'Editar a ficha médica da família', icone: 'cruz', cor: 'rosa', chaves: 'ficha alergia remedio sangue contato', fazer: abrirEditorFicha });
   }
   lista.push({ titulo: 'Mudar o tema (claro, escuro, automático)', icone: 'tema', cor: 'cinza', chaves: 'cor noite escuro claro', fazer: trocarTema });
   for (const a of ATALHOS) lista.push({ titulo: `Emergência: ${a.pt}`, dica: 'abre os artigos', icone: 'cruz', cor: 'vermelho', chaves: a.en, fazer: () => abrirEmergencia(a) });
@@ -1757,6 +2030,14 @@ $('#jogoInterruptor').addEventListener('click', alternarModoJogo);
 $('#sairJogo').addEventListener('click', sairModoJogo);
 $('#copiarChave').addEventListener('click', copiarChave);
 $('#vigiaInterruptor').addEventListener('click', alternarVigia);
+$('#abrirSos').addEventListener('click', abrirSos);
+$('#sosLateral').addEventListener('click', abrirSos);
+$('#sosFechar').addEventListener('click', () => $('#sos').close());
+$('#fichaEditar').addEventListener('click', abrirEditorFicha);
+$('#fichaImprimir').addEventListener('click', async () => { if (!FICHA) await carregarFicha(); imprimirFicha(); });
+$('#fichaMaisPessoa').addEventListener('click', () => $('#fichaPessoas').append(blocoPessoa()));
+$('#fichaMaisContato').addEventListener('click', () => $('#fichaContatos').append(blocoContato()));
+$('#fichaCancelar').addEventListener('click', () => $('#fichaEditor').close('nao'));
 
 if (CENTRAL) {
   document.addEventListener('visibilitychange', () => { if (!document.hidden) verificar(); else clearTimeout(relogio); });
