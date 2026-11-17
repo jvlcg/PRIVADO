@@ -13,7 +13,7 @@
   --fundo: #f5f5f7; --cartao: #ffffff; --cartao-2: #f2f2f7; --texto: #1d1d1f; --texto-2: #6e6e73; --texto-3: #8e8e93;
   --separador: rgba(60, 60, 67, .13); --vidro: rgba(250, 250, 252, .74); --vidro-forte: rgba(246, 246, 248, .94); --vidro-borda: rgba(0, 0, 0, .07);
   --azul: #0071e3; --azul-suave: rgba(0, 113, 227, .1); --laranja: #ff9500; --laranja-suave: rgba(255, 149, 0, .13);
-  --vermelho: #ff3b30; --vermelho-suave: rgba(255, 59, 48, .1); --verde: #34c759; --ciano: #32ade6;
+  --vermelho: #ff3b30; --vermelho-suave: rgba(255, 59, 48, .1); --verde: #34c759; --verde-texto: #248a3d; --ciano: #32ade6;
   --sombra: 0 1px 1px rgba(0, 0, 0, .03), 0 8px 28px rgba(0, 0, 0, .06);
   --sombra-hover: 0 1px 1px rgba(0, 0, 0, .03), 0 14px 34px rgba(0, 0, 0, .1);
   --sombra-alta: 0 24px 80px rgba(0, 0, 0, .22), 0 2px 8px rgba(0, 0, 0, .08);
@@ -27,7 +27,7 @@
   --fundo: #000000; --cartao: #1c1c1e; --cartao-2: #2c2c2e; --texto: #f5f5f7; --texto-2: #a1a1a6; --texto-3: #6e6e73;
   --separador: rgba(84, 84, 88, .5); --vidro: rgba(22, 22, 24, .72); --vidro-forte: rgba(44, 44, 46, .95); --vidro-borda: rgba(255, 255, 255, .08);
   --azul: #0a84ff; --azul-suave: rgba(10, 132, 255, .2); --laranja: #ff9f0a; --laranja-suave: rgba(255, 159, 10, .18);
-  --vermelho: #ff453a; --vermelho-suave: rgba(255, 69, 58, .18); --verde: #30d158; --ciano: #64d2ff;
+  --vermelho: #ff453a; --vermelho-suave: rgba(255, 69, 58, .18); --verde: #30d158; --verde-texto: #30d158; --ciano: #64d2ff;
   --sombra: 0 0 0 1px rgba(255, 255, 255, .05); --sombra-hover: 0 0 0 1px rgba(255, 255, 255, .12);
   --sombra-alta: 0 24px 80px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .1);
   color-scheme: dark;
@@ -37,7 +37,7 @@
     --fundo: #000000; --cartao: #1c1c1e; --cartao-2: #2c2c2e; --texto: #f5f5f7; --texto-2: #a1a1a6; --texto-3: #6e6e73;
     --separador: rgba(84, 84, 88, .5); --vidro: rgba(22, 22, 24, .72); --vidro-forte: rgba(44, 44, 46, .95); --vidro-borda: rgba(255, 255, 255, .08);
     --azul: #0a84ff; --azul-suave: rgba(10, 132, 255, .2); --laranja: #ff9f0a; --laranja-suave: rgba(255, 159, 10, .18);
-    --vermelho: #ff453a; --vermelho-suave: rgba(255, 69, 58, .18); --verde: #30d158; --ciano: #64d2ff;
+    --vermelho: #ff453a; --vermelho-suave: rgba(255, 69, 58, .18); --verde: #30d158; --verde-texto: #30d158; --ciano: #64d2ff;
     --sombra: 0 0 0 1px rgba(255, 255, 255, .05); --sombra-hover: 0 0 0 1px rgba(255, 255, 255, .12);
     --sombra-alta: 0 24px 80px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .1);
     color-scheme: dark;
@@ -186,6 +186,8 @@ html.rolou .barra-topo { opacity: 1; }
 .gasto .ic { width: 13px; height: 13px; stroke-width: 2.4; }
 .selo { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--azul); color: #fff; letter-spacing: .01em; white-space: nowrap; }
 .selo.suave { background: var(--azul-suave); color: var(--azul); }
+.selo.verde { background: color-mix(in srgb, var(--verde) 18%, transparent); color: var(--verde-texto); }
+.selo.laranja { background: var(--laranja-suave); color: color-mix(in srgb, var(--laranja) 70%, var(--texto)); }
 .titulo-linha { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 44px 0 14px; }
 .titulo-linha h2 { margin: 0; }
 
@@ -302,6 +304,22 @@ html.rolou .barra-topo { opacity: 1; }
 .fontes-titulo { font-size: 13px; color: var(--texto-2); margin: 16px 0 6px; font-family: var(--fonte); font-weight: 600; }
 .fontes { margin: 0; padding-left: 20px; font-size: 14px; }
 .fontes li { margin: 3px 0; }
+.fontes li.nao-citada a { color: var(--texto-2); font-weight: 400; }
+.fontes li small { color: var(--texto-3); font-size: 12px; margin-left: 6px; }
+.teto { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+.teto .escada-titulo { margin: 0; }
+/* Simulado sem internet: lista no estilo dos Lembretes */
+dialog.alerta-sheet.folha { width: min(520px, calc(100% - 32px)); text-align: left; }
+dialog.alerta-sheet.folha h3 { padding: 22px 22px 4px; }
+dialog.alerta-sheet.folha p { padding: 0 22px 10px; font-size: 14px; }
+.tarefas-simulado { list-style: none; margin: 0; padding: 0 22px 10px; max-height: 52vh; overflow-y: auto; }
+.tarefas-simulado label { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; cursor: pointer; font-size: 14px; line-height: 1.4; }
+.tarefas-simulado li + li label { border-top: 1px solid var(--separador); }
+.marcador { appearance: none; -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--texto-3); flex: none; margin: 0;
+  display: grid; place-items: center; cursor: pointer; transition: background .2s, border-color .2s; }
+.marcador:checked { background: var(--azul); border-color: var(--azul); }
+.marcador:checked::after { content: ""; width: 5px; height: 10px; border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: translateY(-1px) rotate(45deg); }
+.marcador:checked + span { color: var(--texto-2); text-decoration: line-through; text-decoration-color: var(--texto-3); }
 .resposta .acoes { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--separador); }
 .falha { display: flex; gap: 10px; align-items: center; color: var(--vermelho); font-weight: 600; margin-top: 16px; }
 .artigos { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
@@ -461,6 +479,10 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
   <symbol id="i-desligar" viewBox="0 0 24 24"><path d="M12 3.5v8"/><path d="M7.2 6.3a7.5 7.5 0 1 0 9.6 0"/></symbol>
   <symbol id="i-chave" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 8.5-8.5M16.5 6.5l2.5 2.5M14 9l2 2"/></symbol>
   <symbol id="i-alerta" viewBox="0 0 24 24"><path d="M12 4.5 21 19.5H3z"/><path d="M12 10v4.2M12 17v.1"/></symbol>
+  <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 3.5 5 6v5.5c0 4.2 3 7.8 7 9 4-1.2 7-4.8 7-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-nuvem" viewBox="0 0 24 24"><path d="M7.5 18.5h9.5a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.6a4.5 4.5 0 0 0 1.4 8.9z"/><path d="M12 10.5v5.5M9.8 13.8 12 16l2.2-2.2"/></symbol>
+  <symbol id="i-lista" viewBox="0 0 24 24"><path d="M10 6.5h10M10 12h10M10 17.5h10"/><path d="m3.5 6.5 1.3 1.3 2.2-2.4M3.5 12l1.3 1.3L7 10.9M3.5 17.5l1.3 1.3 2.2-2.4"/></symbol>
+  <symbol id="i-disco" viewBox="0 0 24 24"><rect x="3.5" y="6" width="17" height="12" rx="2.5"/><path d="M7 14.5h.1M10 14.5h7"/></symbol>
 </svg>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 <div class="barra-topo" aria-hidden="true"><span id="barraTitulo">Início</span></div>
@@ -549,6 +571,12 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
         </div>
       </div>
 
+      <div class="faixa" id="saudeResumo" hidden style="margin:16px 0 0">
+        <span class="icone-app laranja"><svg class="ic"><use href="#i-escudo"/></svg></span>
+        <span id="saudeResumoTexto"></span>
+        <a class="botao cinza pequeno" href="#servicos">Ver</a>
+      </div>
+
       <div id="recentesBloco" hidden>
         <h2>Recentes</h2>
         <ul class="grupo simples" id="recentes"></ul>
@@ -565,6 +593,11 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
       <div style="margin-top:24px"><textarea class="campo" id="pergunta" placeholder="Ex.: Como tratar uma queimadura de segundo grau?" aria-label="Sua pergunta"></textarea></div>
       <p class="escada-titulo" id="modosRotulo" style="margin-top:20px">Como responder, do que gasta menos ao que gasta mais</p>
       <div class="escada" id="modos" role="radiogroup" aria-labelledby="modosRotulo"></div>
+      <div class="teto">
+        <span class="escada-titulo" id="tetoRotulo">Teto de gasto por pergunta</span>
+        <span class="segmentado" id="teto" role="group" aria-labelledby="tetoRotulo"></span>
+        <span class="dica" style="margin:0" id="tetoDica"></span>
+      </div>
       <div class="acoes-pergunta">
         <button class="botao" id="perguntarBotao" type="button">Perguntar</button>
         <button class="botao cinza" id="agoraBotao" type="button" hidden title="Para o raciocínio e responde com o que já foi encontrado">Responder agora</button>
@@ -582,6 +615,9 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
       <p class="rotulo-grupo">Modelos na memória</p>
       <ul class="grupo simples" id="modelos"><li class="secundario">Ligue o chat para ver os modelos carregados.</li></ul>
       <p class="dica">O servidor tira da memória o modelo parado há 15 minutos; descarregar libera a placa na hora.</p>
+      <p class="rotulo-grupo">Saúde do cofre</p>
+      <ul class="grupo" id="saude"><li class="secundario">Abra a Central para ver.</li></ul>
+      <p class="dica" id="saudeDiscos"></p>
       <p class="rotulo-grupo">Acesso</p>
       <ul class="grupo">
         <li><span class="icone-app cinza"><svg class="ic"><use href="#i-chave"/></svg></span><span class="textos"><b>Chave do chat</b><small>Na primeira vez, o chat pede a chave. Ela fica em A:\catalogo\chave-api.txt.</small></span><span class="lado"><button class="botao cinza pequeno" id="copiarChave" type="button">Copiar</button></span></li>
@@ -690,6 +726,14 @@ dialog.alerta-sheet p { padding: 0 20px 18px; margin: 0; font-size: 13px; color:
     <div class="alerta-botoes"><button id="confNao" value="nao">Cancelar</button><button id="confSim" value="sim">OK</button></div>
   </form>
 </dialog>
+<dialog class="alerta-sheet folha" id="simulado" aria-labelledby="simTitulo">
+  <form method="dialog">
+    <h3 id="simTitulo">Simulado sem internet</h3>
+    <p class="secundario">Uma vez por mês, tire a internet e veja se o cofre resolve sozinho. Marque o que deu certo; o que falhar mostra o que arrumar.</p>
+    <ul class="tarefas-simulado" id="simTarefas"></ul>
+    <div class="alerta-botoes"><button value="nao">Cancelar</button><button value="sim">Concluir</button></div>
+  </form>
+</dialog>
 <div class="avisos" id="avisos" role="status" aria-live="polite"></div>
 
 <script>
@@ -737,6 +781,21 @@ const ATALHOS = [
 const EXEMPLOS = ['Como purificar água da chuva?', 'Onde fica a Chapada dos Veadeiros?', 'Febre alta em criança', 'Traduzir “bom dia” para o inglês', 'Devo comprar painel solar ou gerador?', 'torniquete'];
 const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 const MESES_LONGOS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+// Teto de gasto por pergunta (o "orçamento de raciocínio" do Survival LLM, medido em Wh): chegou nele, a IA
+// responde na hora com o que já achou, como no "Responder agora".
+const TETOS = [[0, 'Sem teto'], [1, '1 Wh'], [3, '3 Wh']];
+// Simulado mensal sem internet (ideia do kit da localaimaster, 2026), com o que este cofre tem.
+const TAREFAS_SIMULADO = [
+  ['internet', 'Desligue a internet (Wi-Fi e cabo) antes de começar.'],
+  ['socorro', 'Primeiros socorros: em Emergência, abra “Fratura” e ache como imobilizar um braço.'],
+  ['agua', 'Pergunte com fonte “como purificar água da chuva?” e confira se as fontes aparecem citadas.'],
+  ['remedio', 'Remédio: busque na biblioteca para que serve o paracetamol e o limite por dia.'],
+  ['conserto', 'Conserto: ache no iFixit como trocar a bateria de um celular.'],
+  ['traduzir', 'Tradução: no chat, com o translategemma-12b, traduza “onde fica o hospital?” para o inglês.'],
+  ['energia', 'Energia: veja em Energia quanto o cofre gastou neste mês.'],
+  ['religar', 'Religue a internet.'],
+];
+const ICONE_CUIDADO = { integridade: 'escudo', novidades: 'nuvem', sincronizar: 'nuvem', simulado: 'lista' };
 
 let E = null;                 // ultimo estado da Central
 let relogio = null;           // proxima verificacao do estado
@@ -840,6 +899,7 @@ function trocarVista(focar) {
   if (v === 'energia') carregarEnergia();
   if (v === 'historico') carregarHistorico();
   if (v === 'biblioteca') carregarAcervo();
+  if (v === 'servicos') carregarSaude();
 }
 function mostrarVista(focar) {
   if (focar && document.startViewTransition && !document.hidden && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -889,6 +949,20 @@ function montar() {
       el('span', { class: 'lado' }, s.ponto, s.estado, s.ligarBotao, s.abrirLink)));
   }
   montarModos();
+  montarTeto();
+}
+
+function montarTeto() {
+  const caixa = $('#teto');
+  caixa.replaceChildren();
+  const atual = Number(lerPref('teto', '0'));
+  for (const [valor, nome] of TETOS) {
+    caixa.append(el('button', { type: 'button', 'aria-pressed': String(valor === atual), texto: nome,
+      onclick: () => { salvarPref('teto', String(valor)); montarTeto(); } }));
+  }
+  $('#tetoDica').textContent = atual
+    ? `Ao chegar em ${textoWh(atual)} (≈ ${textoReais(atual)}), a IA responde na hora com o que já achou.`
+    : 'A IA pensa o quanto precisar; Responder agora corta quando você quiser.';
 }
 
 function montarIdioma() {
@@ -1226,6 +1300,44 @@ async function carregarRecentes() {
       el('span', { class: 'lado' }, el('span', { class: 'seta', 'aria-hidden': 'true', texto: '›' }))))));
 }
 
+// ---------- Saude do cofre e simulado (ideias do Project N.O.M.A.D. e do kit da localaimaster) ----------
+function quandoFoi(dias) { return dias === null ? 'nunca feito' : dias === 0 ? 'hoje' : dias === 1 ? 'ontem' : `há ${dias} dias`; }
+function juntar(lista) { return lista.length < 2 ? lista.join('') : lista.slice(0, -1).join(', ') + ' e ' + lista[lista.length - 1]; }
+function tamanho(gb) { return gb >= 1000 ? (gb / 1024).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' TB' : gb.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' GB'; }
+
+async function carregarSaude() {
+  if (!CENTRAL) return;
+  let r;
+  try { r = await api('/api/saude'); } catch { return; }
+  $('#saude').replaceChildren(...r.itens.map(i => el('li', {},
+    iconeApp(ICONE_CUIDADO[i.id] || 'escudo', i.em_dia ? 'verde' : 'laranja'),
+    el('span', { class: 'textos' }, el('b', { texto: i.nome }), el('small', { texto: `${quandoFoi(i.dias)}, a cada ${i.a_cada} dias. ${i.como}` })),
+    el('span', { class: 'lado' }, i.id === 'simulado'
+      ? el('button', { class: 'botao cinza pequeno', type: 'button', texto: 'Fazer agora', onclick: abrirSimulado })
+      : el('span', { class: 'selo ' + (i.em_dia ? 'verde' : 'laranja'), texto: i.em_dia ? 'Em dia' : i.dias === null ? 'Nunca feito' : 'Atrasado' })))));
+  $('#saudeDiscos').textContent = r.discos.length
+    ? 'Espaço livre: ' + r.discos.map(d => `${d.nome}, ${tamanho(d.livre_gb)} de ${tamanho(d.total_gb)}`).join('; ') + '.' : '';
+  $('#saudeResumo').hidden = !r.pendentes.length;
+  $('#saudeResumoTexto').textContent = `Para o cofre seguir confiável: ${juntar(r.pendentes.map(p => p.toLowerCase()))}.`;
+}
+
+function abrirSimulado() {
+  const lista = $('#simTarefas'), d = $('#simulado');
+  lista.replaceChildren(...TAREFAS_SIMULADO.map(([id, texto]) => el('li', {},
+    el('label', {}, el('input', { type: 'checkbox', class: 'marcador', value: id }), el('span', { texto })))));
+  d.returnValue = '';
+  d.showModal();
+  d.addEventListener('close', async () => {
+    if (d.returnValue !== 'sim') return;
+    const feitos = [...lista.querySelectorAll('input:checked')].map(c => c.value);
+    try {
+      const r = await api('/api/simulado', { feitos, total: TAREFAS_SIMULADO.length });
+      avisar(`Simulado anotado: ${r.feitos} de ${r.total} tarefas deram certo.` + (r.feitos < r.total ? ' O que falhou mostra o que arrumar.' : ''));
+      carregarSaude();
+    } catch (erro) { avisar(`Não deu para anotar o simulado: ${erro.message}`, null, 'erro'); }
+  }, { once: true });
+}
+
 // ---------- Perguntar ----------
 function irPerguntar(texto, modo) {
   $('#pergunta').value = texto;
@@ -1263,13 +1375,19 @@ function renderizar(texto, fontes) {
 function cartaoResposta(r, pergunta) {
   const md = el('div', { class: 'md' });
   md.innerHTML = renderizar(r.resposta || '', r.fontes || []);
-  const topo = el('div', { class: 'resposta-topo' }, el('span', { class: 'selo suave', texto: NOME_MODO[r.modo] || 'Resposta' }));
+  // Fontes conferidas (ideia do Survival LLM): cada fonte diz se a resposta a citou ou se so foi lida.
+  const conferida = (r.fontes || []).some(f => 'citada' in f);
+  const topo = el('div', { class: 'resposta-topo' }, el('span', { class: 'selo suave', texto: NOME_MODO[r.modo] || 'Resposta' }),
+    conferida ? el('span', { class: 'selo verde', texto: 'Citações conferidas' }) : null);
   if (r.guardada) topo.append(el('span', { texto: `Guardada em ${r.guardada.quando_br}` }));
   else if (r.quando_br) topo.append(el('span', { texto: r.quando_br }));
   const cartao = el('article', { class: 'cartao resposta' }, topo, md);
   if (r.fontes && r.fontes.length) {
-    cartao.append(el('h3', { class: 'fontes-titulo', texto: 'Fontes' }),
-      el('ol', { class: 'fontes' }, r.fontes.map(f => el('li', {}, el('a', { href: f.link, target: '_blank', rel: 'noopener', texto: f.titulo })))));
+    const citadas = r.fontes.filter(f => f.citada).length;
+    cartao.append(el('h3', { class: 'fontes-titulo', texto: conferida ? `Fontes: ${citadas} de ${r.fontes.length} citadas na resposta` : 'Fontes' }),
+      el('ol', { class: 'fontes' }, r.fontes.map(f => el('li', { class: conferida && !f.citada ? 'nao-citada' : null },
+        el('a', { href: f.link, target: '_blank', rel: 'noopener', texto: f.titulo }),
+        conferida && !f.citada ? el('small', { texto: 'lida, não citada' }) : null))));
   }
   const acoes = el('div', { class: 'acoes' });
   if (r.gasto) acoes.append(gastoSelo(r.gasto));
@@ -1302,13 +1420,21 @@ function cartaoArtigos(r, pergunta) {
 let cronometro = null, fimIlha = null;
 function iniciarCronometro(watts) {
   const inicio = Date.now(), visor = $('#cronometro');
+  const teto = Number(lerPref('teto', '0'));
+  let estourou = false;
   visor.hidden = false;
   clearInterval(cronometro);
   const atualizar = () => {
     const s = (Date.now() - inicio) / 1000;
-    const wh = textoWh(watts * s / 3600);
-    visor.textContent = `${Math.round(s)} s com o PC em ~${watts} W: ${wh} até agora`;
+    const whAgora = watts * s / 3600, wh = textoWh(whAgora);
+    visor.textContent = `${Math.round(s)} s com o PC em ~${watts} W: ${wh} até agora` + (teto ? ` (teto ${textoWh(teto)})` : '');
     if (atividade && !atividade.fim) { atividade.tempo = `${Math.round(s)} s`; atividade.wh = wh; atualizarIlha(); }
+    const agora = $('#agoraBotao');
+    if (teto && !estourou && whAgora >= teto && !agora.hidden && !agora.disabled) {
+      estourou = true;
+      avisar(`Chegou no teto de ${textoWh(teto)}: a IA responde agora com o que já achou.`);
+      responderAgora();
+    }
   };
   atualizar();
   cronometro = setInterval(atualizar, 1000);
@@ -1514,6 +1640,8 @@ function acoesPaleta(q) {
     else lista.push({ titulo: 'Modo jogo: desligar todas as IAs', icone: 'jogo', cor: 'laranja', chaves: 'jogo jogar game', fazer: entrarModoJogo });
     lista.push({ titulo: 'Copiar a chave do chat', icone: 'chave', cor: 'cinza', chaves: 'api senha acesso', fazer: copiarChave });
     lista.push({ titulo: E && E.vigia ? 'Parar a vigia de desligar' : 'Ligar a vigia de desligar o PC parado', icone: 'desligar', cor: 'cinza', chaves: 'desligar vigia ocioso dormir', fazer: alternarVigia });
+    lista.push({ titulo: 'Saúde do cofre: o que conferir', icone: 'escudo', cor: 'verde', chaves: 'integridade sincronizar manutencao espaco disco', fazer: () => irPara('servicos') });
+    lista.push({ titulo: 'Fazer o simulado sem internet', icone: 'lista', cor: 'laranja', chaves: 'simulado treino teste offline', fazer: abrirSimulado });
   }
   lista.push({ titulo: 'Mudar o tema (claro, escuro, automático)', icone: 'tema', cor: 'cinza', chaves: 'cor noite escuro claro', fazer: trocarTema });
   for (const a of ATALHOS) lista.push({ titulo: `Emergência: ${a.pt}`, dica: 'abre os artigos', icone: 'cruz', cor: 'vermelho', chaves: a.en, fazer: () => abrirEmergencia(a) });
@@ -1593,7 +1721,7 @@ $('#paletaBusca').addEventListener('keydown', ev => {
   else if (ev.key === 'Tab') ev.preventDefault();
 });
 document.addEventListener('keydown', ev => {
-  if ($('#confirmacao').open) return;
+  if (document.querySelector('dialog[open]')) return;
   if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'k') { ev.preventDefault(); if ($('#paleta').hidden) abrirPaleta(); else fecharPaleta(); return; }
   if (!$('#paleta').hidden || digitando(ev.target) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
   if (ev.key === '/') { ev.preventDefault(); irPara('inicio'); $('#pedido').focus(); }
@@ -1634,6 +1762,7 @@ if (CENTRAL) {
   document.addEventListener('visibilitychange', () => { if (!document.hidden) verificar(); else clearTimeout(relogio); });
   verificar();
   carregarRecentes();
+  carregarSaude();
 } else {
   $('#avisoDisco').hidden = false;
   $('#blocoAgora').hidden = true;

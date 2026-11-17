@@ -279,6 +279,153 @@ class Responder(unittest.TestCase):
         self.assertFalse(corpo["chat_template_kwargs"]["enable_thinking"])
         self.assertNotIn("thinking_budget_tokens", corpo)
 
+    def test_laco_no_raciocinio_refaz_sem_raciocinar(self):
+        respostas = [{"texto": "", "timings": {}, "interrompido": False, "repetiu": "raciocinio"},
+                     {"texto": "Ferva a agua por 1 minuto [1].", "timings": {}, "interrompido": False, "repetiu": None}]
+        with mock.patch.object(sabio, "chat_em_fluxo", side_effect=respostas) as falso:
+            texto = sabio.responder("como purificar agua?", self.FONTES, "m", threading.Event())
+        self.assertEqual(texto, "Ferva a agua por 1 minuto [1].")
+        self.assertFalse(falso.call_args_list[1].args[0]["chat_template_kwargs"]["enable_thinking"])
+
+    def test_laco_na_resposta_avisa_que_cortou(self):
+        r = {"texto": "Ferva a agua [1].", "timings": {}, "interrompido": False, "repetiu": "texto"}
+        with mock.patch.object(sabio, "chat_em_fluxo", return_value=r):
+            texto = sabio.responder("como purificar agua?", self.FONTES, "m", threading.Event())
+        self.assertTrue(texto.endswith(sabio.AVISO_LACO))
+
+
+class _LlamaEmLaco(BaseHTTPRequestHandler):
+    """Imita um modelo que entra em laco: a mesma frase sem parar, na resposta ou no raciocinio."""
+    campo = "content"
+    desconectou = threading.Event()
+
+    def log_message(self, *a):
+        pass
+
+    def do_POST(self):
+        self.rfile.read(int(self.headers.get("Content-Length") or 0))
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream")
+        self.end_headers()
+        frases = ["Para purificar a agua, siga estes passos. "] + ["Ferva a agua por um minuto e deixe esfriar antes de beber. "] * 400
+        try:
+            for frase in frases:
+                self.wfile.write(f'data: {json.dumps({"choices": [{"delta": {self.campo: frase}}]})}\n\n'.encode())
+                self.wfile.flush()
+                time.sleep(0.002)
+            self.wfile.write(b"data: [DONE]\n\n")
+            self.wfile.flush()
+        except OSError:
+            type(self).desconectou.set()
+
+
+class GuardaContraLaco(unittest.TestCase):
+    """Ideia do Survival LLM: um modelo preso repetindo a mesma frase e cortado cedo, sem gastar a placa a toa."""
+
+    def setUp(self):
+        _LlamaEmLaco.desconectou.clear()
+        self.servidor = ThreadingHTTPServer(("127.0.0.1", 0), _LlamaEmLaco)
+        threading.Thread(target=self.servidor.serve_forever, daemon=True).start()
+        self.endereco = mock.patch.object(sabio, "LLM", f"http://127.0.0.1:{self.servidor.server_address[1]}")
+        self.endereco.start()
+
+    def tearDown(self):
+        self.endereco.stop()
+        self.servidor.shutdown()
+        self.servidor.server_close()
+
+    def test_laco_na_resposta_e_cortado_e_fica_uma_volta(self):
+        _LlamaEmLaco.campo = "content"
+        r = sabio.chat_em_fluxo({"model": "x", "messages": []})
+        self.assertEqual(r["repetiu"], "texto")
+        self.assertTrue(r["texto"].startswith("Para purificar a agua"))
+        self.assertLess(r["texto"].count("Ferva a agua"), 4)  # das 400 repeticoes ficou uma volta
+        self.assertTrue(_LlamaEmLaco.desconectou.wait(3))     # o servidor percebe a saida e para
+
+    def test_laco_no_raciocinio_e_percebido(self):
+        _LlamaEmLaco.campo = "reasoning_content"
+        r = sabio.chat_em_fluxo({"model": "x", "messages": []})
+        self.assertEqual(r["repetiu"], "raciocinio")
+        self.assertEqual(r["texto"], "")
+
+    def test_texto_comprido_sem_repeticao_nao_e_laco(self):
+        texto = " ".join(f"Passo {i}: faca a etapa numero {i} com calma e confira o resultado {i * 7}." for i in range(80))
+        self.assertIsNone(sabio.em_laco(texto))
+
+
+class ConferenciaDeCitacoes(unittest.TestCase):
+    """Ideia do Survival LLM: a citacao [n] tem de apontar para uma fonte que a IA leu de verdade."""
+
+    def test_normaliza_listas_e_intervalos(self):
+        texto, citadas, inventadas = sabio.conferir_citacoes("Ferva [1, 2]. Filtre [2-3].", 3)
+        self.assertEqual(texto, "Ferva [1][2]. Filtre [2][3].")
+        self.assertEqual((citadas, inventadas), ([1, 2, 3], []))
+
+    def test_tira_a_citacao_de_fonte_que_nao_existe(self):
+        texto, citadas, inventadas = sabio.conferir_citacoes("Ferva a agua [1]. Use cloro [7].", 3)
+        self.assertEqual(texto, "Ferva a agua [1]. Use cloro.")
+        self.assertEqual((citadas, inventadas), ([1], [7]))
+
+    def test_avisa_quando_inventa_ou_nao_cita(self):
+        texto, citadas = sabio.conferir_resposta("Use cloro [5].", 2)
+        self.assertIn("fonte que não existe ([5])", texto)
+        texto, citadas = sabio.conferir_resposta("Ferva a agua por um minuto.", 3)
+        self.assertIn("não citou nenhuma", texto)
+        self.assertEqual(citadas, [])
+
+    def test_sem_nota_quando_diz_que_as_fontes_nao_respondem(self):
+        texto, _ = sabio.conferir_resposta("As fontes fornecidas não respondem a essa pergunta.", 3)
+        self.assertNotIn("Conferido", texto)
+
+
+class RegrasDeSeguranca(unittest.TestCase):
+    def test_toda_resposta_do_cofre_leva_as_regras(self):
+        r = {"texto": "Ferva a agua [1].", "timings": {}, "interrompido": False, "repetiu": None}
+        with mock.patch.object(sabio, "chat_em_fluxo", return_value=r) as falso:
+            sabio.responder("pergunta", [("A", "http://x", "t")], "m", threading.Event())
+            sabio.responder_direto("pergunta", "m")
+        for chamada in falso.call_args_list:
+            sistema = chamada.args[0]["messages"][0]["content"]
+            for regra in ("192 (SAMU)", "monoxido de carbono", "dose"):
+                self.assertIn(regra, sistema)
+
+
+class SaudeDoCofre(unittest.TestCase):
+    """Ideia do N.O.M.A.D. e do kit da localaimaster: o painel diz o que esta atrasado, pelas datas dos registros."""
+
+    def setUp(self):
+        import tempfile
+        self.pasta = tempfile.TemporaryDirectory()
+        logs = Path(self.pasta.name)
+        (logs / "integridade-2026-10-29.txt").write_text("ok", encoding="utf-8")
+        (logs / "verificacao-2026-08-01.txt").write_text("ok", encoding="utf-8")
+        self.trocas = [mock.patch.object(central, "PASTA_LOGS", logs),
+                       mock.patch.object(central, "ARQ_SIMULADOS", logs / "simulados.csv")]
+        for t in self.trocas:
+            t.start()
+
+    def tearDown(self):
+        for t in self.trocas:
+            t.stop()
+        self.pasta.cleanup()
+
+    def test_em_dia_atrasado_e_nunca_feito(self):
+        itens = {i["id"]: i for i in central.saude_do_cofre(central.date(2026, 11, 17))["itens"]}
+        self.assertTrue(itens["integridade"]["em_dia"])              # 19 dias, a cada 90
+        self.assertEqual(itens["integridade"]["dias"], 19)
+        self.assertFalse(itens["novidades"]["em_dia"])               # 108 dias, a cada 30
+        self.assertIsNone(itens["sincronizar"]["ultima"])            # nunca feito
+        self.assertFalse(itens["simulado"]["em_dia"])
+
+    def test_simulado_registrado_fica_em_dia_e_so_guarda_ids(self):
+        r = central.registrar_simulado(["socorro", "agua", "<script>x"], 8)
+        self.assertEqual((r["feitos"], r["total"]), (3, 8))
+        linha = central.ARQ_SIMULADOS.read_text(encoding="utf-8").splitlines()[1]
+        self.assertNotIn("<", linha)
+        itens = {i["id"]: i for i in central.saude_do_cofre()["itens"]}
+        self.assertTrue(itens["simulado"]["em_dia"])
+        self.assertEqual(itens["simulado"]["dias"], 0)
+
 
 class RegistroDeGasto(unittest.TestCase):
     def test_registra_e_soma_o_mes(self):

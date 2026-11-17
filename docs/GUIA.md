@@ -115,6 +115,28 @@ O plano, do que rende mais para o que custa menos:
 
 Ficam em observação no catálogo, sem baixar: Ornith 1.5 9B, Harrier (embeddings), Granite Speech 5.0, VoxCPM2 e LTX-2.5. Não valem para esta placa, porque exigem placas mais novas (Blackwell) ou bem maiores: arquivos NVFP4, Nemotron 3.5 Transcribe, MiniMax H3 e Wan 2.7/3.0.
 
+### Ideias de projetos parecidos (17/11/2026)
+
+Pesquisa feita em 17/11/2026 nos projetos abertos mais parecidos com o cofre. Nenhum junta tudo o que o cofre tem (escada de esforço, conta de energia, conselho, modo jogo), mas cada um trouxe algo:
+
+| Projeto | O que é | O que veio para o cofre |
+| --- | --- | --- |
+| [Project N.O.M.A.D.](https://github.com/Crosstalk-Solutions/project-nomad) (Apache 2.0, ~44 mil estrelas, v1.35.1) | servidor offline de sobrevivência para Linux: Kiwix, IA com Ollama, cursos do Khan Academy (Kolibri), mapas, CyberChef e notas | o painel de saúde do cofre |
+| [Survival LLM](https://github.com/anonnerdfrenzy/survival-llm) (MIT, ~1,7 mil estrelas) | app de IA offline com 1,5 milhão de artigos e testes de segurança publicados | conferência das citações, regras de segurança, guarda contra laço e o teto de gasto (o orçamento de raciocínio dele, aqui em Wh) |
+| [civilization_node](https://github.com/emincb/civilization_node) (MIT) | IA local que consulta o Kiwix como ferramenta | o cofre já faz isso com o Agente do Cofre (MCP) |
+| [Kit da localaimaster](https://localaimaster.com/blog/offline-ai-survival-kit) (artigo de abril de 2026) | guia de um kit offline de ~200 GB | o simulado mensal sem internet e um prazo para conferir cada coisa |
+
+O que mudou:
+
+- **Citações conferidas.** Cada [n] da resposta é conferido contra as fontes que a IA leu. Citação de fonte inexistente sai, com um aviso; resposta sem nenhuma citação ganha um alerta. Na lista, as fontes não citadas aparecem como "lida, não citada".
+- **Regras de segurança em toda resposta** (com fonte, rápida e conselho): em risco de vida, primeiro ligar 192 ou 193; nunca gerador, churrasqueira ou carvão em lugar fechado; nada de dose inventada. Nos testes do Survival LLM, modelos pequenos erraram justamente nisso.
+- **Guarda contra laço.** Se a IA começa a repetir o mesmo trecho, na resposta ou no raciocínio, o cofre corta na hora: a placa não fica gastando à toa, e a resposta cortada não vai para as guardadas.
+- **Teto de gasto por pergunta** (Perguntar): sem teto, 1 Wh ou 3 Wh. Ao chegar nele, a IA responde com o que já achou, como no Responder agora.
+- **Saúde do cofre** (Serviços): quando foram a conferência dos arquivos, as novidades, a sincronização e o simulado, com o prazo de cada um, e o espaço livre nos discos. O Início avisa o que estiver atrasado.
+- **Simulado sem internet**, uma vez por mês: oito tarefas (primeiros socorros, água, remédio, conserto, tradução, energia). Ao concluir, a data fica anotada em `A:\logs\simulados.csv`.
+
+Ficaram para depois, porque precisam de download grande ou dos modelos ligados: cursos do Khan Academy em português pelo Kolibri; um piso de relevância no reordenador (falta medir as notas dele aqui); e um conjunto de perguntas de emergência para avaliar os modelos.
+
 ## Seu hardware e o sistema
 
 O PC roda bem modelos de até cerca de 45 GB: a placa de vídeo segura 12 GB e o resto fica nos 64 GB de RAM. O Nemotron 74B (48 GB) ainda funciona bem; o gpt-oss-120b (59 GB) funciona, mas ocupa toda a RAM: feche os outros programas antes de usá-lo.
@@ -168,8 +190,8 @@ Numa janela estreita a barra lateral vira uma coluna de ícones; no celular, uma
 | Seção | Para quê |
 | --- | --- |
 | Início | **"Do que você precisa?"**: escreva com suas palavras e a Central mostra o jeito que resolve gastando menos energia (veja "Escada de esforço" abaixo). Também traz os atalhos de emergência, os anéis do PC, as perguntas recentes (abrir uma não gasta nada) e os botões para abrir cada ferramenta. |
-| Perguntar | Escolha na escada quanto esforço a resposta merece. Respostas citam as fontes com links e têm o botão **Responder agora**. |
-| Serviços | Liga e abre o chat, a biblioteca, o conselho e o ComfyUI, com o estado e o gasto de cada um. Mostra os modelos na memória (com botão para descarregar) e copia a chave do chat. |
+| Perguntar | Escolha na escada quanto esforço a resposta merece. Respostas citam as fontes com links e têm o botão **Responder agora**. As citações são conferidas (cada fonte diz se foi citada ou só lida), e o **teto de gasto** faz a IA responder na hora ao chegar em 1 ou 3 Wh. |
+| Serviços | Liga e abre o chat, a biblioteca, o conselho e o ComfyUI, com o estado e o gasto de cada um. Mostra os modelos na memória (com botão para descarregar) e copia a chave do chat. Também mostra a **saúde do cofre**: o que conferir e quando, o simulado sem internet e o espaço livre nos discos. |
 | Biblioteca | Busca nas bibliotecas, emergência e o acervo inteiro (68 bibliotecas), com filtro, onde cada uma está e o link para abrir. |
 | Energia | Gasto do mês por tarefa, os últimos 6 meses e quanto custa o PC parado ligado. |
 | Histórico | As perguntas já respondidas, com busca. Abrir uma resposta guardada não gasta nada; dá para esquecer as que não quiser. |
@@ -241,7 +263,7 @@ As ferramentas só leem: nada de comandos nem de escrita em arquivos. `ler_artig
 
 **Modo jogo.** Antes de jogar, use a opção 12 do menu ou o botão **Modo jogo** na Central ou no painel do conselho: fecha o chat, a biblioteca, o conselho, o ComfyUI, o Ollama e a própria Central, e libera a placa de vídeo, a memória e o disco. Enquanto ele estiver ligado, nada das IAs abre (nem a verificação semanal nem a sincronização) e o menu só deixa usar as opções leves. Para sair: a opção 12 de novo, ou `Painel.cmd` e "Sair do modo jogo".
 
-Testado neste PC de 25/10 a 06/11/2026:
+Testado neste PC de 25/10 a 17/11/2026:
 
 | Teste | Resultado | Tempo |
 | --- | --- | --- |
@@ -279,6 +301,7 @@ Testado neste PC de 25/10 a 06/11/2026:
 | Busca com as bibliotecas novas (05/11) | a Low-tech Magazine, em 11 idiomas, fazia o Kiwix recusar a busca conjunta em inglês (o cofre caía no plano lento, uma biblioteca por vez); corrigido: as multilíngues buscam sozinhas, e a busca voltou a 4 pedidos (3,9 s) com Arduino, Bicicletas e Sustentabilidade nos resultados | 3,9 s |
 | Central no estilo da Apple (06/11) | conferida no navegador nas sete seções, em tela grande (1440 px), janela estreita e celular (375 px, sem rolagem lateral), nos temas claro e escuro; procura (Ctrl+K), alertas de confirmação, ilha e anéis com as leituras reais; 47 testes automáticos passando | na hora |
 | Vigia que se recupera (06/11) | encerrada de fora de propósito, foi reaberta pela tarefa agendada na repetição seguinte; `-Parar` deixou a tarefa desativada | 600 s |
+| Ideias de projetos parecidos (17/11) | um modelo falso repetindo a mesma frase 400 vezes foi cortado em menos de 4 voltas, e o servidor parou de gerar; citações inventadas saíram; o teto de 1 Wh disparou o Responder agora uma vez; saúde do cofre com as datas reais dos registros; 59 testes passando | na hora |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 7). Exemplos em `A:\dev\midia-gerada`.
 

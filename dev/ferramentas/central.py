@@ -20,12 +20,14 @@ import ctypes
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import threading
 import time
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
+from datetime import date, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -222,6 +224,73 @@ def pastas_conhecimento() -> list[Path]:
     return [p for p in pastas if p.is_dir()]
 
 
+# ---------- Saude do cofre ----------
+# Ideia do Project N.O.M.A.D. (painel de saude) e do kit da localaimaster (simulado mensal sem internet, 2026):
+# o cofre so serve na hora do aperto se for conferido de tempos em tempos. As datas saem dos registros em logs\.
+PASTA_LOGS = RAIZ / "logs"
+ARQ_SIMULADOS = PASTA_LOGS / "simulados.csv"
+CUIDADOS = [
+    {"id": "integridade", "nome": "Conferência dos arquivos", "padrao": "integridade-*.txt", "dias": 90,
+     "como": "Menu, opção 16: confere pelo SHA256 se algum arquivo estragou com o tempo."},
+    {"id": "novidades", "nome": "Novidades do catálogo", "padrao": "verificacao-*.txt", "dias": 30,
+     "como": "Menu, opção 14 (com internet): vê se saíram versões novas dos modelos e das bibliotecas."},
+    {"id": "sincronizar", "nome": "Sincronização", "padrao": "sincronizar-*.txt", "dias": 60,
+     "como": "Menu, opção 15 (com internet): baixa o que mudou e confere cada arquivo."},
+    {"id": "simulado", "nome": "Simulado sem internet", "padrao": None, "dias": 30,
+     "como": "Desligue a internet e resolva a lista de tarefas: mostra se o cofre se vira sozinho."},
+]
+
+
+def _ultima_data(padrao: str | None) -> date | None:
+    if padrao is None:  # o simulado fica no proprio registro, uma linha por simulado
+        try:
+            linhas = ARQ_SIMULADOS.read_text(encoding="utf-8").splitlines()[1:]
+            return max(date.fromisoformat(l[:10]) for l in linhas if l.strip()) if linhas else None
+        except (OSError, ValueError):
+            return None
+    datas = [date.fromisoformat(m.group(1)) for p in PASTA_LOGS.glob(padrao)
+             if (m := re.search(r"(\d{4}-\d{2}-\d{2})", p.name))]
+    return max(datas) if datas else None
+
+
+def saude_do_cofre(hoje: date | None = None) -> dict:
+    hoje = hoje or date.today()
+    itens = []
+    for c in CUIDADOS:
+        ultima = _ultima_data(c["padrao"])
+        dias = (hoje - ultima).days if ultima else None
+        itens.append({"id": c["id"], "nome": c["nome"], "como": c["como"], "a_cada": c["dias"],
+                      "ultima": ultima.isoformat() if ultima else None, "dias": dias,
+                      "em_dia": dias is not None and dias <= c["dias"]})
+    discos = []
+    locais = [("SSD, o núcleo", RAIZ.anchor)]
+    try:
+        raiz_cofre = json.loads(CATALOGO.read_text(encoding="utf-8-sig")).get("cofre", {}).get("raiz")
+        if raiz_cofre:
+            locais.append(("HD, o cofre", raiz_cofre))
+    except Exception:
+        pass
+    for nome, caminho in locais:
+        try:
+            u = shutil.disk_usage(caminho)
+            discos.append({"nome": nome, "livre_gb": round(u.free / 1024 ** 3, 1), "total_gb": round(u.total / 1024 ** 3)})
+        except OSError:
+            pass
+    return {"itens": itens, "discos": discos, "pendentes": [i["nome"] for i in itens if not i["em_dia"]]}
+
+
+def registrar_simulado(feitos: list, total: int) -> dict:
+    """Anota um simulado: quando, quantas tarefas deram certo e quais (so ids curtos, nada do que a pessoa digitou)."""
+    ids = [re.sub(r"[^a-z0-9-]", "", str(x).lower())[:30] for x in feitos][:30]
+    PASTA_LOGS.mkdir(parents=True, exist_ok=True)
+    novo = not ARQ_SIMULADOS.exists()
+    with ARQ_SIMULADOS.open("a", encoding="utf-8") as f:
+        if novo:
+            f.write("data;feitos;total;tarefas\n")
+        f.write(f"{datetime.now().isoformat(timespec='seconds')};{len(ids)};{int(total)};{','.join(ids)}\n")
+    return {"ok": True, "feitos": len(ids), "total": int(total)}
+
+
 def acervo() -> dict:
     """Bibliotecas do catalogo: o que cada uma tem, onde esta (SSD ou HD) e o link quando a biblioteca esta ligada."""
     try:
@@ -409,6 +478,8 @@ class Central(BaseHTTPRequestHandler):
             self._json(200, acervo())
         elif rota == "/api/energia":
             self._json(200, painel_energia())
+        elif rota == "/api/saude":
+            self._json(200, saude_do_cofre())
         elif rota == "/api/chave":
             # So esta pagina le a resposta: a Central nao libera CORS, barra nomes de dominio (DNS rebinding)
             # e recusa o que o navegador marca como vindo de outro site, mesmo sem Origin.
@@ -443,6 +514,8 @@ class Central(BaseHTTPRequestHandler):
                 self._json(200, vigia(bool(corpo.get("ligar"))))
             elif self.path == "/api/esquecer" and corpo.get("id"):
                 self._json(200, {"ok": HISTORICO.esquecer(str(corpo["id"]))})
+            elif self.path == "/api/simulado" and isinstance(corpo.get("feitos"), list):
+                self._json(200, registrar_simulado(corpo["feitos"], int(corpo.get("total") or 0)))
             elif self.path == "/api/agora":
                 AGORA.set()
                 PEDIU_AGORA.set()
@@ -529,7 +602,9 @@ class Central(BaseHTTPRequestHandler):
             segundos = time.time() - inicio
             wh = watts * segundos / 3600
             sabio.registrar_gasto(tarefa, segundos, watts)
-            interrompida = PEDIU_AGORA.is_set() or "(resposta interrompida a pedido)" in r["resposta"]
+            # Cortada a pedido ou por laco nao fica guardada como completa (a proxima vez pergunta de novo).
+            interrompida = (PEDIU_AGORA.is_set() or "(resposta interrompida a pedido)" in r["resposta"]
+                            or sabio.AVISO_LACO.strip() in r["resposta"])
             item = HISTORICO.guardar(pergunta, modo, r["resposta"], r.get("fontes"), wh, segundos, r["modelo"], interrompida)
             evento({"tipo": "final", "modo": modo, **r, "id": item["id"],
                     "gasto": f"{segundos:.0f} s com o PC em ~{watts:.0f} W: {texto_custo(wh)}"})

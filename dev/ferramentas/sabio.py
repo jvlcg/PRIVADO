@@ -159,11 +159,33 @@ def http_json(url: str, corpo: dict | None = None, timeout: int = 600) -> dict:
         return json.loads(r.read().decode("utf-8"))
 
 
+# Guarda contra laco: um modelo que entra em repeticao gasta a placa a toa ate o limite de tokens (o Survival LLM
+# registrou um preso 94 minutos). Se o fim do texto aparece REPETICAO_VEZES vezes na janela, e laco.
+REPETICAO_TRECHO = 60
+REPETICAO_VEZES = 4
+REPETICAO_JANELA = 2400
+AVISO_LACO = "\n\n(resposta cortada: a IA começou a repetir o mesmo trecho)"
+
+
+def em_laco(texto: str) -> int | None:
+    """Se o texto termina num trecho que se repete sem parar (a IA entrou em laco), devolve onde cortar:
+    logo depois da primeira volta do laco. Senao, None."""
+    if len(texto) < 400:
+        return None
+    fim = texto[-REPETICAO_TRECHO:]
+    if len(fim.strip()) < 12 or texto[-REPETICAO_JANELA:].count(fim) < REPETICAO_VEZES:
+        return None
+    primeira = texto.find(fim)
+    segunda = texto.find(fim, primeira + 1)
+    return segunda if segunda > 0 else primeira
+
+
 def chat_em_fluxo(corpo: dict, parar: threading.Event | None = None) -> dict:
     """Pede ao llama-server em streaming, numa thread. Se `parar` acender ("Responder agora"), derruba a
-    conexao (o servidor para de gerar e de gastar a placa) e devolve o texto que ja veio."""
+    conexao (o servidor para de gerar e de gastar a placa) e devolve o texto que ja veio. Se a IA entrar em
+    laco (o mesmo trecho sem parar, na resposta ou no raciocinio), corta tambem: `repetiu` diz onde."""
     parar = parar or threading.Event()
-    estado = {"texto": [], "timings": {}, "erro": None, "sock": None}
+    estado = {"texto": [], "raciocinio": [], "timings": {}, "erro": None, "sock": None, "repetiu": None}
     destino = urllib.parse.urlsplit(LLM)
 
     def trabalhar() -> None:
@@ -177,6 +199,7 @@ def chat_em_fluxo(corpo: dict, parar: threading.Event | None = None) -> dict:
             resp = conexao.getresponse()
             if resp.status != 200:
                 raise RuntimeError(f"HTTP {resp.status}: {resp.read()[:300].decode('utf-8', 'replace')}")
+            pedacos = 0
             for linha in resp:
                 if not linha.startswith(b"data: "):
                     continue
@@ -186,11 +209,22 @@ def chat_em_fluxo(corpo: dict, parar: threading.Event | None = None) -> dict:
                 j = json.loads(carga)
                 estado["timings"] = j.get("timings") or estado["timings"]
                 for escolha in j.get("choices") or []:
-                    pedaco = (escolha.get("delta") or {}).get("content")
-                    if pedaco:
-                        estado["texto"].append(pedaco)
+                    delta = escolha.get("delta") or {}
+                    if delta.get("content"):
+                        estado["texto"].append(delta["content"])
+                    if delta.get("reasoning_content"):
+                        estado["raciocinio"].append(delta["reasoning_content"])
+                pedacos += 1
+                if pedacos % 16 == 0:  # conferir a cada 16 pedacos custa quase nada
+                    if em_laco("".join(estado["texto"])) is not None:
+                        estado["repetiu"] = "texto"
+                    elif em_laco("".join(estado["raciocinio"][-800:])) is not None:
+                        estado["repetiu"] = "raciocinio"
+                    if estado["repetiu"]:
+                        conexao.close()  # o llama-server percebe a saida e para de gerar
+                        break
         except Exception as erro:
-            if not parar.is_set():
+            if not parar.is_set() and not estado["repetiu"]:
                 estado["erro"] = erro
 
     t = threading.Thread(target=trabalhar, daemon=True)
@@ -209,7 +243,10 @@ def chat_em_fluxo(corpo: dict, parar: threading.Event | None = None) -> dict:
             break
     if estado["erro"]:
         raise estado["erro"]
-    return {"texto": "".join(estado["texto"]).strip(), "timings": estado["timings"], "interrompido": interrompido}
+    texto = "".join(estado["texto"])
+    if estado["repetiu"] == "texto":
+        texto = texto[:em_laco(texto)]  # fica a primeira volta do laco, o resto era repeticao
+    return {"texto": texto.strip(), "timings": estado["timings"], "interrompido": interrompido, "repetiu": estado["repetiu"]}
 
 
 def http_texto(url: str, timeout: int = 60) -> str:
@@ -332,13 +369,23 @@ def reordenar(pergunta: str, trechos: list[str], quantos: int) -> list[int]:
         return list(range(min(quantos, len(trechos))))
 
 
+# Regras que os testes de outros projetos mostraram necessarias (Survival LLM, 2026: modelos pequenos chegaram a
+# aceitar gerador perto de casa e a inventar dose). Valem para toda resposta do cofre, com ou sem fonte.
+REGRAS_SEGURANCA = (
+    "Regras de seguranca: em emergencia com risco de vida, comece mandando ligar 192 (SAMU) ou 193 (Bombeiros), "
+    "se houver telefone. Nunca indique gerador, churrasqueira, carvao, fogareiro ou motor ligado dentro de casa, "
+    "na garagem ou em lugar fechado: o monoxido de carbono mata. Nao invente dose de remedio: so diga a dose que "
+    "estiver escrita na fonte, citando; sem fonte, mande conferir na bula ou com um profissional de saude."
+)
+
+
 def responder(pergunta: str, fontes: list[tuple[str, str, str]], modelo: str, parar: threading.Event | None = None) -> str:
     contexto = "\n\n".join(f"[{i}] {titulo}\n{trecho}" for i, (titulo, _, trecho) in enumerate(fontes, 1))
     sistema = (
         "Voce responde em portugues do Brasil usando SOMENTE as fontes fornecidas. "
-        "Cite as fontes com [1], [2] logo depois de cada afirmacao. "
-        "Se as fontes nao responderem a pergunta, diga isso claramente em vez de inventar. "
-        "Em temas de saude ou seguranca, inclua os sinais de alerta e quando procurar ajuda."
+        "Cite as fontes com [1], [2] logo depois de cada afirmacao, so com os numeros das fontes que existem. "
+        "Responda com o que leu: se as fontes nao responderem a pergunta, diga isso claramente em vez de inventar. "
+        "Em temas de saude ou seguranca, inclua os sinais de alerta e quando procurar ajuda. " + REGRAS_SEGURANCA
     )
     corpo = {
         "model": modelo,
@@ -358,14 +405,19 @@ def responder(pergunta: str, fontes: list[tuple[str, str, str]], modelo: str, pa
         corpo.pop("thinking_budget_tokens")
         parar.clear()
     r = chat_em_fluxo(corpo, parar)
+    if r.get("repetiu") == "texto":
+        return r["texto"] + AVISO_LACO
     if r["interrompido"] and len(r["texto"]) >= 80:
         return r["texto"] + "\n\n(resposta interrompida a pedido)"
-    if not r["texto"] or r["interrompido"]:
-        # O raciocinio gastou tudo, ou pediram "Responder agora" enquanto ainda raciocinava: de novo, direto.
+    if not r["texto"] or r["interrompido"] or r.get("repetiu") == "raciocinio":
+        # O raciocinio gastou tudo, entrou em laco, ou pediram "Responder agora" enquanto ainda raciocinava:
+        # de novo, direto.
         corpo["chat_template_kwargs"] = direto
         corpo.pop("thinking_budget_tokens", None)
         parar.clear()
         r = chat_em_fluxo(corpo, parar)
+        if r.get("repetiu") == "texto":
+            r["texto"] += AVISO_LACO
         if r["interrompido"]:
             r["texto"] += "\n\n(resposta interrompida a pedido)"
     return r["texto"]
@@ -516,14 +568,58 @@ def responder_direto(pergunta: str, modelo: str, parar: threading.Event | None =
     corpo = {"model": modelo, "max_tokens": 1500,
              "chat_template_kwargs": {"enable_thinking": False, "reasoning_effort": "low"},
              "messages": [{"role": "system", "content": "Responda em portugues do Brasil, de forma curta e pratica. "
-                           "Em temas de saude ou seguranca, inclua sinais de alerta e quando procurar ajuda."},
+                           "Em temas de saude ou seguranca, inclua sinais de alerta e quando procurar ajuda. "
+                           + REGRAS_SEGURANCA},
                           {"role": "user", "content": pergunta}]}
     r = chat_em_fluxo(corpo, parar)
     if r["interrompido"] and len(r["texto"]) < 80:
         # Pediram "Responder agora" antes de sair quase nada: uma resposta bem curta, sem esperar mais.
         r = chat_em_fluxo({**corpo, "max_tokens": 300}) | {"interrompido": True}
-    texto = r["texto"] + ("\n\n(resposta interrompida a pedido)" if r["interrompido"] else "")
+    texto = r["texto"] + (AVISO_LACO if r.get("repetiu") == "texto" else "")
+    texto += "\n\n(resposta interrompida a pedido)" if r["interrompido"] else ""
     return "_(Resposta rapida, sem consultar a biblioteca: confira antes de seguir.)_\n\n" + texto
+
+
+# Conferencia das citacoes (ideia do Survival LLM, 2026): modelos citam fonte que nao leram. Aqui as citacoes
+# [n] sao conferidas contra as fontes que a IA recebeu de fato.
+_CITACAO = re.compile(r"\[(\d+(?:\s*(?:,|;|-|–|\be\b)\s*\d+)*)\]")
+_SEM_RESPOSTA = re.compile(r"(fontes?|trechos?)( fornecid\w+)? nao (respond|traz|trazem|cont|fala|menciona|explica)"
+                           r"|nao (encontrei|achei|ha|tem) (informac|nada|resposta)")
+
+
+def conferir_citacoes(texto: str, n_fontes: int) -> tuple[str, list[int], list[int]]:
+    """Normaliza [1, 2] e [1-3] em [1][2][3], tira as citacoes de fontes que nao existem e devolve
+    (texto, citadas, inventadas)."""
+    citadas, inventadas = set(), set()
+
+    def trocar(m: re.Match) -> str:
+        numeros = []
+        for parte in re.split(r"\s*(?:,|;|\be\b)\s*", m.group(1)):
+            a, _, b = parte.replace("–", "-").partition("-")
+            if a.strip().isdigit() and b.strip().isdigit() and 0 < int(b) - int(a) < 20:
+                numeros += range(int(a), int(b) + 1)
+            elif a.strip().isdigit():
+                numeros.append(int(a))
+        validos = [n for n in numeros if 1 <= n <= n_fontes]
+        citadas.update(validos)
+        inventadas.update(n for n in numeros if n not in validos)
+        return "".join(f"[{n}]" for n in dict.fromkeys(validos))
+
+    texto = _CITACAO.sub(trocar, texto)
+    texto = re.sub(r"[ \t]+([.,;:!?])", r"\1", texto)  # o espaco que sobrou onde a citacao saiu
+    return texto, sorted(citadas), sorted(inventadas)
+
+
+def conferir_resposta(texto: str, n_fontes: int) -> tuple[str, list[int]]:
+    """A resposta com as citacoes conferidas e, quando preciso, uma nota no fim dizendo o que se achou."""
+    texto, citadas, inventadas = conferir_citacoes(texto, n_fontes)
+    notas = []
+    if inventadas:
+        lista = ", ".join(f"[{n}]" for n in inventadas)
+        notas.append(f"_(Conferido: a resposta citava fonte que não existe ({lista}); a citação foi tirada.)_")
+    if n_fontes and not citadas and not _SEM_RESPOSTA.search(sem_acento(texto).lower()):
+        notas.append("_(Conferido: a resposta não citou nenhuma das fontes lidas. Confira nos artigos abaixo antes de seguir.)_")
+    return (texto + "\n\n" + "\n".join(notas)) if notas else texto, citadas
 
 
 def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int = 3, maximo: int = 12, n_trechos: int = 6,
@@ -587,8 +683,9 @@ def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int =
         melhores = reordenar(pergunta, [f"{origem[i][0]}\n{t}" for i, t in enumerate(trechos)], n_trechos)
     fontes = [(origem[i][0], origem[i][1], trechos[i]) for i in melhores]
     avisar(f"Escrevendo a resposta com {modelo}" + (" (direto, sem raciocinar)" if parar.is_set() else ""))
-    return {"resposta": responder(pergunta, fontes, modelo, parar), "termos": termos,
-            "fontes": [{"titulo": t, "link": l} for t, l, _ in fontes]}
+    resposta, citadas = conferir_resposta(responder(pergunta, fontes, modelo, parar), len(fontes))
+    return {"resposta": resposta, "termos": termos,
+            "fontes": [{"titulo": t, "link": l, "citada": i in citadas} for i, (t, l, _) in enumerate(fontes, 1)]}
 
 
 def cmd_perguntar(args) -> None:

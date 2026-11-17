@@ -80,7 +80,8 @@ SISTEMA_MEMBRO = (
     "em ate umas 350 palavras (o relator escreve a versao completa). "
     "Mostre o raciocinio quando houver conta ou logica, com as contas em texto simples, sem LaTeX "
     "(ex.: 200 W x 4 h = 800 Wh). Se nao tiver certeza de algo, diga claramente em vez "
-    "de inventar. Em temas de saude ou seguranca, inclua os sinais de alerta e quando procurar ajuda."
+    "de inventar. Em temas de saude ou seguranca, inclua os sinais de alerta e quando procurar ajuda. "
+    + sabio.REGRAS_SEGURANCA
 )
 PEDIDO_REVISAO = (
     "Os outros membros do conselho responderam a mesma pergunta assim:\n\n{outras}\n\n"
@@ -98,6 +99,7 @@ SISTEMA_RELATOR = (
     "marcadores de citacao.\n"
     "- No corpo da resposta nao fale em 'Resposta 1' ou 'membros'.\n"
     "- Escreva contas em texto simples, sem LaTeX (ex.: 889 Wh / 0,8 = 1.111 Wh).\n"
+    "- " + sabio.REGRAS_SEGURANCA + " Se alguma resposta quebrar essas regras, corrija.\n"
     "Termine com uma secao curta '### Como o conselho decidiu': pontos de consenso, divergencias (e o lado "
     "que voce adotou, com o motivo em uma frase) e o grau de confianca (alto, medio ou baixo)."
 )
