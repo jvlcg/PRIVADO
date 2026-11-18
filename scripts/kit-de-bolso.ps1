@@ -41,8 +41,11 @@ $ArquivoFicha     = Join-Path $Raiz 'dev\historico\ficha-medica.json'
 $PortaKit         = 8484
 $LimiteFat32      = [int64]4294967295
 $Bloco            = 4MB
-$EscritaEstimada  = 15e6    # bytes/s de um pen drive comum; a copia mede o de verdade
-$LeituraEstimada  = 30e6
+$EscritaEstimada  = 7e6     # bytes/s de um pen drive USB 2.0 comum (medido: 6,4 MB/s gravando, 20 MB/s lendo)
+$LeituraEstimada  = 20e6
+# O ultimo kit num pen drive mediu a velocidade de verdade: a estimativa usa a dele.
+$UltimoKit = Ler-Json $ArquivoUltimoKit
+if ($UltimoKit -and $UltimoKit.removivel -and [double]$UltimoKit.mb_s -gt 0) { $EscritaEstimada = [double]$UltimoKit.mb_s * 1e6 }
 $Utf8SemBom       = New-Object Text.UTF8Encoding $false
 
 # Leitura direta do disco (FILE_FLAG_NO_BUFFERING): a memoria do Windows nao responde no lugar do pen drive,
@@ -241,10 +244,15 @@ function Montar-Plano($dest) {
         $presos = $novos
     }
 
-    [int64]$aCopiar = 0
-    foreach ($c in $escolha.dentro) { if ($existentes[$c.arquivo] -ne $c.tamanho) { $aCopiar += $c.tamanho } }
-    [int64]$aConferir = 0
-    foreach ($c in $escolha.dentro) { $aConferir += $c.tamanho }
+    # O que ja esta no destino e o manifesto diz que foi conferido nao e copiado nem relido de novo.
+    $manifesto = Ler-Json (Join-Path $pastaProg 'manifesto.json')
+    $jaConferidos = @{}
+    if ($manifesto) { foreach ($b in @($manifesto.bibliotecas)) { if ($b.arquivo) { $jaConferidos[[string]$b.arquivo] = [string]$b.sha256 } } }
+    [int64]$aCopiar = 0; [int64]$aConferir = 0
+    foreach ($c in $escolha.dentro) {
+        if ($existentes[$c.arquivo] -ne $c.tamanho) { $aCopiar += $c.tamanho; $aConferir += $c.tamanho }
+        elseif ($jaConferidos[$c.arquivo] -ne $c.sha256) { $aConferir += $c.tamanho }
+    }
     $segundos = $aCopiar / $EscritaEstimada + $aConferir / $LeituraEstimada
     $e = Energia-Catalogo
     $watts = $e.tarefas.'kit-de-bolso'.watts
@@ -292,7 +300,7 @@ function Mostrar-Plano($plano) {
     Info ''
     if ($ComFicha) { Info 'Ficha medica: vai junto (Ficha medica.html). Dado pessoal: se o pen drive se perder, a ficha vai junto.' }
     else { Info 'Ficha medica: nao vai (dado pessoal). Para levar, rode com -ComFicha.' }
-    Info "Tempo estimado: ~$(Texto-Duracao $plano.segundos) (copia a ~15 MB/s e releitura para conferir; depende do pen drive)."
+    Info ([string]::Format($CulturaBR, 'Tempo estimado: ~{0} (copia a ~{1:N1} MB/s e releitura para conferir; depende do pen drive).', (Texto-Duracao $plano.segundos), $EscritaEstimada / 1e6))
     Mostrar-Estimativa 'kit-de-bolso' (Texto-Custo $plano.wh)
 }
 

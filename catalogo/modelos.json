@@ -57,7 +57,7 @@
       "testar":       { "wh": 0.7, "unidade": "", "origem": "estimado (~20 s)" },
       "vigia":        { "wh": 0, "unidade": "", "texto": "economiza: desliga o PC esquecido ligado" },
       "gigante":      { "wh": 23, "watts": 170, "unidade": "por pergunta a um modelo do HD (gpt-oss-120b, Nemotron)", "origem": "estimado (~8 min com o carregamento)" },
-      "kit-de-bolso": { "wh": 55, "watts": 120, "unidade": "por kit de 16 GB (~27 min)", "origem": "estimado: PC parado + copia e releitura no pen drive" },
+      "kit-de-bolso": { "wh": 114, "watts": 120, "unidade": "por kit de 16 GB (~1 h num pen drive USB 2.0)", "origem": "medido em 17/11/2026: 57 min, gravando a 6,4 MB/s" },
       "trocar-modelo": { "wh": 3.5, "watts": 170, "unidade": "por troca com teste (baixar soma ~25 Wh a cada 10 GB)", "origem": "estimado: ~75 s de teste na placa" }
     }
   },
