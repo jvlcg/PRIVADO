@@ -841,7 +841,7 @@ html.sem-movimento *, html.sem-movimento *::before, html.sem-movimento *::after 
       <div class="cartao" style="padding:0;overflow:hidden">
       <table class="tabela">
         <thead><tr><th>Para</th><th>Use</th><th>Observação</th></tr></thead>
-        <tbody>
+        <tbody id="qualIa">
           <tr><td>Conversar rápido</td><td><code>gemma-4-12b-qat</code></td><td>inteiro na placa: ~109 palavras por segundo</td></tr>
           <tr><td>Dia a dia</td><td><code>gemma-4-26b-a4b-qat</code></td><td>~75 palavras por segundo, entende imagens</td></tr>
           <tr><td>Melhor resposta</td><td><code>qwen3.8-27b-iq3</code></td><td>~10 palavras por segundo</td></tr>
@@ -1039,7 +1039,7 @@ const TAREFAS_SIMULADO = [
   ['agua', 'Pergunte com fonte “como purificar água da chuva?” e confira se as fontes aparecem citadas.'],
   ['remedio', 'Remédio: busque na biblioteca para que serve o paracetamol e o limite por dia.'],
   ['conserto', 'Conserto: ache no iFixit como trocar a bateria de um celular.'],
-  ['traduzir', 'Tradução: no chat, com o translategemma-12b, traduza “onde fica o hospital?” para o inglês.'],
+  ['traduzir', 'Tradução: no chat, com o modelo de tradução (veja em Modelos), traduza “onde fica o hospital?” para o inglês.'],
   ['energia', 'Energia: veja em Energia quanto o cofre gastou neste mês.'],
   ['religar', 'Religue a internet.'],
 ];
@@ -1181,6 +1181,7 @@ function trocarVista(focar) {
   if (v === 'biblioteca') carregarAcervo();
   if (v === 'servicos') carregarSaude();
   if (v === 'modelos') carregarPapeis();
+  if (v === 'ajuda') montarQualIa();
 }
 let vistaAntes = null;
 function mostrarVista(focar) {
@@ -1876,6 +1877,33 @@ async function manterPapel(p) {
     avisar(r.texto, null, r.ok ? null : 'erro');
   } catch (erro) { avisar(`Não deu para manter: ${erro.message}`, null, 'erro'); }
   carregarPapeis();
+}
+
+// Ajuda, "Qual IA usar": segue os papeis (uma troca de modelo aparece aqui). A medida feita neste PC so vale
+// para o modelo em que foi medida; um modelo novo mostra o que o papel faz e onde ele roda.
+const QUAL_IA = [['rapida', 'Conversar rápido'], ['principal', 'Dia a dia e respostas com fonte'], ['profundo', 'Melhor resposta'],
+  ['segunda-opiniao', 'Raciocínio e contas'], ['codigo', 'Programar'], ['medicina', 'Saúde'], ['traducao', 'Traduzir'], ['documentos', 'Ler foto ou documento']];
+const MEDIDO_AQUI = {
+  'gemma-4-12b-qat': 'inteiro na placa: ~109 palavras por segundo', 'gemma-4-26b-a4b-qat': '~75 palavras por segundo, entende imagens',
+  'qwen3.8-27b-iq3': '~10 palavras por segundo', 'gpt-oss-20b': 'o mais veloz para pensar', 'ornith-1.5-35b-a3b': 'o agente de código que mais acerta ferramentas',
+  'medgemma-27b': 'junto com a WikiMed; não substitui um médico', 'translategemma-12b': '55 idiomas, inclusive texto em fotos', 'glm-ocr': 'tabelas e PDFs escaneados',
+};
+async function montarQualIa() {
+  if (!CENTRAL) return;  // aberta do disco: fica a tabela escrita na pagina
+  let r = PAPEIS;
+  if (!r) { try { r = PAPEIS = await api('/api/papeis'); } catch { return; } }
+  const linhas = QUAL_IA.map(([id, para]) => {
+    const p = r.papeis.find(x => x.id === id);
+    if (!p) return null;
+    const onde = ONDE_RODA[p.modelo.cabe] ? ONDE_RODA[p.modelo.cabe][0] : '';
+    const nota = MEDIDO_AQUI[p.modelo.id] || [onde, p.uso].filter(Boolean).join('; ');
+    return el('tr', {}, el('td', { texto: para }), el('td', {}, el('code', { texto: p.modelo.id })), el('td', { texto: nota }));
+  }).filter(Boolean);
+  if (!linhas.length) return;
+  linhas.push(el('tr', {}, el('td', { texto: 'Segunda opinião' }), el('td', { texto: 'Conselho de IAs' }), el('td', { texto: 'várias IAs respondem e um relator decide' })),
+    el('tr', {}, el('td', { texto: 'O maior que roda aqui' }), el('td', {}, el('code', { texto: 'nemotron-3.5-bolt-74b' })), el('td', { texto: 'fica no HD: ~5 min para carregar' })),
+    el('tr', {}, el('td', { texto: 'Trocar um modelo' }), el('td', {}, el('a', { href: '#modelos', texto: 'Modelos' })), el('td', { texto: 'cada papel com o seu modelo; o anterior fica guardado para voltar' })));
+  $('#qualIa').replaceChildren(...linhas);
 }
 
 // ---------- Na falta de luz: quanto o cofre aguenta numa bateria ----------
