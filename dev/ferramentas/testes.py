@@ -858,5 +858,113 @@ class CentralRespostaGuardada(unittest.TestCase):
         self.assertIn("gasto", dados["sugestoes"][0])
 
 
+class PapeisDoCofre(unittest.TestCase):
+    """Atualizar um modelo e trocar o modelo de um papel: tudo segue o papel na hora, e o anterior fica para voltar."""
+
+    def setUp(self):
+        import papeis
+        self.papeis = papeis
+        self.pasta = tempfile.TemporaryDirectory()
+        base = Path(self.pasta.name)
+        self.base = base
+        papel = lambda i, nome, tipos, motor, modelo, troca="automatica": {  # noqa: E731
+            "id": i, "nome": nome, "grupo": "Teste", "tipos": tipos, "motor": motor, "troca": troca, "modelo": modelo, "anterior": "", "trocado_em": ""}
+        (base / "papeis.json").write_text(json.dumps({"papeis": [
+            papel("rapida", "Resposta rápida", ["llm", "leve"], "llama.cpp", "pequeno-a"),
+            papel("busca", "Busca por sentido", ["embeddings"], "llama.cpp", "vetor-a"),
+            papel("imagem", "Criar imagens", ["imagem"], "comfyui", "img-a", "manual"),
+        ]}, ensure_ascii=False), encoding="utf-8")
+        (base / "modelos.json").write_text(json.dumps({"modelos": [
+            {"id": "pequeno-a", "nome": "Pequeno A", "tipo": "llm", "motor": "llama.cpp", "tamanho_gb": 7},
+            {"id": "pequeno-b", "nome": "Pequeno B", "tipo": "llm", "motor": "llama.cpp", "tamanho_gb": 8},
+            {"id": "nao-baixado", "nome": "Ainda não", "tipo": "llm", "motor": "llama.cpp", "tamanho_gb": 9},
+            {"id": "enorme", "nome": "Enorme", "tipo": "llm", "motor": "llama.cpp", "tamanho_gb": 300},
+            {"id": "vetor-a", "nome": "Vetor A", "tipo": "embeddings", "motor": "llama.cpp", "tamanho_gb": 0.6},
+            {"id": "img-a", "nome": "Imagem A", "tipo": "imagem", "motor": "comfyui", "tamanho_gb": 17},
+        ], "conselho": {"membros": ["@rapida", "pequeno-b"], "relator": "@rapida"}}), encoding="utf-8")
+        (base / "estado.json").write_text(json.dumps({"modelos": {i: {"completo": True} for i in ("pequeno-a", "pequeno-b", "enorme", "vetor-a", "img-a")}}),
+                                          encoding="utf-8")
+        self.trocas = [mock.patch.object(papeis, "ARQUIVO", base / "papeis.json"), mock.patch.object(papeis, "CATALOGO", base / "modelos.json"),
+                       mock.patch.object(papeis, "ESTADO", base / "estado.json"), mock.patch.object(papeis, "REGISTRO", base / "trocas.csv"),
+                       mock.patch.object(central, "ARQ_TROCA", base / "troca.json")]
+        for t in self.trocas:
+            t.start()
+
+    def tearDown(self):
+        for t in self.trocas:
+            t.stop()
+        self.pasta.cleanup()
+
+    def test_troca_vale_na_hora_e_o_anterior_fica_para_voltar(self):
+        self.assertEqual(tarefas.MODELO_RAPIDO, "pequeno-a")
+        self.papeis.trocar("rapida", "pequeno-b")
+        self.assertEqual(tarefas.MODELO_RAPIDO, "pequeno-b")              # o nome antigo segue o papel, sem reiniciar
+        self.assertEqual(sabio.MODELO_EMB, "vetor-a")
+        p = next(x for x in self.papeis.listar() if x["id"] == "rapida")
+        self.assertEqual(p["anterior"]["id"], "pequeno-a")
+        self.papeis.voltar("rapida")
+        self.assertEqual(self.papeis.modelo("rapida"), "pequeno-a")
+        registro = (self.base / "trocas.csv").read_text(encoding="utf-8")
+        self.assertIn(";rapida;pequeno-a;pequeno-b;trocou", registro)
+        self.assertIn("voltou", registro)
+
+    def test_recusa_o_que_nao_serve_e_nada_muda(self):
+        with self.assertRaisesRegex(ValueError, "não serve"):
+            self.papeis.trocar("busca", "pequeno-b")                       # modelo de conversa no papel de busca
+        with self.assertRaisesRegex(ValueError, "não foi baixado"):
+            self.papeis.trocar("rapida", "nao-baixado")
+        with self.assertRaisesRegex(ValueError, "catálogo"):
+            self.papeis.trocar("rapida", "inventado")
+        with self.assertRaisesRegex(ValueError, "manual"):
+            self.papeis.trocar("imagem", "img-a")
+        with self.assertRaisesRegex(ValueError, "anterior"):
+            self.papeis.voltar("rapida")
+        self.assertEqual(self.papeis.modelo("rapida"), "pequeno-a")
+
+    def test_candidatos_e_conselho_seguem_os_papeis(self):
+        p = next(x for x in self.papeis.listar() if x["id"] == "rapida")
+        ids = [c["id"] for c in p["candidatos"]]
+        self.assertIn("nao-baixado", ids)
+        self.assertNotIn("vetor-a", ids)                                   # busca nao serve para responder
+        self.assertLess(ids.index("pequeno-b"), ids.index("nao-baixado"))  # os ja baixados primeiro
+        self.assertEqual(self.papeis.resolver(["@rapida", "pequeno-b", {"x": "@busca"}]), ["pequeno-a", "pequeno-b", {"x": "vetor-a"}])
+        import conselho
+        with mock.patch.object(conselho, "CATALOGO", self.base / "modelos.json"):
+            cfg = conselho.ler_config()
+        self.assertEqual(cfg["membros"], ["pequeno-a", "pequeno-b"])
+        self.assertEqual(cfg["relator"], "pequeno-a")
+
+    def test_manter_diz_se_o_anterior_ficou_sem_uso(self):
+        self.papeis.trocar("rapida", "pequeno-b")
+        r = self.papeis.manter("rapida")
+        self.assertEqual((r["antigo"], r["sem_uso"]), ("pequeno-a", True))
+        self.assertIn("Conselho de IAs", self.papeis.usado_por("pequeno-b"))  # citado pelo nome no conselho: nunca "sem uso"
+
+    def test_sem_o_arquivo_vale_o_time_padrao(self):
+        with mock.patch.object(self.papeis, "ARQUIVO", self.base / "nao-existe.json"):
+            self.assertEqual(self.papeis.modelo("principal"), self.papeis.PADRAO["principal"])
+            with self.assertRaises(RuntimeError):
+                self.papeis.trocar("rapida", "pequeno-b")
+
+    def test_central_mostra_onde_roda_e_valida_antes_de_trocar(self):
+        with mock.patch.object(central, "placa", return_value={"vram_total_gb": 12}), \
+             mock.patch.object(central, "memoria", return_value={"ram_total_gb": 64}):
+            r = central.papeis_painel()
+        p = next(x for x in r["papeis"] if x["id"] == "rapida")
+        self.assertEqual(p["modelo"]["cabe"], "placa")                      # 7 GB numa placa de 12
+        self.assertEqual([c["id"] for c in p["candidatos"]], ["pequeno-b", "nao-baixado", "enorme"])  # o grande demais por ultimo
+        self.assertEqual(central.onde_cabe(11.3, "llama.cpp", {"vram_total_gb": 12}, {"ram_total_gb": 64}), "ram")
+        self.assertEqual(central.onde_cabe(300, "llama.cpp", {"vram_total_gb": 12}, {"ram_total_gb": 64}), "grande")
+        self.assertEqual(central.onde_cabe(0.1, "python", None, None), "processador")
+        with mock.patch.object(central.subprocess, "Popen") as popen:
+            self.assertFalse(central.trocar_modelo("rapida", "vetor-a")["ok"])   # nao serve
+            self.assertFalse(central.trocar_modelo("imagem", "img-a")["ok"])     # troca manual
+            self.assertFalse(central.trocar_modelo("inventado", "pequeno-b")["ok"])
+            popen.assert_not_called()                                            # nenhuma janela aberta
+        r = central.voltar_modelo("rapida")
+        self.assertFalse(r["ok"])
+        self.assertIn("anterior", r["texto"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

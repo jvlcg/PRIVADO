@@ -69,6 +69,23 @@ $opcoes = @(
            $f = Read-Host '  Levar também a ficha médica da família? É dado pessoal. (s/N)'
            if ($f -match '^\s*[sS]') { & "$PSScriptRoot\kit-de-bolso.ps1" -ComFicha } else { & "$PSScriptRoot\kit-de-bolso.ps1" }
        } }
+
+    @{ n = 21; grupo = 'MODELOS'; nome = 'Quem faz o quê: trocar e atualizar modelos'; tarefa = 'trocar-modelo'
+       acao = {
+           & "$PSScriptRoot\trocar-modelo.ps1"
+           $papel = (Read-Host '  Papel para trocar (ex.: rapida; Enter = voltar)').Trim()
+           if ($papel) {
+               & "$PSScriptRoot\trocar-modelo.ps1" -Papel $papel -Candidatos
+               $para = (Read-Host '  Trocar por qual modelo? (o id; v = voltar ao anterior; m = manter o novo; Enter = nada)').Trim()
+               if ($para -eq 'v') { & "$PSScriptRoot\trocar-modelo.ps1" -Papel $papel -Voltar }
+               elseif ($para -eq 'm') { & "$PSScriptRoot\trocar-modelo.ps1" -Papel $papel -Manter }
+               elseif ($para) {
+                   $extra = @{}
+                   if (ModoJogo-Ativo) { $extra.SemTeste = $true; Info 'Modo jogo ligado: troca sem o teste na placa de vídeo.' }
+                   & "$PSScriptRoot\trocar-modelo.ps1" -Papel $papel -Para $para @extra
+               }
+           }
+       } }
 )
 # Palavras que acham cada opção quando você digita uma palavra em vez do número.
 $chaves = @{
@@ -79,9 +96,11 @@ $chaves = @{
     13 = 'status acervo aberto'; 14 = 'verificar novidades atualizacoes atualizar'; 15 = 'sincronizar baixar backup'
     16 = 'integridade sha256 conferir'; 17 = 'catalogo lista modelos'; 18 = 'testar teste testes'; 19 = 'desligar vigia ocioso dormir'
     20 = 'kit bolso pen drive pendrive usb iphone celular android levar emergencia'
+    21 = 'trocar modelo modelos papel papeis atualizar upgrade substituir quem faz'
 }
-# No modo jogo só funcionam as opções que não ligam IA nem pesam no PC (o kit só copia, com prioridade baixa).
-$livresNoJogo = 1, 10, 11, 12, 13, 17, 18, 19, 20
+# No modo jogo só funcionam as opções que não ligam IA nem pesam no PC (o kit só copia, com prioridade baixa;
+# a troca de modelo pula o teste da placa no modo jogo).
+$livresNoJogo = 1, 10, 11, 12, 13, 17, 18, 19, 20, 21
 
 function Sem-Acento([string]$s) {
     $d = $s.ToLowerInvariant().Normalize([Text.NormalizationForm]::FormD)

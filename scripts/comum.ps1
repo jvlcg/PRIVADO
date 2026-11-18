@@ -407,6 +407,24 @@ function Mostrar-GastoFinal($tarefa, [datetime]$inicio) {
     Registrar-Gasto $tarefa $s $w
 }
 
+# Papeis: quem faz o que no cofre (catalogo\papeis.json). As ferramentas pedem o modelo pelo papel; o
+# trocar-modelo.ps1 e a Central trocam o modelo de um papel sem mexer em codigo (o anterior fica para voltar).
+$ArquivoPapeis = Join-Path $PastaCatalogo 'papeis.json'
+function Ler-Papeis {
+    $p = Ler-Json $ArquivoPapeis
+    if ($p -and $p.papeis) { return @($p.papeis) }
+    return @()
+}
+function Modelo-DoPapel([string]$papel, [string]$padrao = '') {
+    $p = @(Ler-Papeis | Where-Object { $_.id -eq $papel }) | Select-Object -First 1
+    if ($p -and $p.modelo) { return [string]$p.modelo }
+    return $padrao
+}
+# Os modelos de algum papel e os guardados para voltar: o servidor de modelos precisa conhecer todos.
+function Modelos-DosPapeis {
+    return @(Ler-Papeis | ForEach-Object { $_.modelo; $_.anterior } | Where-Object { $_ } | ForEach-Object { [string]$_ } | Select-Object -Unique)
+}
+
 # Modo jogo: com este arquivo presente, nada das IAs liga (nem a verificacao semanal); modo-jogo.ps1 liga e desliga.
 $ArquivoModoJogo = Join-Path $PastaCatalogo 'modo-jogo.txt'
 function ModoJogo-Ativo { return (Test-Path -LiteralPath $ArquivoModoJogo) }

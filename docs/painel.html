@@ -117,7 +117,7 @@ html.rolou .barra-topo { opacity: 1; }
 .ilha-ir { display: flex; align-items: center; gap: 9px; min-height: 30px; padding: 0 12px 0 10px; border: 0; border-radius: 999px; background: none; color: inherit; cursor: pointer; font-weight: 600; min-width: 0; }
 .ilha-ir:focus-visible { outline-color: rgba(255, 255, 255, .6); }
 .ilha .ponto { width: 8px; height: 8px; border-radius: 50%; background: #8e8e93; flex: none; }
-.ilha .ponto.verde { background: #30d158; } .ilha .ponto.laranja { background: #ff9f0a; }
+.ilha .ponto.verde { background: #30d158; } .ilha .ponto.laranja { background: #ff9f0a; } .ilha .ponto.vermelho { background: #ff453a; }
 .ilha .ponto.pulsando { animation: pulsar 1.4s ease-in-out infinite; }
 .ilha .giro { width: 15px; height: 15px; border-radius: 50%; border: 2px solid rgba(255, 159, 10, .25); border-top-color: #ff9f0a; animation: girar .9s linear infinite; flex: none; }
 .ilha .rotulo { overflow: hidden; text-overflow: ellipsis; }
@@ -546,6 +546,22 @@ dialog.folha-ajustes::backdrop { background: rgba(0, 0, 0, .3); }
 .folha-corpo { padding: 0 16px 20px; }
 .folha-corpo .rotulo-grupo { margin: 18px 12px 8px; }
 .folha-corpo .grupo > li { flex-wrap: wrap; row-gap: 8px; }
+/* Modelos: o modelo atual em destaque e a lista para trocar, como a escolha de rede Wi-Fi do iPhone. */
+.modelo-atual { display: flex; align-items: center; gap: 14px; background: var(--cartao); border-radius: 16px; padding: 14px 16px; }
+.modelo-atual .icone-app { width: 52px; height: 52px; border-radius: 13px; }
+.modelo-atual .icone-app .ic { width: 28px; height: 28px; }
+.modelo-atual .rotulo { display: block; font-size: 12px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; color: var(--texto-3); }
+.modelo-atual b { display: block; font-size: 18px; letter-spacing: -.01em; margin-top: 1px; }
+.modelo-atual small { display: block; color: var(--texto-2); font-size: 13px; margin-top: 2px; }
+.papel-uso { margin: 2px 8px 12px; color: var(--texto-2); font-size: 15px; }
+.candidatos .marca { flex: none; color: var(--azul); font-size: 18px; font-weight: 700; visibility: hidden; }
+.candidatos [aria-checked="true"] .marca { visibility: visible; }
+.candidatos [aria-checked="true"] b { color: var(--azul); }
+.cabe-placa { color: var(--verde-texto); }
+.cabe-ram { color: color-mix(in srgb, var(--laranja) 72%, var(--texto)); }
+.cabe-grande { color: var(--vermelho); }
+.folha-acoes { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 4px 4px; }
+.folha-acoes .botao { flex: 1 1 160px; }
 .novidades { list-style: none; margin: 18px 0 0; padding: 0 6px; display: grid; gap: 20px; }
 .novidades li { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; }
 .novidades .icone-app { width: 44px; height: 44px; border-radius: 11px; }
@@ -604,6 +620,7 @@ html.sem-movimento *, html.sem-movimento *::before, html.sem-movimento *::after 
   <symbol id="i-ajustes" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6M18.4 18.4l-1.6-1.6M7.2 7.2 5.6 5.6"/><circle cx="12" cy="12" r="6.2"/></symbol>
   <symbol id="i-mais" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="18.5" cy="12" r="1.7" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-disco" viewBox="0 0 24 24"><rect x="3.5" y="6" width="17" height="12" rx="2.5"/><path d="M7 14.5h.1M10 14.5h7"/></symbol>
+  <symbol id="i-modelos" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2.5"/><path d="M10 3.5v3M14 3.5v3M10 17.5v3M14 17.5v3M3.5 10h3M3.5 14h3M17.5 10h3M17.5 14h3"/><path d="M10.2 12.2 12 10l1.8 2.2-1.8 2.2z"/></symbol>
 </svg>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 <div class="barra-topo" aria-hidden="true"><span id="barraTitulo">Início</span></div>
@@ -747,6 +764,13 @@ html.sem-movimento *, html.sem-movimento *::before, html.sem-movimento *::after 
       <ul class="grupo">
         <li><span class="icone-app cinza"><svg class="ic"><use href="#i-chave"/></svg></span><span class="textos"><b>Chave do chat</b><small>Na primeira vez, o chat pede a chave. Ela fica em A:\catalogo\chave-api.txt.</small></span><span class="lado"><button class="botao cinza pequeno" id="copiarChave" type="button">Copiar</button></span></li>
       </ul>
+    </section>
+
+    <section class="vista" data-vista="modelos" aria-labelledby="t-modelos" hidden>
+      <h1 id="t-modelos" tabindex="-1">Modelos</h1>
+      <p class="subtitulo">Quem faz o que no cofre. Para atualizar, troque o modelo de um papel: tudo passa a usar o novo na hora, e o anterior fica guardado para voltar.</p>
+      <div id="papeis"><p class="secundario">Carregando...</p></div>
+      <p class="dica" id="papeisDica"></p>
     </section>
 
     <section class="vista" data-vista="biblioteca" aria-labelledby="t-biblioteca" hidden>
@@ -921,6 +945,7 @@ html.sem-movimento *, html.sem-movimento *::before, html.sem-movimento *::after 
     <p class="rotulo-grupo">Cofre</p>
     <ul class="grupo simples">
       <li class="linha-botao"><button class="linha" type="button" data-ir="servicos"><span class="textos"><b>Serviços e saúde do cofre</b></span><span class="seta" aria-hidden="true">›</span></button></li>
+      <li class="linha-botao"><button class="linha" type="button" data-ir="modelos"><span class="textos"><b>Modelos e atualizações</b></span><span class="seta" aria-hidden="true">›</span></button></li>
       <li class="linha-botao"><button class="linha" type="button" id="ajFicha"><span class="textos"><b>Ficha médica da família</b></span><span class="seta" aria-hidden="true">›</span></button></li>
       <li class="linha-botao"><button class="linha" type="button" id="ajNovidades"><span class="textos"><b>Novidades da Central</b></span><span class="seta" aria-hidden="true">›</span></button></li>
     </ul>
@@ -930,6 +955,10 @@ html.sem-movimento *, html.sem-movimento *::before, html.sem-movimento *::after 
 <dialog class="folha-ajustes" id="mais" aria-labelledby="maisTitulo">
   <div class="folha-topo"><h2 id="maisTitulo">Mais</h2><button class="ok" type="button" data-fechar>OK</button></div>
   <div class="folha-corpo"><ul class="grupo" id="maisLista"></ul></div>
+</dialog>
+<dialog class="folha-ajustes" id="papelFolha" aria-labelledby="papelTitulo">
+  <div class="folha-topo"><h2 id="papelTitulo">Modelo</h2><button class="ok" type="button" data-fechar>OK</button></div>
+  <div class="folha-corpo" id="papelCorpo"></div>
 </dialog>
 <dialog class="folha-ajustes" id="novidades" aria-labelledby="novTitulo">
   <div class="folha-corpo" style="padding:26px 24px 24px">
@@ -952,6 +981,7 @@ const VISTAS = [
   { id: 'inicio', nome: 'Início', icone: 'inicio' },
   { id: 'perguntar', nome: 'Perguntar', icone: 'perguntar' },
   { id: 'servicos', nome: 'Serviços', icone: 'servicos' },
+  { id: 'modelos', nome: 'Modelos', icone: 'modelos' },
   { id: 'biblioteca', nome: 'Biblioteca', icone: 'biblioteca' },
   { id: 'energia', nome: 'Energia', icone: 'energia' },
   { id: 'historico', nome: 'Histórico', icone: 'historico' },
@@ -1002,10 +1032,12 @@ const TAREFAS_SIMULADO = [
   ['religar', 'Religue a internet.'],
 ];
 const ICONE_CUIDADO = { integridade: 'escudo', novidades: 'nuvem', sincronizar: 'nuvem', simulado: 'lista', kit: 'disco' };
-const NO_MAIS = ['servicos', 'historico', 'ajuda'];  // no celular, ficam na folha "Mais"
+const NO_MAIS = ['servicos', 'modelos', 'historico', 'ajuda'];  // no celular, ficam na folha "Mais"
 const TAMANHOS = [['1', 'Normal'], ['1.12', 'Grande'], ['1.25', 'Maior']];
-const NOVIDADES = '2026-11-17';
+const NOVIDADES = '2026-11-17b';
 const ITENS_NOVIDADES = [
+  ['modelos', 'roxo', 'Modelos: atualize trocando', 'Cada papel do cofre tem um modelo. Troque por um melhor: ele é baixado, conferido e testado antes, e o anterior fica guardado para voltar.'],
+  ['disco', 'verde', 'Kit de bolso', 'O essencial num pen drive conferido, para usar no iPhone, no Android ou em qualquer PC (menu, opção 20).'],
   ['cruz', 'vermelho', 'SOS e ficha médica', 'Números de emergência, o que fazer agora e as alergias e os remédios da família, num toque.'],
   ['escudo', 'verde', 'Respostas conferidas', 'Cada citação é conferida contra o que a IA leu; regras de segurança em toda resposta.'],
   ['energia', 'laranja', 'Teto de gasto e falta de luz', 'Um limite em Wh por pergunta e quanto o cofre aguenta numa bateria.'],
@@ -1136,6 +1168,7 @@ function trocarVista(focar) {
   if (v === 'historico') carregarHistorico();
   if (v === 'biblioteca') carregarAcervo();
   if (v === 'servicos') carregarSaude();
+  if (v === 'modelos') carregarPapeis();
 }
 let vistaAntes = null;
 function mostrarVista(focar) {
@@ -1257,6 +1290,17 @@ async function verificar() {
 function mostrar(e) {
   const antes = E;
   E = e;
+  // Troca de modelo terminou (ok ou nao): a lista de Modelos se atualiza e um aviso conta como foi. Vale tambem
+  // para a troca rapida (ja baixado, sem teste), que acaba antes de a Central ver o "em andamento".
+  const t = e.troca, ta = antes && antes.troca;
+  const terminouAgora = t && t.fim && !(ta && ta.fim && ta.quando === t.quando);
+  const sumiuNoMeio = ta && ta.rodando && !t;
+  if (antes && (terminouAgora || sumiuNoMeio)) {
+    if (t && t.acao && t.acao !== 'trocou') { /* voltar ou manter: o aviso da propria acao ja apareceu */ }
+    else if (t && t.fim === 'ok') avisar(`${t.texto}. O anterior ficou guardado para voltar.`);
+    else avisar(`A troca de modelo não terminou${t && t.texto ? ': ' + t.texto : ''}. Nada mudou.`, null, 'erro');
+    carregarPapeis();
+  }
   for (const s of SERVICOS) {
     const ok = e.servicos[s.id], ligando = e.ligando.includes(s.id), falhou = e.falhou.includes(s.id);
     s.ponto.className = s.pontoApp.className = 'estado-ponto' + (ok ? ' ligado' : ligando ? ' ligando' : falhou ? ' falhou' : '');
@@ -1343,6 +1387,14 @@ function atualizarIlha() {
     const ligando = SERVICOS.filter(s => E.ligando.includes(s.id));
     const ligados = SERVICOS.filter(s => E.servicos[s.id]).length;
     if (ligando.length) { ponto = 'laranja pulsando'; rotulo = 'Ligando ' + ligando.map(s => s.naIlha).join(' e '); ir = 'servicos'; }
+    else if (E.troca && E.troca.rodando) {
+      giro = true; rotulo = E.troca.texto || 'Trocando modelo'; ir = 'modelos';
+      discreto = `passo ${Math.max(1, E.troca.passo || 0)} de ${E.troca.passos || 4}`;
+    } else if (E.troca && E.troca.fim) {
+      const deu = E.troca.fim === 'ok';
+      ponto = deu ? 'verde' : 'vermelho'; ir = 'modelos';
+      rotulo = deu ? E.troca.texto : 'A troca de modelo não terminou'; discreto = deu ? '' : 'nada mudou';
+    }
     else if (E.modo_jogo) { ponto = 'laranja'; rotulo = 'Modo jogo'; discreto = 'IAs desligadas'; }
     else {
       if (ligados) { ponto = 'verde'; rotulo = `${ligados} ${ligados === 1 ? 'serviço ligado' : 'serviços ligados'}`; ir = 'servicos'; }
@@ -1698,6 +1750,113 @@ function imprimirFicha() {
     f.ponto_encontro ? el('section', {}, el('h2', { texto: 'Ponto de encontro' }), el('p', { texto: f.ponto_encontro })) : null,
     el('p', { texto: `Impressa em ${new Date().toLocaleDateString('pt-BR')} pela Central do Cofre.`, style: 'margin-top:14pt;color:#555' }));
   window.print();
+}
+
+// ---------- Modelos: quem faz o que (papeis) ----------
+// Atualizar = trocar o modelo de um papel. A troca baixa, confere e testa antes (trocar-modelo.ps1); a ilha mostra.
+const ICONE_GRUPO_PAPEL = { 'Responder': ['perguntar', 'azul'], 'Especialistas': ['conselho', 'roxo'], 'Busca': ['procurar', 'ciano'], 'Voz e imagem': ['criar', 'rosa'] };
+const ONDE_RODA = { placa: ['cabe na placa', 'cabe-placa'], ram: ['placa e RAM, mais lento', 'cabe-ram'], grande: ['grande demais para este PC', 'cabe-grande'] };
+let PAPEIS = null, papelAberto = null, escolhido = null;
+
+function detalheModelo(m, comOnde = true) {
+  const onde = comOnde && ONDE_RODA[m.cabe] ? ONDE_RODA[m.cabe][0] : '';
+  return [m.tamanho_gb ? tamanho(m.tamanho_gb) : '', m.parametros ? `${m.parametros} parâmetros` : '', onde,
+    m.local === 'cofre' ? 'no HD' : m.local ? 'no SSD' : ''].filter(Boolean).join(' · ');
+}
+async function carregarPapeis() {
+  if (!CENTRAL) { $('#papeis').replaceChildren(el('p', { class: 'secundario', texto: 'Os modelos aparecem com a Central aberta (Painel.cmd).' })); return; }
+  let r;
+  try { r = await api('/api/papeis'); } catch (erro) { $('#papeis').replaceChildren(el('p', { class: 'secundario', texto: `Não deu para ler os modelos: ${erro.message}` })); return; }
+  PAPEIS = r;
+  const grupos = [...new Set(r.papeis.map(p => p.grupo))];
+  $('#papeis').replaceChildren(...grupos.flatMap(g => {
+    const [ic, cor] = ICONE_GRUPO_PAPEL[g] || ['modelos', 'cinza'];
+    return [el('p', { class: 'rotulo-grupo', texto: g }), el('ul', { class: 'grupo' }, ...r.papeis.filter(p => p.grupo === g).map(p =>
+      el('li', { class: 'linha-botao' }, el('button', { type: 'button', class: 'linha', onclick: () => abrirPapel(p.id) },
+        iconeApp(ic, cor),
+        el('span', { class: 'textos' }, el('b', { texto: p.nome }), el('small', { texto: [p.modelo.nome, p.modelo.tamanho_gb ? tamanho(p.modelo.tamanho_gb) : ''].filter(Boolean).join(' · ') })),
+        el('span', { class: 'lado' }, p.anterior ? el('span', { class: 'selo suave', texto: 'Trocado' }) : null, el('span', { class: 'seta', 'aria-hidden': 'true', texto: '›' }))))))];
+  }));
+  $('#papeisDica').textContent = r.placa_gb
+    ? `Este PC: placa de vídeo de ${tamanho(r.placa_gb)} e ${tamanho(r.ram_gb)} de RAM. Modelo que cabe inteiro na placa responde muito mais rápido.` : '';
+  if ($('#papelFolha').open && papelAberto) montarPapel(papelAberto);
+}
+function abrirPapel(id) {
+  papelAberto = id; escolhido = null;
+  montarPapel(id);
+  const d = $('#papelFolha');
+  if (!d.open) d.showModal();
+}
+function montarPapel(id) {
+  const p = PAPEIS && PAPEIS.papeis.find(x => x.id === id);
+  if (!p) return;
+  const [ic, cor] = ICONE_GRUPO_PAPEL[p.grupo] || ['modelos', 'cinza'];
+  const trocando = E && E.troca && E.troca.rodando;
+  $('#papelTitulo').textContent = p.nome;
+  const corpo = [el('p', { class: 'papel-uso', texto: p.uso }),
+    el('div', { class: 'modelo-atual' }, iconeApp(ic, cor),
+      el('div', {}, el('span', { class: 'rotulo', texto: 'Agora' }), el('b', { texto: p.modelo.nome }), el('small', { texto: detalheModelo(p.modelo, p.motor !== 'python') })))];
+  if (p.anterior) corpo.push(el('p', { class: 'rotulo-grupo', texto: 'Troca recente' }),
+    el('ul', { class: 'grupo simples' }, el('li', {}, el('span', { class: 'textos' },
+      el('b', { texto: `O anterior está guardado: ${p.anterior.nome}` }),
+      el('small', { texto: 'Gostou do novo? Mantenha, e o anterior vai para a pasta _para-apagar. Não gostou? Volte com um toque.' })))),
+    el('div', { class: 'folha-acoes' },
+      el('button', { class: 'botao cinza', type: 'button', texto: 'Voltar ao anterior', disabled: trocando, onclick: () => voltarPapel(p) }),
+      el('button', { class: 'botao', type: 'button', texto: 'Manter o novo', disabled: trocando, onclick: () => manterPapel(p) })));
+  if (p.troca === 'manual') {
+    corpo.push(el('p', { class: 'dica', texto: 'Este papel se troca à mão: a ferramenta precisa de um ajuste (veja o guia, seção Modelos).' }));
+  } else if (!p.candidatos.length) {
+    corpo.push(el('p', { class: 'dica', texto: 'Nenhum outro modelo do catálogo serve para este papel. Um modelo novo entra no catálogo e aparece aqui.' }));
+  } else {
+    corpo.push(el('p', { class: 'rotulo-grupo', texto: 'Trocar por' }),
+      el('ul', { class: 'grupo candidatos', role: 'radiogroup', 'aria-label': `Modelos para ${p.nome}` }, ...p.candidatos.map(c => {
+        const onde = ONDE_RODA[c.cabe];
+        return el('li', { class: 'linha-botao' }, el('button', { type: 'button', class: 'linha', role: 'radio', 'aria-checked': String(escolhido === c.id),
+          onclick: () => { escolhido = c.id; montarPapel(id); } },
+          el('span', { class: 'textos' }, el('b', { texto: c.nome }),
+            el('small', {}, [c.tamanho_gb ? tamanho(c.tamanho_gb) : '', c.baixado ? 'baixado' : 'precisa baixar'].filter(Boolean).join(' · '),
+              onde ? el('span', { class: onde[1], texto: ' · ' + onde[0] }) : null)),
+          el('span', { class: 'marca', 'aria-hidden': 'true', texto: '✓' })));
+      })),
+      el('div', { class: 'folha-acoes' }, el('button', { class: 'botao', type: 'button', disabled: !escolhido || trocando,
+        texto: trocando ? 'Há uma troca em andamento' : escolhido ? 'Trocar' : 'Escolha um modelo acima', onclick: () => trocarPapel(p, escolhido) })),
+      el('p', { class: 'dica', texto: 'A troca baixa o modelo se faltar, confere cada arquivo e faz uma pergunta de teste antes de trocar: se o teste falhar, nada muda.' }));
+  }
+  $('#papelCorpo').replaceChildren(...corpo);
+}
+async function trocarPapel(p, id) {
+  const c = p.candidatos.find(x => x.id === id);
+  if (!c) return;
+  const testar = !(PAPEIS && PAPEIS.modo_jogo);
+  const partes = [`${p.modelo.nome} → ${c.nome}.`];
+  if (!c.baixado) partes.push(`Antes, baixa ${c.tamanho_gb ? tamanho(c.tamanho_gb) : 'o modelo'} (precisa de internet).`);
+  partes.push(testar ? 'O modelo novo responde uma pergunta de teste antes de trocar.' : 'Modo jogo ligado: troca sem o teste.');
+  if (c.cabe === 'grande') partes.push('Atenção: ele é grande demais para este PC e leria do disco a cada palavra, travando o computador.');
+  else if (p.id === 'rapida' && c.cabe !== 'placa') partes.push('A resposta rápida só é rápida com o modelo inteiro na placa.');
+  partes.push('O anterior fica guardado para voltar.');
+  if (!await confirmar({ titulo: `Trocar ${p.nome}?`, texto: partes.join(' '), sim: 'Trocar', perigo: c.cabe === 'grande' })) return;
+  try {
+    const r = await api('/api/papeis/trocar', { papel: p.id, modelo: id, testar });
+    avisar(r.texto, null, r.ok ? null : 'erro');
+    if (r.ok) { $('#papelFolha').close(); verificar(); }
+  } catch (erro) { avisar(`Não deu para trocar: ${erro.message}`, null, 'erro'); }
+}
+async function voltarPapel(p) {
+  if (!await confirmar({ titulo: `Voltar ao ${p.anterior.nome}?`, texto: `${p.nome} volta a usar o ${p.anterior.nome}, na hora. O ${p.modelo.nome} fica guardado.`, sim: 'Voltar' })) return;
+  try {
+    const r = await api('/api/papeis/voltar', { papel: p.id });
+    avisar(r.texto, null, r.ok ? null : 'erro');
+  } catch (erro) { avisar(`Não deu para voltar: ${erro.message}`, null, 'erro'); }
+  carregarPapeis();
+}
+async function manterPapel(p) {
+  if (!await confirmar({ titulo: `Ficar com o ${p.modelo.nome}?`,
+    texto: `O ${p.anterior.nome} sai da volta. Se nenhum outro papel usar, os arquivos dele vão para a pasta _para-apagar; apague você mesmo quando quiser.`, sim: 'Manter' })) return;
+  try {
+    const r = await api('/api/papeis/manter', { papel: p.id });
+    avisar(r.texto, null, r.ok ? null : 'erro');
+  } catch (erro) { avisar(`Não deu para manter: ${erro.message}`, null, 'erro'); }
+  carregarPapeis();
 }
 
 // ---------- Na falta de luz: quanto o cofre aguenta numa bateria ----------
@@ -2139,7 +2298,8 @@ function abrirAjustes() { montarAjustes(); const d = $('#ajustes'); if (!d.open)
 
 // ---------- Mais (no celular): o que nao coube na barra de abas ----------
 function abrirMais() {
-  const itens = [['Serviços', 'servicos', 'azul', () => irPara('servicos')], ['Histórico', 'historico', 'cinza', () => irPara('historico')],
+  const itens = [['Serviços', 'servicos', 'azul', () => irPara('servicos')], ['Modelos', 'modelos', 'roxo', () => irPara('modelos')],
+    ['Histórico', 'historico', 'cinza', () => irPara('historico')],
     ['Ajuda', 'ajuda', 'cinza', () => irPara('ajuda')], ['SOS e ficha médica', 'cruz', 'vermelho', abrirSos],
     ['Procurar', 'procurar', 'roxo', abrirPaleta], ['Ajustes', 'ajustes', 'cinza', abrirAjustes]];
   $('#maisLista').replaceChildren(...itens.map(([nome, ic, cor, fazer]) => el('li', { class: 'linha-botao' },
@@ -2212,7 +2372,7 @@ document.addEventListener('click', ev => {
   const ir = ev.target.closest('dialog [data-ir]');
   if (ir) { ir.closest('dialog').close(); irPara(ir.dataset.ir); }
 });
-for (const id of ['#sos', '#ajustes', '#mais', '#novidades', '#simulado', '#fichaEditor']) arrastarParaFechar($(id));
+for (const id of ['#sos', '#ajustes', '#mais', '#novidades', '#simulado', '#fichaEditor', '#papelFolha']) arrastarParaFechar($(id));
 $('#paleta').addEventListener('click', ev => { if (ev.target === $('#paleta')) fecharPaleta(); });
 $('#paletaBusca').addEventListener('input', () => { paletaSel = 0; buscarGuardadasPaleta(); desenharPaleta(); });
 $('#paletaBusca').addEventListener('keydown', ev => {
@@ -2228,7 +2388,7 @@ document.addEventListener('keydown', ev => {
   if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'k') { ev.preventDefault(); if ($('#paleta').hidden) abrirPaleta(); else fecharPaleta(); return; }
   if (!$('#paleta').hidden || digitando(ev.target) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
   if (ev.key === '/') { ev.preventDefault(); irPara('inicio'); $('#pedido').focus(); }
-  else if (/^[1-7]$/.test(ev.key)) irPara(VISTAS[+ev.key - 1].id);
+  else if (/^[1-8]$/.test(ev.key)) irPara(VISTAS[+ev.key - 1].id);
   else if (ev.key === '?') irPara('ajuda');
 });
 

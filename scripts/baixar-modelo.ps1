@@ -43,11 +43,16 @@ if ($Listar -or (-not $Id -and $Prioridade -eq 0)) {
 }
 
 if ($Id) {
-    $desconhecidos = @($Id | Where-Object { $baixaveis.id -notcontains $_ })
+    # Pedido pelo nome vale para qualquer modelo do catalogo, inclusive um so em observacao (ex.: para trocar um
+    # papel com o trocar-modelo.ps1) ou um aposentado que voce quer de volta.
+    $todos = @($cat.modelos)
+    $desconhecidos = @($Id | Where-Object { $todos.id -notcontains $_ })
     if ($desconhecidos.Count -gt 0) { throw "Id(s) fora do catalogo: $($desconhecidos -join ', '). Veja a lista com -Listar." }
-    $sel = @($baixaveis | Where-Object { $Id -contains $_.id })
+    $sel = @($todos | Where-Object { $Id -contains $_.id })
 } else {
-    $sel = @($baixaveis | Where-Object { $_.prioridade -le $Prioridade -and ($Local -eq 'todos' -or (Local-De $_) -eq $Local) } | Sort-Object prioridade)
+    # Aposentados (trocados por um modelo novo e guardados para apagar) nao voltam sozinhos na sincronizacao.
+    $fora = @($estado.aposentados)
+    $sel = @($baixaveis | Where-Object { $fora -notcontains $_.id -and $_.prioridade -le $Prioridade -and ($Local -eq 'todos' -or (Local-De $_) -eq $Local) } | Sort-Object prioridade)
 }
 
 # 1. Planejamento: o que falta baixar e quanto espaco precisa em cada disco.
@@ -126,6 +131,8 @@ foreach ($p in $plano) {
         $r.repo_modificado = [string]$repoInfo[$m.repo].lastModified
         $r.arquivos[$p.arq.caminho] = $registro
         $r.completo = (@($m.arquivos | Where-Object { -not $r.arquivos.Contains($_.caminho) }).Count -eq 0)
+        # Baixado de novo de proposito: deixa de ser aposentado.
+        if ($r.completo -and $e.Contains('aposentados')) { $e.aposentados = @($e.aposentados | Where-Object { $_ -ne $m.id }) }
     }
     Ok "$(Split-Path $p.dest -Leaf) baixado e conferido"
 }

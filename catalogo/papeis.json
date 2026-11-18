@@ -1,0 +1,206 @@
+{
+  "nota": "Quem faz o que no cofre. Cada ferramenta pede o modelo pelo papel, nao pelo nome: para atualizar um modelo, troque o modelo do papel (Central, secao Modelos, ou scripts\\trocar-modelo.ps1). A troca guarda o anterior em 'anterior': voltar e um clique. 'tipos' diz que modelos do catalogo servem para o papel; 'troca' manual quer dizer que a ferramenta precisa de ajuste a mao (o ComfyUI usa fluxos proprios).",
+  "papeis": [
+    {
+      "id": "principal",
+      "nome": "Resposta com fonte",
+      "grupo": "Responder",
+      "uso": "Lê a biblioteca e responde citando as fontes. Também faz a triagem e escreve a resposta final do conselho.",
+      "tipos": [
+        "llm"
+      ],
+      "motor": "llama.cpp",
+      "troca": "automatica",
+      "modelo": "gemma-4-26b-a4b-qat",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "rapida",
+      "nome": "Resposta rápida",
+      "grupo": "Responder",
+      "uso": "Responde em segundos, sem consultar a biblioteca. Vai melhor se couber inteiro na placa de vídeo.",
+      "tipos": [
+        "llm",
+        "leve"
+      ],
+      "motor": "llama.cpp",
+      "troca": "automatica",
+      "modelo": "gemma-4-12b-qat",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "profundo",
+      "nome": "Raciocínio profundo",
+      "grupo": "Responder",
+      "uso": "Pensa mais antes de responder: membro do conselho e relator do modo profundo.",
+      "tipos": [
+        "llm"
+      ],
+      "motor": "llama.cpp",
+      "troca": "automatica",
+      "modelo": "qwen3.8-27b-iq3",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "segunda-opiniao",
+      "nome": "Segunda opinião",
+      "grupo": "Responder",
+      "uso": "Membro do conselho de outro laboratório (erros diferentes se anulam) e o chat das contas.",
+      "tipos": [
+        "llm"
+      ],
+      "motor": "llama.cpp",
+      "troca": "automatica",
+      "modelo": "gpt-oss-20b",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "codigo",
+      "nome": "Código",
+      "grupo": "Especialistas",
+      "uso": "Programação e agentes de código. Entra no conselho quando o assunto é código.",
+      "tipos": [
+        "codigo",
+        "llm"
+      ],
+      "motor": "llama.cpp",
+      "troca": "automatica",
+      "modelo": "ornith-1.5-35b-a3b",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "medicina",
+      "nome": "Saúde",
+      "grupo": "Especialistas",
+      "uso": "Sintomas, remédios e exames. Entra no conselho quando o assunto é saúde.",
+      "tipos": [
+        "medicina",
+        "llm"
+      ],
+      "motor": "llama.cpp",
+      "troca": "automatica",
+      "modelo": "medgemma-27b",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "traducao",
+      "nome": "Tradução",
+      "grupo": "Especialistas",
+      "uso": "Traduz textos e fotos entre dezenas de idiomas. Entra no conselho quando o pedido é tradução.",
+      "tipos": [
+        "traducao",
+        "llm"
+      ],
+      "motor": "llama.cpp",
+      "troca": "automatica",
+      "modelo": "translategemma-12b",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "documentos",
+      "nome": "Fotos e documentos",
+      "grupo": "Especialistas",
+      "uso": "Lê fotos e PDFs escaneados, inclusive tabelas e fórmulas.",
+      "tipos": [
+        "ocr",
+        "visao"
+      ],
+      "motor": "llama.cpp",
+      "troca": "automatica",
+      "modelo": "glm-ocr",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "leve",
+      "nome": "PC fraco",
+      "grupo": "Especialistas",
+      "uso": "Para notebook sem placa de vídeo ou PC antigo, e para levar a outro computador.",
+      "tipos": [
+        "leve"
+      ],
+      "motor": "llama.cpp",
+      "troca": "automatica",
+      "modelo": "gemma-4-e4b",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "busca",
+      "nome": "Busca por sentido",
+      "grupo": "Busca",
+      "uso": "Transforma textos em vetores para achar trechos parecidos com a pergunta.",
+      "tipos": [
+        "embeddings"
+      ],
+      "motor": "llama.cpp",
+      "troca": "automatica",
+      "modelo": "qwen3-embedding-0.6b",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "reordenar",
+      "nome": "Reordenar resultados",
+      "grupo": "Busca",
+      "uso": "Escolhe os trechos mais úteis da biblioteca para a resposta com fonte.",
+      "tipos": [
+        "embeddings"
+      ],
+      "motor": "llama.cpp",
+      "troca": "automatica",
+      "modelo": "qwen3-reranker-0.6b",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "transcricao",
+      "nome": "Transcrever áudio",
+      "grupo": "Voz e imagem",
+      "uso": "Áudio e vídeo em texto e legenda (Whisper).",
+      "tipos": [
+        "audio"
+      ],
+      "motor": "whisper.cpp",
+      "troca": "automatica",
+      "modelo": "whisper-large-v3-turbo",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "voz",
+      "nome": "Falar em voz alta",
+      "grupo": "Voz e imagem",
+      "uso": "Lê textos em português do Brasil (Piper).",
+      "tipos": [
+        "audio"
+      ],
+      "motor": "python",
+      "troca": "manual",
+      "modelo": "piper-pt-br",
+      "anterior": "",
+      "trocado_em": ""
+    },
+    {
+      "id": "imagem",
+      "nome": "Criar imagens",
+      "grupo": "Voz e imagem",
+      "uso": "Imagem a partir de texto no ComfyUI. Trocar pede um fluxo novo no ComfyUI.",
+      "tipos": [
+        "imagem"
+      ],
+      "motor": "comfyui",
+      "troca": "manual",
+      "modelo": "z-image-turbo",
+      "anterior": "",
+      "trocado_em": ""
+    }
+  ]
+}

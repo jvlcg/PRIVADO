@@ -12,10 +12,11 @@
 param(
     [Parameter(Mandatory = $true)][string]$Audio,
     [string]$Idioma = 'pt',
-    [string]$Modelo = 'whisper-large-v3-turbo'
+    [string]$Modelo = ''   # vazio: o do papel "transcricao" (catalogo\papeis.json)
 )
 . "$PSScriptRoot\comum.ps1"
 Bloquear-SeModoJogo 'a transcricao'
+if (-not $Modelo) { $Modelo = Modelo-DoPapel 'transcricao' 'whisper-large-v3-turbo' }
 
 $cat = Ler-Catalogo
 $m = $cat.modelos | Where-Object { $_.id -eq $Modelo } | Select-Object -First 1

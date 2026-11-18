@@ -43,11 +43,19 @@ import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import papeis  # noqa: E402  (quem faz o que: o modelo de cada papel, em catalogo\papeis.json)
+
 LLM = os.environ.get("SABIO_LLM", "http://127.0.0.1:8080")
 KIWIX = os.environ.get("SABIO_KIWIX", "http://127.0.0.1:8081")
-MODELO_CHAT = os.environ.get("SABIO_MODELO", "gemma-4-26b-a4b-qat")
-MODELO_EMB = "qwen3-embedding-0.6b"
-MODELO_RERANK = "qwen3-reranker-0.6b"
+# Os modelos seguem os papeis, lidos a cada uso: trocar um modelo vale na hora, sem reiniciar a Central.
+# De fora, sabio.MODELO_CHAT, MODELO_EMB e MODELO_RERANK continuam valendo (veja o __getattr__ no fim do arquivo).
+
+
+def modelo_chat() -> str:
+    return os.environ.get("SABIO_MODELO") or papeis.modelo("principal")
+
+
 BANCO = Path(os.environ.get("SABIO_BANCO", Path(__file__).resolve().parents[1] / "datasets" / "sabio.sqlite"))
 INSTRUCAO_BUSCA = "Instruct: Dada uma pergunta, encontre trechos que a respondam\nQuery: "
 # Chave de acesso do servidor de modelos (gerada por iniciar-servidor.ps1, fora do git).
@@ -349,7 +357,7 @@ def palavras_da_pergunta(pergunta: str, maximo: int = 6) -> list[str]:
 # ---------- Modelos (llama-server) ----------
 
 def embeddings(textos: list[str]) -> list[list[float]]:
-    r = http_json(f"{LLM}/v1/embeddings", {"model": MODELO_EMB, "input": textos})
+    r = http_json(f"{LLM}/v1/embeddings", {"model": papeis.modelo("busca"), "input": textos})
     vetores = [d["embedding"] for d in sorted(r["data"], key=lambda d: d["index"])]
     return [normalizar(v) for v in vetores]
 
@@ -362,7 +370,7 @@ def normalizar(v: list[float]) -> list[float]:
 def reordenar(pergunta: str, trechos: list[str], quantos: int) -> list[int]:
     """Usa o reranker; se ele nao estiver disponivel, mantem a ordem da busca."""
     try:
-        r = http_json(f"{LLM}/v1/rerank", {"model": MODELO_RERANK, "query": pergunta, "documents": trechos, "top_n": quantos})
+        r = http_json(f"{LLM}/v1/rerank", {"model": papeis.modelo("reordenar"), "query": pergunta, "documents": trechos, "top_n": quantos})
         return [x["index"] for x in sorted(r["results"], key=lambda x: -x["relevance_score"])][:quantos]
     except Exception as erro:
         print(f"(reranker indisponivel: {erro}; usando a ordem da busca)", file=sys.stderr)
@@ -632,12 +640,13 @@ def conferir_resposta(texto: str, n_fontes: int) -> tuple[str, list[int]]:
     return (texto + "\n\n" + "\n".join(notas)) if notas else texto, citadas
 
 
-def perguntar_com_fonte(pergunta: str, modelo: str = MODELO_CHAT, artigos: int = 3, maximo: int = 12, n_trechos: int = 6,
+def perguntar_com_fonte(pergunta: str, modelo: str | None = None, artigos: int = 3, maximo: int = 12, n_trechos: int = 6,
                         livros_escolhidos: str | None = None, avisar=None, parar: threading.Event | None = None,
                         nota_pessoal: str = "") -> dict:
     """Busca nas bibliotecas, escolhe os melhores trechos e o modelo responde citando [1], [2]...
     `avisar(texto)` recebe o andamento. `parar` acende com "Responder agora": cada etapa para e o modelo
     responde com o que ja foi achado. Problemas que a pessoa pode resolver viram RuntimeError com a explicacao."""
+    modelo = modelo or modelo_chat()
     avisar = avisar or (lambda texto: print(texto, file=sys.stderr))
     parar = parar or threading.Event()
     for nome, url in (("modelos (iniciar-servidor.ps1)", f"{LLM}/health"), ("biblioteca (iniciar-biblioteca.ps1)", KIWIX)):
@@ -736,12 +745,12 @@ def cmd_perguntar(args) -> None:
     inicio = time.time()
     try:
         if args.modo == "rapida":
-            modelo = args.modelo if args.modelo != MODELO_CHAT else tarefas.MODELO_RAPIDO
+            modelo = args.modelo or papeis.modelo("rapida")
             if not servidor_ok(f"{LLM}/health"):
                 raise RuntimeError(f"O servidor de modelos (iniciar-servidor.ps1) nao esta respondendo em {LLM}.")
             r = {"resposta": responder_direto(args.pergunta, modelo, parar), "fontes": []}
         else:
-            modelo = args.modelo
+            modelo = args.modelo or modelo_chat()
             r = perguntar_com_fonte(args.pergunta, modelo, args.artigos, args.maximo, args.trechos, args.livros, parar=parar)
     except RuntimeError as erro:
         sys.exit(str(erro))
@@ -811,7 +820,7 @@ def cmd_buscar(args) -> None:
     candidatos = pontuados[:30]
     melhores = reordenar(args.pergunta, [t for _, _, t in candidatos], args.trechos)
     fontes = [(Path(candidatos[i][1]).name, candidatos[i][1], candidatos[i][2]) for i in melhores]
-    print("\n" + responder(args.pergunta, fontes, args.modelo) + "\n")
+    print("\n" + responder(args.pergunta, fontes, args.modelo or modelo_chat()) + "\n")
     print("Fontes:")
     for i, (nome, caminho, _) in enumerate(fontes, 1):
         print(f"  [{i}] {nome} - {caminho}")
@@ -826,7 +835,7 @@ def main() -> None:
     a.add_argument("--artigos", type=int, default=3, help="no maximo quantos artigos de cada biblioteca")
     a.add_argument("--maximo", type=int, default=12, help="total de artigos lidos")
     a.add_argument("--trechos", type=int, default=6)
-    a.add_argument("--modelo", default=MODELO_CHAT)
+    a.add_argument("--modelo", default=None, help="padrao: o modelo do papel (catalogo\\papeis.json)")
     a.add_argument("--modo", choices=("buscar", "rapida", "fonte"), default="fonte",
                    help="buscar: so a biblioteca, sem IA; rapida: IA pequena sem fontes; fonte: IA citando as bibliotecas")
     a.add_argument("--de-novo", action="store_true", help="pergunta de novo mesmo com resposta guardada")
@@ -837,10 +846,22 @@ def main() -> None:
     c = sub.add_parser("buscar")
     c.add_argument("pergunta")
     c.add_argument("--trechos", type=int, default=6)
-    c.add_argument("--modelo", default=MODELO_CHAT)
+    c.add_argument("--modelo", default=None, help="padrao: o modelo do papel principal")
     c.set_defaults(f=cmd_buscar)
     args = p.parse_args()
     args.f(args)
+
+
+_PAPEL_DO_NOME = {"MODELO_EMB": "busca", "MODELO_RERANK": "reordenar"}
+
+
+def __getattr__(nome: str):
+    """sabio.MODELO_CHAT, MODELO_EMB e MODELO_RERANK, os nomes antigos: devolvem o modelo do papel agora."""
+    if nome == "MODELO_CHAT":
+        return modelo_chat()
+    if nome in _PAPEL_DO_NOME:
+        return papeis.modelo(_PAPEL_DO_NOME[nome])
+    raise AttributeError(f"module {__name__!r} has no attribute {nome!r}")
 
 
 if __name__ == "__main__":

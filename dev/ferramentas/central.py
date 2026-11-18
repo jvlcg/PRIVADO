@@ -34,6 +34,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import sabio  # noqa: E402  (HTTP com a chave de acesso e a checagem de origem)
 import tarefas  # noqa: E402  (que ferramenta usar e o historico de respostas)
+import papeis  # noqa: E402  (quem faz o que: o modelo de cada papel)
 
 RAIZ = Path(__file__).resolve().parents[2]
 SCRIPTS = RAIZ / "scripts"
@@ -185,6 +186,7 @@ def estado() -> dict:
         "memoria": memoria(),
         "modelos": modelos_na_memoria() if ligados["chat"] else [],
         "modo_jogo": MODO_JOGO.exists(),
+        "troca": troca_em_andamento(),
         "vigia": vigia_ligada(),
         "gasto_mes": texto_gasto_mes(),
         "gasto_mes_wh": round(sabio.gasto_mes()["wh"], 3),
@@ -298,6 +300,116 @@ def registrar_simulado(feitos: list, total: int) -> dict:
             f.write("data;feitos;total;tarefas\n")
         f.write(f"{datetime.now().isoformat(timespec='seconds')};{len(ids)};{int(total)};{','.join(ids)}\n")
     return {"ok": True, "feitos": len(ids), "total": int(total)}
+
+
+# ---------- Modelos: quem faz o que (papeis) ----------
+# Atualizar um modelo e trocar o modelo de um papel (catalogo\papeis.json). A troca baixa, confere e testa o modelo
+# novo num processo a parte (trocar-modelo.ps1, janela minimizada) e grava o andamento, que a ilha mostra.
+ARQ_TROCA = PASTA_LOGS / "troca-de-modelo.json"
+ID_PAPEL = re.compile(r"^[a-z0-9-]{1,40}$")
+ID_MODELO = re.compile(r"^[A-Za-z0-9._-]{1,100}$")
+
+
+def onde_cabe(gb, motor: str, p: dict | None, m: dict | None) -> str:
+    """placa (inteiro na placa de video, rapido), ram (placa e RAM, mais lento), grande (trava o PC) ou processador."""
+    if motor not in ("llama.cpp", "comfyui") or not gb:
+        return "processador"
+    vram = float((p or {}).get("vram_total_gb") or 0)
+    ram = float((m or {}).get("ram_total_gb") or 0)
+    if vram and float(gb) <= vram - 1.5:
+        return "placa"
+    if float(gb) <= vram + ram - 8:
+        return "ram"
+    return "grande"
+
+
+def troca_em_andamento() -> dict | None:
+    """A troca que o trocar-modelo.ps1 esta fazendo, ou a ultima, ate 2 min depois de acabar (para a ilha)."""
+    try:
+        t = json.loads(ARQ_TROCA.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError):
+        return None
+    t["rodando"] = not t.get("fim") and processo_vivo(int(t.get("pid") or 0), "powershell.exe")
+    if not t["rodando"] and not t.get("fim"):
+        t["fim"] = "interrompida"  # a janela fechou no meio: nada foi trocado
+    try:
+        idade = time.time() - datetime.fromisoformat(str(t.get("quando"))).timestamp()
+    except ValueError:
+        idade = 1e9
+    return t if t["rodando"] or idade < 120 else None
+
+
+def papeis_painel() -> dict:
+    p, m = placa(), memoria()
+    lista = papeis.listar()
+    ordem = {"placa": 0, "processador": 0, "ram": 1, "grande": 2}
+    for item in lista:
+        for alvo in [item["modelo"], item["anterior"], *item["candidatos"]]:
+            if alvo:
+                alvo["cabe"] = onde_cabe(alvo.get("tamanho_gb"), item["motor"], p, m)
+        # Os que fazem sentido primeiro: cabe na placa, depois os que usam a RAM; os grandes demais por ultimo.
+        item["candidatos"].sort(key=lambda c: (ordem.get(c["cabe"], 1), not c["baixado"], str(c["nome"]).lower()))
+    return {"papeis": lista, "troca": troca_em_andamento(), "modo_jogo": MODO_JOGO.exists(),
+            "placa_gb": (p or {}).get("vram_total_gb"), "ram_gb": (m or {}).get("ram_total_gb")}
+
+
+def trocar_modelo(papel: str, modelo: str, testar: bool = True) -> dict:
+    """Comeca a troca numa janela minimizada: baixa se faltar, confere, testa e so entao troca."""
+    t = troca_em_andamento()
+    if t and t.get("rodando"):
+        return {"ok": False, "texto": "Já há uma troca em andamento: espere ela terminar."}
+    item = next((i for i in papeis.listar() if i["id"] == papel), None)
+    if not item:
+        return {"ok": False, "texto": "Papel desconhecido."}
+    if item["troca"] == "manual":
+        return {"ok": False, "texto": f"{item['nome']}: a troca é manual (veja o guia, seção Modelos)."}
+    if modelo not in {c["id"] for c in item["candidatos"]}:
+        return {"ok": False, "texto": "Esse modelo não serve para este papel."}
+    if testar and MODO_JOGO.exists():
+        return {"ok": False, "texto": "Modo jogo ligado: o teste usa a placa de vídeo. Saia do modo jogo ou troque sem testar."}
+    info = subprocess.STARTUPINFO()
+    info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    info.wShowWindow = 7  # SW_SHOWMINNOACTIVE: o andamento aparece na ilha; a janela fica para quem quiser ver
+    args = ["-Papel", papel, "-Para", modelo, "-Sim"] + ([] if testar else ["-SemTeste"])
+    proc = subprocess.Popen(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(SCRIPTS / "trocar-modelo.ps1"), *args],
+                            cwd=str(SCRIPTS), creationflags=subprocess.CREATE_NEW_CONSOLE, startupinfo=info)
+    PASTA_LOGS.mkdir(parents=True, exist_ok=True)
+    ARQ_TROCA.write_text(json.dumps({"papel": papel, "para": modelo, "etapa": "comecando", "texto": f"Preparando a troca de {item['nome']}",
+                                     "passo": 0, "passos": 4, "fim": "", "pid": proc.pid,
+                                     "quando": datetime.now().isoformat(timespec="seconds")}, ensure_ascii=False), encoding="utf-8")
+    return {"ok": True, "texto": f"Trocando {item['nome']}: acompanhe na ilha, no topo."}
+
+
+def _anotar_troca(papel: str, acao: str, texto: str) -> None:
+    """Voltar e manter tambem vao para a ilha: assim ela nunca fica mostrando uma troca que ja foi desfeita."""
+    try:
+        PASTA_LOGS.mkdir(parents=True, exist_ok=True)
+        ARQ_TROCA.write_text(json.dumps({"papel": papel, "para": "", "etapa": "pronto", "acao": acao, "texto": texto, "passo": 4,
+                                         "passos": 4, "fim": "ok", "pid": 0, "quando": datetime.now().isoformat(timespec="seconds")},
+                                        ensure_ascii=False), encoding="utf-8")
+    except OSError:
+        pass
+
+
+def voltar_modelo(papel: str) -> dict:
+    try:
+        p = papeis.voltar(papel)
+    except (ValueError, RuntimeError) as erro:
+        return {"ok": False, "texto": str(erro)}
+    _anotar_troca(papel, "voltou", f"{p.get('nome') or papel} voltou para o {p['modelo']}")
+    return {"ok": True, "texto": f"{p.get('nome') or papel} voltou para o {p['modelo']}. O outro ficou guardado."}
+
+
+def manter_modelo(papel: str) -> dict:
+    """Fica com o novo: o trocar-modelo.ps1 tira o anterior da volta e, sem uso, guarda os arquivos para apagar."""
+    r = subprocess.run(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(SCRIPTS / "trocar-modelo.ps1"),
+                        "-Papel", papel, "-Manter"], capture_output=True, encoding="utf-8", errors="replace", timeout=600,
+                       creationflags=subprocess.CREATE_NO_WINDOW)
+    linhas = [re.sub(r"^\[(ok|!)\]\s*", "", l.strip()) for l in (r.stdout or "").splitlines() if l.strip()]
+    if r.returncode != 0:
+        return {"ok": False, "texto": linhas[-1] if linhas else "Não deu para manter o modelo novo."}
+    _anotar_troca(papel, "manteve", f"{next((p['nome'] for p in papeis.listar() if p['id'] == papel), papel)}: ficou o modelo novo")
+    return {"ok": True, "texto": " ".join(linhas[-2:]) or "Pronto."}
 
 
 def acervo() -> dict:
@@ -489,6 +601,8 @@ class Central(BaseHTTPRequestHandler):
             self._json(200, painel_energia())
         elif rota == "/api/saude":
             self._json(200, saude_do_cofre())
+        elif rota == "/api/papeis":
+            self._json(200, papeis_painel())
         elif rota == "/api/ficha":
             # Dado de saude da familia: mesma barreira da chave (so esta pagina le, nunca outro site).
             if self.headers.get("Sec-Fetch-Site") == "cross-site":
@@ -532,6 +646,12 @@ class Central(BaseHTTPRequestHandler):
                 self._json(200, tarefas.salvar_ficha(corpo))
             elif self.path == "/api/simulado" and isinstance(corpo.get("feitos"), list):
                 self._json(200, registrar_simulado(corpo["feitos"], int(corpo.get("total") or 0)))
+            elif self.path == "/api/papeis/trocar" and ID_PAPEL.match(str(corpo.get("papel") or "")) and ID_MODELO.match(str(corpo.get("modelo") or "")):
+                self._json(200, trocar_modelo(corpo["papel"], corpo["modelo"], corpo.get("testar", True) is not False))
+            elif self.path == "/api/papeis/voltar" and ID_PAPEL.match(str(corpo.get("papel") or "")):
+                self._json(200, voltar_modelo(corpo["papel"]))
+            elif self.path == "/api/papeis/manter" and ID_PAPEL.match(str(corpo.get("papel") or "")):
+                self._json(200, manter_modelo(corpo["papel"]))
             elif self.path == "/api/agora":
                 AGORA.set()
                 PEDIU_AGORA.set()

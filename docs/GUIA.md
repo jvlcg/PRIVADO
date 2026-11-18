@@ -195,12 +195,13 @@ Numa janela estreita a barra lateral vira uma coluna de ícones. No celular, a b
 | Início | **"Do que você precisa?"**: escreva com suas palavras e a Central mostra o jeito que resolve gastando menos energia (veja "Escada de esforço" abaixo). Também traz os atalhos de emergência, os anéis do PC, as perguntas recentes (abrir uma não gasta nada) e os botões para abrir cada ferramenta. |
 | Perguntar | Escolha na escada quanto esforço a resposta merece. Respostas citam as fontes com links e têm o botão **Responder agora**. As citações são conferidas (cada fonte diz se foi citada ou só lida), e o **teto de gasto** faz a IA responder na hora ao chegar em 1 ou 3 Wh. |
 | Serviços | Liga e abre o chat, a biblioteca, o conselho e o ComfyUI, com o estado e o gasto de cada um. Mostra os modelos na memória (com botão para descarregar) e copia a chave do chat. Também mostra a **saúde do cofre**: o que conferir e quando, o simulado sem internet e o espaço livre nos discos. |
+| Modelos | Quem faz o que no cofre: cada papel (resposta com fonte, rápida, código, saúde, tradução, busca, transcrição...) com o modelo de agora. Tocar num papel mostra o modelo, se ele cabe na placa de vídeo, e os que podem substituí-lo; trocar baixa, confere e testa antes, e o anterior fica guardado para voltar (veja "Modelos: trocar e atualizar"). |
 | Biblioteca | Busca nas bibliotecas, emergência e o acervo inteiro (68 bibliotecas), com filtro, onde cada uma está e o link para abrir. |
 | Energia | Gasto do mês por tarefa, os últimos 6 meses e quanto custa o PC parado ligado. **Na falta de luz** mostra quanto o cofre aguenta num nobreak, numa bateria de carro ou numa estação de 1.000 Wh, pelo consumo medido deste PC. |
 | Histórico | As perguntas já respondidas, com busca. Abrir uma resposta guardada não gasta nada; dá para esquecer as que não quiser. |
 | Ajuda | Qual IA usar, os atalhos de teclado e onde está o resto. |
 
-Atalhos: **Ctrl+K** abre a procura, como o Spotlight: os resultados vêm em grupos, com o melhor no topo, e incluem as respostas guardadas; **Ctrl+,** abre os **Ajustes** (tema, tamanho do texto, reduzir movimento, idioma e teto de gasto); **/** vai para a caixa do Início; as teclas **1 a 7** trocam de seção. O que fecha ou apaga algo (fechar tudo, modo jogo, vigia, esquecer uma resposta) pede confirmação num alerta como o do sistema, e Esc cancela. Abrir um serviço desligado o liga e avisa com o link quando estiver pronto. A Central só atende este PC e recusa pedidos vindos de outros sites. O painel funciona sem internet: não carrega nada de fora, nem fontes de letra.
+Atalhos: **Ctrl+K** abre a procura, como o Spotlight: os resultados vêm em grupos, com o melhor no topo, e incluem as respostas guardadas; **Ctrl+,** abre os **Ajustes** (tema, tamanho do texto, reduzir movimento, idioma e teto de gasto); **/** vai para a caixa do Início; as teclas **1 a 8** trocam de seção. O que fecha ou apaga algo (fechar tudo, modo jogo, vigia, esquecer uma resposta) pede confirmação num alerta como o do sistema, e Esc cancela. Abrir um serviço desligado o liga e avisa com o link quando estiver pronto. A Central só atende este PC e recusa pedidos vindos de outros sites. O painel funciona sem internet: não carrega nada de fora, nem fontes de letra.
 
 Para imprimir e guardar junto do PC: **`A:\docs\cartao-emergencia.html`** (abra e use Ctrl+P). Numa folha A4: como ligar tudo, os endereços, onde achar cada assunto de emergência, quanto tempo o PC aguenta numa bateria e o que fazer se este PC quebrar.
 
@@ -213,7 +214,7 @@ Para imprimir e guardar junto do PC: **`A:\docs\cartao-emergencia.html`** (abra 
 
 A ficha médica só vai junto se você pedir (no menu, "s"; no terminal, `-ComFicha`), porque o pen drive pode se perder; no iPhone, o lugar dela é a Ficha Médica do app Saúde, que aparece na tela bloqueada. Rodar de novo atualiza o kit: pula o que já está conferido, copia o que mudou e põe as versões velhas em `_para-apagar`, no próprio pen drive. O pen drive de 16 GB foi formatado em exFAT, que o iPhone lê e que guarda arquivos de mais de 4 GB (o FAT32 não guarda). Nele couberam 46 bibliotecas (16,4 GB); ficaram de fora o iFixit em português (3,6 GB), o fórum de eletrônica (4,3 GB) e a Wikipédia (20,6 GB), que o iPhone pode baixar inteira pelo próprio app Kiwix. **No iPhone** (USB-C): app Arquivos, copie a pasta Bibliotecas do pen drive para "No meu iPhone" e abra os arquivos no app Kiwix, que funciona em modo avião. O ABRA-ME explica também o SOS de Emergência, traduzir o inglês sem internet e o hotspot do Kiwix, que deixa outros celulares lerem as bibliotecas pela mesma rede Wi-Fi. A saúde do cofre lembra de atualizar o kit a cada 90 dias.
 
-O menu agrupa as opções em Usar, Criar, Energia, Manter e Levar e mostra ao lado de cada uma o gasto estimado na tarifa da Equatorial Goiás (R$ 1,25/kWh, seção "Custo de energia"). Antes de rodar, ele repete a estimativa; os scripts mais longos mostram no fim quanto gastaram de fato. Além do número, ele aceita uma palavra (`biblioteca`, `jogo`, `energia`, `desligar`...): com uma opção só, ela roda; com várias, ele as lista. Três palavras ou mais que não sejam de nenhuma opção viram pergunta.
+O menu agrupa as opções em Usar, Criar, Energia, Manter, Levar e Modelos e mostra ao lado de cada uma o gasto estimado na tarifa da Equatorial Goiás (R$ 1,25/kWh, seção "Custo de energia"). Antes de rodar, ele repete a estimativa; os scripts mais longos mostram no fim quanto gastaram de fato. Além do número, ele aceita uma palavra (`biblioteca`, `jogo`, `energia`, `desligar`...): com uma opção só, ela roda; com várias, ele as lista. Três palavras ou mais que não sejam de nenhuma opção viram pergunta.
 
 | Opção | O que faz | Onde abre | Gasto estimado |
 | --- | --- | --- | --- |
@@ -237,6 +238,7 @@ O menu agrupa as opções em Usar, Criar, Energia, Manter e Levar e mostra ao la
 | 18. Testar o projeto | scripts, catálogo, arquivos baixados e segredos no que vai para o GitHub | no terminal | ~0,7 Wh |
 | 19. Vigia de desligar | desliga o PC parado depois que o Claude termina (veja "Para gastar menos") | janela própria | economiza |
 | 20. Kit de bolso | o essencial num pen drive, conferido, para usar sem este PC no iPhone, no Android ou em qualquer computador (veja "Kit de bolso") | no terminal | ~55 Wh ≈ R$ 0,07 por kit de 16 GB |
+| 21. Modelos | quem faz o quê; trocar o modelo de um papel, voltar ou manter (veja "Modelos: trocar e atualizar") | no terminal | ~3,5 Wh por troca com teste |
 
 **Responder agora.** Toda ferramenta que pensa por muito tempo tem como parar e receber a resposta com o que já foi encontrado. No conselho e na Central é o botão **Responder agora**, que aparece enquanto a IA trabalha; no terminal (opções 4 e 5), o primeiro Ctrl+C faz o mesmo e o segundo cancela. A IA que estiver falando para na hora (a placa deixa de gastar), o relator escreve sem raciocinar com o que as outras já disseram e a resposta avisa quantas IAs tinham respondido. Se nada tiver sido achado ainda, vem uma resposta rápida, sem fontes, marcada como tal.
 
@@ -316,6 +318,7 @@ Testado neste PC de 25/10 a 17/11/2026:
 | Vigia que se recupera (06/11) | encerrada de fora de propósito, foi reaberta pela tarefa agendada na repetição seguinte; `-Parar` deixou a tarefa desativada | 600 s |
 | Ideias de projetos parecidos (17/11) | um modelo falso repetindo a mesma frase 400 vezes foi cortado em menos de 4 voltas, e o servidor parou de gerar; citações inventadas saíram; o teto de 1 Wh disparou o Responder agora uma vez; saúde do cofre com as datas reais dos registros; 59 testes passando | na hora |
 | Ficha médica, SOS e navegação do iPhone (17/11) | a IA recebeu a alergia da Ana ("banana" não puxou a Ana); SOS e ficha conferidos sem gravar nada de teste; 5 abas e Mais no celular; folha fechada arrastando para baixo; Ctrl+, abriu os Ajustes; texto Maior sem rolagem lateral; procura em grupos; 62 testes passando | na hora |
+| Trocar modelos por papel (17/11) | "PC fraco" trocado pela Central (Gemma 4 E4B por Qwen3.5 0.8B) e desfeito com "Voltar ao anterior"; a ilha mostrou o resultado e a lista se atualizou sozinha; o conselho e as sugestões do Início seguiram os papéis; os candidatos vêm na ordem do que cabe na placa; pedido sem JSON ou com papel inválido recusado; 69 testes passando | na hora |
 
 Pelo terminal, com o ComfyUI aberto: `gerar.ps1 -Imagem "..."`, `gerar.ps1 -Video "..."` ou `gerar.ps1 -Animar -Foto x.png -Movimento y.mp4` (menu, opção 7). Exemplos em `A:\dev\midia-gerada`.
 
@@ -439,6 +442,28 @@ Toda segunda às 10h o Windows **verifica** novidades sozinho; a opção **15 do
 | `SHA256SUMS.txt` (raiz de cada disco) | hashes de tudo, formato padrão | `verificar-integridade.ps1` |
 
 A sincronização pode ser interrompida e rodada de novo: continua de onde parou. Para adicionar um modelo, copie um bloco em `modelos.json`, ajuste e rode `baixar-modelo.ps1 -Id <id>`.
+
+### Modelos: trocar e atualizar
+
+Nenhuma ferramenta do cofre chama um modelo pelo nome: cada uma pede o **papel**, e `catalogo\papeis.json` diz que modelo faz cada papel agora. Atualizar um modelo é trocar o modelo do papel; a Central, o "Perguntar", o conselho, as sugestões do Início, a busca e a transcrição passam a usar o novo na hora, sem mexer em código e sem reiniciar nada.
+
+| Grupo | Papéis (modelo em 17/11/2026) |
+| --- | --- |
+| Responder | Resposta com fonte (Gemma 4 26B QAT, também triagem e relator do conselho), Resposta rápida (Gemma 4 12B QAT), Raciocínio profundo (Qwen3.8 27B), Segunda opinião (gpt-oss-20b) |
+| Especialistas | Código (Ornith 1.5), Saúde (MedGemma 27B), Tradução (TranslateGemma 12B), Fotos e documentos (GLM-OCR), PC fraco (Gemma 4 E4B) |
+| Busca | Busca por sentido (Qwen3 Embedding), Reordenar resultados (Qwen3 Reranker) |
+| Voz e imagem | Transcrever áudio (Whisper), Falar em voz alta (Piper) e Criar imagens (Z-Image), estes dois trocados à mão |
+
+**Na Central** (seção Modelos): toque no papel, escolha o modelo novo e toque em Trocar. Cada candidato diz se cabe inteiro na placa de vídeo (o mais rápido), se vai usar a RAM também (mais lento) ou se é grande demais para este PC, e se já está baixado. A ilha, no topo, mostra o andamento. **No menu**: opção 21. **No terminal**: `trocar-modelo.ps1 -Papel rapida -Candidatos` e `trocar-modelo.ps1 -Papel rapida -Para <id>`.
+
+A troca é segura em quatro passos:
+
+1. Confere se o modelo está no catálogo e serve para o papel (um modelo de conversa não entra no lugar da busca).
+2. Baixa, se faltar, conferindo o SHA-256 de cada arquivo.
+3. Testa: liga o modelo numa porta só dele, faz uma pergunta curta e mede a velocidade. Se ele não responder, nada é trocado. No modo jogo, a troca pula o teste.
+4. Troca e guarda o anterior. **Voltar ao anterior** desfaz na hora. **Manter o novo** tira o anterior da volta; se nenhum outro papel nem o conselho usar o anterior, os arquivos dele vão para `_para-apagar` (apague você com Shift+Delete) e a sincronização não o baixa de novo.
+
+Cada troca fica anotada em `A:\logs\trocas-de-modelo.csv`. Um modelo que ainda não está no catálogo entra como sempre (um bloco em `modelos.json`, com o `repo` e os `arquivos`) e já aparece como candidato no papel do tipo dele. O conselho também segue os papéis: na seção `conselho` do catálogo, "@principal" quer dizer "o modelo do papel principal".
 
 ### GitHub
 

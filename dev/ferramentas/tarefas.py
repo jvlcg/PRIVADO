@@ -22,6 +22,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sabio import palavras_da_pergunta, sem_acento  # noqa: E402
+import papeis  # noqa: E402  (o modelo de cada papel, em catalogo\papeis.json)
 
 ARQUIVO_HISTORICO = Path(__file__).resolve().parents[1] / "historico" / "perguntas.jsonl"
 
@@ -32,7 +33,8 @@ MODOS = {
     "fonte": {"titulo": "Perguntar com fonte", "tarefa": "perguntar", "nivel": 2},
     "conselho": {"titulo": "Conselho de IAs", "tarefa": "conselho", "nivel": 3},
 }
-MODELO_RAPIDO = "gemma-4-12b-qat"  # cabe inteiro na placa: ~109 palavras/s (medido em 05/11/2026)
+# O modelo da resposta rapida e o do papel "rapida" (catalogo\papeis.json); de fora, tarefas.MODELO_RAPIDO
+# continua valendo (veja o __getattr__ no fim). As sugestoes de chat tambem seguem os papeis.
 
 # ---------- Que ferramenta usar ----------
 
@@ -72,7 +74,7 @@ _REGRAS: list[tuple[str, str, list[dict], str | None]] = [
      r"|renal|exame|vacina\w*|paciente|ferimento|curativo|pomada)\b",
      [_s("fonte", "Perguntar com fonte (WikiMed)", "A IA responde citando a WikiMed e a Wikipédia.", "perguntar"),
       _s("buscar", "Ler direto na biblioteca", "Os artigos da Wikipédia e das outras bibliotecas sobre o assunto, sem IA.", "buscar"),
-      _s("chat", "Chat com o medgemma-27b", "Modelo de saúde, para conversar sobre o caso.", "chat", modelo="medgemma-27b")],
+      _s("chat", "Chat com o {modelo}", "Modelo de saúde, para conversar sobre o caso.", "chat", papel="medicina")],
      AVISO_SAUDE),
     ("lugar",
      r"\b(mapa|onde fica|como chego|como chegar|endereco|bairro|rota|caminho (para|ate)|mais proxim\w*|perto daqui|localiza\w*)\b",
@@ -81,7 +83,7 @@ _REGRAS: list[tuple[str, str, list[dict], str | None]] = [
      None),
     ("ler",
      r"\b(ler (uma |a |esta |essa )?(foto|imagem|documento)|extrai\w*|digitaliz\w*|ocr|texto d[aeo] (foto|imagem|documento)|escanead\w*|nota fiscal)\b",
-     [_s("chat", "Chat com o glm-ocr", "Lê fotos e PDFs escaneados, inclusive tabelas: anexe a imagem no chat.", "chat", modelo="glm-ocr")],
+     [_s("chat", "Chat com o {modelo}", "Lê fotos e PDFs escaneados, inclusive tabelas: anexe a imagem no chat.", "chat", papel="documentos")],
      None),
     # Transcrever e traduzir antes de criar: "transcrever o video de uma aula" e "traduzir a letra da musica para o
     # portugues" falam de video e musica sem querer criar nada.
@@ -95,7 +97,7 @@ _REGRAS: list[tuple[str, str, list[dict], str | None]] = [
      None),
     ("traduzir",
      r"\b(traduz\w*|traducao|translate|(em|para o|para|pro) (ingles|espanhol|frances|alemao|italiano|chines|japones|portugues))\b",
-     [_s("chat", "Chat com o translategemma-12b", "Tradutor de 55 idiomas, inclusive texto em fotos.", "chat", modelo="translategemma-12b"),
+     [_s("chat", "Chat com o {modelo}", "O tradutor do cofre, inclusive texto em fotos.", "chat", papel="traducao"),
       _s("rapida", MODOS["rapida"]["titulo"], "Para uma frase curta, a IA pequena resolve.", "rapida")],
      None),
     # Criar so com verbo de criacao ou nome de obra: "logo" sozinho e o adverbio ("logo depois de comer").
@@ -108,13 +110,13 @@ _REGRAS: list[tuple[str, str, list[dict], str | None]] = [
     ("codigo",
      r"\b(codigo|programa(r|cao)|python|javascript|typescript|java|c\+\+|rust|golang|script|bug|compila\w*|sql|html|css"
      r"|powershell|bash|linux|stack ?trace|exception|regex|api|git|funcao (em|no|do|de) (python|javascript|codigo|programa|excel))\b",
-     [_s("chat", "Chat com o ornith-1.5-35b-a3b", "O agente de código do cofre: o que mais acerta ferramentas.", "chat", modelo="ornith-1.5-35b-a3b"),
+     [_s("chat", "Chat com o {modelo}", "O modelo de código do cofre, feito para programar e usar ferramentas.", "chat", papel="codigo"),
       _s("conselho", MODOS["conselho"]["titulo"], "Para um problema difícil: inclui o Stack Overflow nas fontes.", "conselho")],
      None),
     ("contas",
      r"(\b(calcul\w*|quanto (e|da|fica|custa)|porcentagem|percentual|equacao|juros|converte\w*|conversao|regra de tres|media de|raiz quadrada)\b"
      r"|\d+\s*[+*/x^%]\s*\d+)",  # sem o "-": "38-39 graus" e datas nao sao conta
-     [_s("chat", "Chat com o gpt-oss-20b", "Raciocínio e contas: o mais veloz do cofre.", "chat", modelo="gpt-oss-20b"),
+     [_s("chat", "Chat com o {modelo}", "Raciocínio e contas, passo a passo.", "chat", papel="segunda-opiniao"),
       _s("rapida", MODOS["rapida"]["titulo"], "Para uma conta simples, a IA pequena resolve.", "rapida")],
      None),
     ("decisao",
@@ -139,6 +141,10 @@ def sugerir(texto: str) -> dict:
     for tipo, padrao, sugestoes, aviso in _REGRAS_COMPILADAS:
         if padrao.search(t):
             escolhidas = [dict(s) for s in sugestoes]
+            for s in escolhidas:  # o chat sugerido e o do papel agora (uma troca de modelo vale aqui na hora)
+                if s.get("papel"):
+                    s["modelo"] = papeis.modelo(s["papel"])
+                    s["titulo"] = s["titulo"].format(modelo=s["modelo"])
             # Completa com a escada padrao, sem repetir modo, ate 4 opcoes.
             for s in _escada(curta):
                 if len(escolhidas) >= 4:
@@ -370,3 +376,10 @@ def texto_ficha(ficha: dict | None = None) -> str:
     if ficha.get("ponto_encontro"):
         partes.append(f"Ponto de encontro: {ficha['ponto_encontro']}")
     return "\n".join(partes)
+
+
+def __getattr__(nome: str):
+    """tarefas.MODELO_RAPIDO, o nome antigo: o modelo do papel "rapida" agora."""
+    if nome == "MODELO_RAPIDO":
+        return papeis.modelo("rapida")
+    raise AttributeError(f"module {__name__!r} has no attribute {nome!r}")

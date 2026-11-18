@@ -99,11 +99,23 @@ if ($cat) {
         }
         if ($m.local -and $m.local -notin 'nucleo', 'cofre') { Problema "modelo $($m.id): local '$($m.local)' (use nucleo ou cofre)" }
     }
+    # Papeis (catalogo\papeis.json): cada um aponta para um modelo do catalogo, do tipo e do motor certos.
+    $todos = @{}
+    foreach ($m in @($cat.modelos)) { $todos[[string]$m.id] = $m }
+    $papeis = @(Ler-Papeis)
+    if (-not $papeis.Count) { Problema 'catalogo\papeis.json faltando ou sem papeis: as ferramentas ficam com o time padrao e a troca de modelos para' }
+    foreach ($p in $papeis) {
+        $m = $todos[[string]$p.modelo]
+        if (-not $m) { Problema "papel '$($p.id)' usa '$($p.modelo)', que nao esta no catalogo"; continue }
+        if (@($p.tipos).Count -and @($p.tipos) -notcontains $m.tipo) { Problema "papel '$($p.id)': '$($m.id)' e do tipo $($m.tipo), e o papel pede $(@($p.tipos) -join ', ')" }
+        if ($p.motor -and $m.motor -ne $p.motor) { Problema "papel '$($p.id)': '$($m.id)' roda no $($m.motor), e o papel pede $($p.motor)" }
+    }
     if ($cat.conselho) {
-        $ids = @($prontos | ForEach-Object id)
         $time = @($cat.conselho.membros) + @($cat.conselho.relator, $cat.conselho.relator_profundo, $cat.conselho.triagem)
         if ($cat.conselho.especialistas) { $time += @($cat.conselho.especialistas.PSObject.Properties | ForEach-Object Value) }
-        foreach ($t in @($time | Where-Object { $_ } | Sort-Object -Unique)) { if ($ids -notcontains $t) { Problema "conselho usa '$t', que nao esta no catalogo para baixar" } }
+        # "@papel" e o modelo que faz o papel agora; um nome comum fixa aquele modelo.
+        $time = @($time | Where-Object { $_ } | ForEach-Object { $n = [string]$_; if ($n.StartsWith('@')) { Modelo-DoPapel $n.Substring(1) $n } else { $n } })
+        foreach ($t in @($time | Sort-Object -Unique)) { if (-not $todos.ContainsKey($t)) { Problema "conselho usa '$t', que nao esta no catalogo" } }
     }
     if (-not $cat.energia -or [double]$cat.energia.tarifa_kwh -le 0) { Problema 'catalogo sem a secao energia (tarifa_kwh): o menu e a Central nao conseguem estimar o gasto' }
     else {

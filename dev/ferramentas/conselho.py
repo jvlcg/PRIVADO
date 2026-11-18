@@ -43,6 +43,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import sabio  # noqa: E402  (HTTP, busca nas bibliotecas Kiwix e reranker)
+import papeis  # noqa: E402  ("@principal" no time vira o modelo do papel, em catalogo\papeis.json)
 
 RAIZ = Path(__file__).resolve().parents[2]
 LLM = sabio.LLM
@@ -50,14 +51,15 @@ KIWIX = sabio.KIWIX
 CATALOGO = RAIZ / "catalogo" / "modelos.json"
 ATAS = Path(os.environ.get("CONSELHO_ATAS", RAIZ / "dev" / "conselho"))
 
-# Usado so se o catalogo nao tiver a secao "conselho".
+# Usado so se o catalogo nao tiver a secao "conselho". "@papel" e o modelo que faz o papel agora: trocar um modelo
+# (Central, secao Modelos) muda o time sozinho.
 PADRAO = {
-    "membros": ["gemma-4-26b-a4b-qat", "gpt-oss-20b", "qwen3.8-27b-iq3"],
-    "relator": "gemma-4-26b-a4b-qat",
-    "relator_profundo": "qwen3.8-27b-iq3",
-    "triagem": "gemma-4-26b-a4b-qat",
+    "membros": ["@principal", "@segunda-opiniao", "@profundo"],
+    "relator": "@principal",
+    "relator_profundo": "@profundo",
+    "triagem": "@principal",
     "max_membros": 3,
-    "especialistas": {"codigo": "ornith-1.5-35b-a3b", "medicina": "medgemma-27b", "traducao": "translategemma-12b"},
+    "especialistas": {"codigo": "@codigo", "medicina": "@medicina", "traducao": "@traducao"},
 }
 AREAS = {
     "geral": "conhecimentos gerais e conversa",
@@ -124,7 +126,7 @@ def ler_config() -> dict:
         cfg.update(json.loads(CATALOGO.read_text(encoding="utf-8-sig")).get("conselho") or {})
     except Exception as erro:
         print(f"(sem a secao 'conselho' no catalogo: {erro}; usando o time padrao)", file=sys.stderr)
-    return cfg
+    return papeis.resolver(cfg)
 
 
 def modelos_servidor() -> dict[str, dict]:

@@ -52,8 +52,12 @@ $incluidos = @()
 $escondidos = @()
 # Modelos maiores que RAM + VRAM leriam do disco a cada palavra e travariam o PC: ficam de fora por padrao.
 $memoriaGB = [math]::Round(((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB) + 12)
-foreach ($m in @($cat.modelos | Where-Object { $_.status -eq 'baixar' -and $_.motor -eq 'llama.cpp' })) {
-    if (-not ($estado.modelos.Contains($m.id) -and $estado.modelos[$m.id].completo)) { continue }
+# Entram os modelos a baixar e os de algum papel (um modelo so em observacao vira titular ao ser trocado); os
+# aposentados (trocados e guardados para apagar) ficam de fora.
+$dosPapeis = Modelos-DosPapeis
+$aposentados = @($estado.aposentados)
+foreach ($m in @($cat.modelos | Where-Object { ($_.status -eq 'baixar' -or $dosPapeis -contains $_.id) -and $_.motor -eq 'llama.cpp' })) {
+    if (-not ($estado.modelos.Contains($m.id) -and $estado.modelos[$m.id].completo) -or $aposentados -contains $m.id) { continue }
     if (-not $IncluirGigantes -and [double]$m.tamanho_gb -gt ($memoriaGB - 8)) { $escondidos += $m.id; continue }
     $arqs = @($m.arquivos | ForEach-Object { Caminho-Destino $m $_ })
     $modelo = $arqs | Where-Object { (Split-Path $_ -Leaf) -notmatch '^(mmproj|mtp-)' -and $_ -match '\.gguf$' } | Select-Object -First 1
