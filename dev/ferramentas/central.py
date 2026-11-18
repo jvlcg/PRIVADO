@@ -439,6 +439,7 @@ def painel_energia() -> dict:
     e = energia()
     pc_parado = float(e.get("pc_parado_w") or 114)
     return {"por_tarefa": por_tarefa, "meses": meses, "tarifa_detalhe": e.get("tarifa_detalhe", ""),
+            "distribuidora": e.get("distribuidora", ""), "tarifa_kwh": float(e.get("tarifa_kwh") or 0),
             "pc_parado_w": pc_parado, "pc_parado_dia": texto_custo(pc_parado * 24), "pc_parado_mes": texto_custo(pc_parado * 24 * 30)}
 
 
