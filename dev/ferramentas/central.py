@@ -229,6 +229,7 @@ def pastas_conhecimento() -> list[Path]:
 # o cofre so serve na hora do aperto se for conferido de tempos em tempos. As datas saem dos registros em logs\.
 PASTA_LOGS = RAIZ / "logs"
 ARQ_SIMULADOS = PASTA_LOGS / "simulados.csv"
+ARQ_KIT = PASTA_LOGS / "kit-de-bolso.json"  # o ultimo kit de bolso montado (scripts\kit-de-bolso.ps1)
 CUIDADOS = [
     {"id": "integridade", "nome": "Conferência dos arquivos", "padrao": "integridade-*.txt", "dias": 90,
      "como": "Menu, opção 16: confere pelo SHA256 se algum arquivo estragou com o tempo."},
@@ -238,10 +239,18 @@ CUIDADOS = [
      "como": "Menu, opção 15 (com internet): baixa o que mudou e confere cada arquivo."},
     {"id": "simulado", "nome": "Simulado sem internet", "padrao": None, "dias": 30,
      "como": "Desligue a internet e resolva a lista de tarefas: mostra se o cofre se vira sozinho."},
+    {"id": "kit", "nome": "Kit de bolso", "padrao": "kit", "dias": 90,
+     "como": "Menu, opção 20: atualiza o pen drive com as bibliotecas novas e confere cada arquivo. No iPhone, copie de novo a pasta Bibliotecas."},
 ]
 
 
 def _ultima_data(padrao: str | None) -> date | None:
+    if padrao == "kit":  # so conta kit num pen drive (ou cartao) que terminou sem erro; pasta de teste nao conta
+        try:
+            k = json.loads(ARQ_KIT.read_text(encoding="utf-8-sig"))
+            return date.fromisoformat(str(k.get("montado_em") or "")[:10]) if k.get("ok") and k.get("removivel") else None
+        except (OSError, ValueError, AttributeError):
+            return None
     if padrao is None:  # o simulado fica no proprio registro, uma linha por simulado
         try:
             linhas = ARQ_SIMULADOS.read_text(encoding="utf-8").splitlines()[1:]

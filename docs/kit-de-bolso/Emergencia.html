@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Emergência</title>
+<style>
+  :root {
+    --fundo: #f2f2f7; --cartao: #ffffff; --texto: #1d1d1f; --sec: #6e6e73; --linha: rgba(60, 60, 67, .14);
+    --vermelho: #d70015; --vermelho-suave: #fff1f2; --azul: #0066cc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fundo: #000; --cartao: #1c1c1e; --texto: #f5f5f7; --sec: #98989d; --linha: rgba(84, 84, 88, .55);
+      --vermelho: #ff453a; --vermelho-suave: #2c1213; --azul: #4da3ff;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--fundo); color: var(--texto);
+    font: 17px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: max(20px, env(safe-area-inset-top)) 16px max(40px, env(safe-area-inset-bottom)); }
+  header { padding: 8px 4px 4px; }
+  h1 { font-size: 40px; line-height: 1.05; letter-spacing: -.025em; margin: 0; color: var(--vermelho); }
+  .lema { margin: 6px 0 0; font-size: 19px; color: var(--sec); }
+  h2 { font-size: 22px; letter-spacing: -.01em; margin: 30px 4px 10px; }
+  .numeros { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 18px; }
+  .numeros a {
+    display: block; text-decoration: none; color: #fff; background: var(--vermelho);
+    border-radius: 18px; padding: 14px 16px; min-height: 92px;
+  }
+  .numeros b { display: block; font-size: 38px; line-height: 1.05; letter-spacing: -.02em; }
+  .numeros span { font-size: 15px; opacity: .92; }
+  .outros { margin-top: 10px; background: var(--cartao); border-radius: 18px; overflow: hidden; }
+  .outros a { display: flex; gap: 12px; align-items: baseline; padding: 13px 16px; color: var(--texto); text-decoration: none; border-top: 1px solid var(--linha); }
+  .outros a:first-child { border-top: 0; }
+  .outros b { min-width: 130px; font-variant-numeric: tabular-nums; color: var(--azul); }
+  .outros span { color: var(--sec); font-size: 15px; }
+  .cartao { background: var(--cartao); border-radius: 18px; padding: 18px 18px 14px; margin: 12px 0; }
+  .sempre { background: var(--vermelho-suave); border: 1px solid var(--linha); }
+  .cartao h3 { margin: 0 0 8px; font-size: 19px; letter-spacing: -.01em; }
+  ol, ul { margin: 0; padding-left: 22px; }
+  li { margin: 6px 0; }
+  .buscar { margin: 10px 0 2px; font-size: 14px; color: var(--sec); }
+  .buscar a { color: var(--azul); }
+  .indice { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+  .indice a { display: inline-block; padding: 7px 13px; border-radius: 999px; background: var(--cartao); color: var(--texto); text-decoration: none; font-size: 15px; border: 1px solid var(--linha); }
+  footer { margin: 28px 4px 0; font-size: 13px; color: var(--sec); }
+  @media (min-width: 560px) { .numeros { grid-template-columns: repeat(4, 1fr); } }
+  @media print {
+    body { background: #fff; color: #000; font-size: 12pt; }
+    .numeros a { background: #fff; color: #000; border: 2px solid #000; }
+    .cartao, .outros { break-inside: avoid; border: 1px solid #999; }
+    .indice, .buscar { display: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Emergência</h1>
+    <p class="lema">Respire. Segurança primeiro. Na dúvida, ligue 192: o atendente orienta pelo telefone.</p>
+  </header>
+
+  <nav class="numeros" aria-label="Ligar agora">
+    <a href="tel:192"><b>192</b><span>SAMU · ambulância</span></a>
+    <a href="tel:193"><b>193</b><span>Bombeiros · fogo, resgate, afogamento</span></a>
+    <a href="tel:190"><b>190</b><span>Polícia Militar</span></a>
+    <a href="tel:199"><b>199</b><span>Defesa Civil · enchente, deslizamento</span></a>
+  </nav>
+  <nav class="outros" aria-label="Outros números">
+    <a href="tel:08007226001"><b>0800 722 6001</b><span>Disque-Intoxicação (Anvisa, 24 h, grátis)</span></a>
+    <a href="tel:188"><b>188</b><span>CVV · apoio emocional, 24 h, grátis</span></a>
+    <a href="tel:191"><b>191</b><span>Polícia Rodoviária Federal · estradas</span></a>
+    <a href="tel:180"><b>180</b><span>Central de Atendimento à Mulher</span></a>
+  </nav>
+
+  <section class="cartao sempre">
+    <h3>Primeiro, sempre</h3>
+    <ol>
+      <li><b>Segurança:</b> não vire a segunda vítima. Fogo, fio elétrico, trânsito ou água? Afaste o perigo ou espere o socorro.</li>
+      <li><b>Ligue 192</b> e diga: o que aconteceu, onde (endereço e ponto de referência), quantas pessoas, se estão acordadas e respirando.</li>
+      <li><b>Não desligue antes do atendente.</b> Faça o que ele pedir e mande alguém esperar a ambulância na rua.</li>
+    </ol>
+  </section>
+
+  <ul class="indice" aria-label="Ir para">
+    <li><a href="#rcp">Parada cardíaca</a></li>
+    <li><a href="#sangramento">Sangramento</a></li>
+    <li><a href="#engasgo">Engasgo</a></li>
+    <li><a href="#avc">AVC</a></li>
+    <li><a href="#convulsao">Convulsão</a></li>
+    <li><a href="#queimadura">Queimadura</a></li>
+    <li><a href="#intoxicacao">Intoxicação</a></li>
+    <li><a href="#choque">Choque elétrico</a></li>
+  </ul>
+
+  <h2>O que fazer agora</h2>
+
+  <section class="cartao" id="rcp">
+    <h3>Parada cardíaca (RCP)</h3>
+    <ol>
+      <li>Não responde e não respira (ou só “puxa o ar” de vez em quando): ligue 192 e peça um desfibrilador (DEA) se houver por perto.</li>
+      <li>Mãos uma sobre a outra no centro do peito, braços esticados: empurre forte (5 a 6 cm) e rápido (100 a 120 por minuto), deixando o peito voltar.</li>
+      <li>Não pare até o socorro chegar, a pessoa reagir ou o DEA mandar parar. Cansou? Troque com alguém sem parar.</li>
+    </ol>
+    <p class="buscar">Na biblioteca, procure: <a href="http://127.0.0.1:8484/search?books.filter.lang=por&amp;pattern=reanima%C3%A7%C3%A3o%20cardiopulmonar">reanimação cardiopulmonar</a> · <a href="http://127.0.0.1:8484/search?books.filter.lang=eng&amp;pattern=cardiopulmonary%20resuscitation">cardiopulmonary resuscitation</a></p>
+  </section>
+
+  <section class="cartao" id="sangramento">
+    <h3>Sangramento forte</h3>
+    <ol>
+      <li>Aperte firme em cima do ferimento com um pano limpo (ou a própria mão) e não solte.</li>
+      <li>Encharcou? Ponha outro pano por cima, sem tirar o primeiro.</li>
+      <li>Deite a pessoa, mantenha aquecida e ligue 192.</li>
+    </ol>
+    <p class="buscar">Na biblioteca, procure: <a href="http://127.0.0.1:8484/search?books.filter.lang=por&amp;pattern=hemorragia">hemorragia</a> · <a href="http://127.0.0.1:8484/search?books.filter.lang=eng&amp;pattern=bleeding%20control">bleeding control</a></p>
+  </section>
+
+  <section class="cartao" id="engasgo">
+    <h3>Engasgo</h3>
+    <ol>
+      <li>Tosse com força? Deixe tossir e fique junto.</li>
+      <li>Não fala, não tosse, não respira: 5 tapas firmes nas costas, entre as escápulas, e 5 compressões na barriga, logo acima do umbigo (manobra de Heimlich). Alterne até sair.</li>
+      <li>Bebê: de bruços no seu antebraço, cabeça mais baixa, 5 tapas nas costas; depois de barriga para cima, 5 compressões no meio do peito com dois dedos.</li>
+      <li>Desmaiou: ligue 192 e comece a RCP.</li>
+    </ol>
+    <p class="buscar">Na biblioteca, procure: <a href="http://127.0.0.1:8484/search?books.filter.lang=por&amp;pattern=manobra%20de%20Heimlich">manobra de Heimlich</a> · <a href="http://127.0.0.1:8484/search?books.filter.lang=eng&amp;pattern=choking%20first%20aid">choking first aid</a></p>
+  </section>
+
+  <section class="cartao" id="avc">
+    <h3>AVC (derrame): lembre de SAMU</h3>
+    <ol>
+      <li><b>S</b>orria: um lado da boca cai? <b>A</b>brace: levantando os dois braços, um cai? <b>M</b>úsica: cantando ou falando uma frase, a fala sai enrolada?</li>
+      <li><b>U</b>rgente: qualquer um desses sinais, ligue 192 e anote a hora em que começou.</li>
+      <li>Não dê comida, bebida nem remédio.</li>
+    </ol>
+    <p class="buscar">Na biblioteca, procure: <a href="http://127.0.0.1:8484/search?books.filter.lang=por&amp;pattern=acidente%20vascular%20cerebral">acidente vascular cerebral</a> · <a href="http://127.0.0.1:8484/search?books.filter.lang=eng&amp;pattern=stroke%20recognition">stroke recognition</a></p>
+  </section>
+
+  <section class="cartao" id="convulsao">
+    <h3>Convulsão</h3>
+    <ol>
+      <li>Afaste objetos e proteja a cabeça com algo macio. Não segure a pessoa nem ponha nada na boca dela.</li>
+      <li>Marque o tempo. Passou de 5 minutos, ou ela não acorda entre uma crise e outra: ligue 192.</li>
+      <li>Quando parar, vire de lado e fique junto até ela acordar.</li>
+    </ol>
+    <p class="buscar">Na biblioteca, procure: <a href="http://127.0.0.1:8484/search?books.filter.lang=por&amp;pattern=convuls%C3%A3o">convulsão</a> · <a href="http://127.0.0.1:8484/search?books.filter.lang=eng&amp;pattern=seizure%20first%20aid">seizure first aid</a></p>
+  </section>
+
+  <section class="cartao" id="queimadura">
+    <h3>Queimadura</h3>
+    <ol>
+      <li>Água corrente fria (não gelada) por 20 minutos. Nada de gelo, pasta de dente, manteiga ou pó de café.</li>
+      <li>Tire anéis, relógio e roupas soltas perto da queimadura; o que grudou na pele, deixe.</li>
+      <li>Cubra com plástico filme ou pano limpo. Queimadura grande, no rosto, nas mãos, nos genitais ou em criança: ligue 192.</li>
+    </ol>
+    <p class="buscar">Na biblioteca, procure: <a href="http://127.0.0.1:8484/search?books.filter.lang=por&amp;pattern=queimadura">queimadura</a> · <a href="http://127.0.0.1:8484/search?books.filter.lang=eng&amp;pattern=burn%20treatment">burn treatment</a></p>
+  </section>
+
+  <section class="cartao" id="intoxicacao">
+    <h3>Intoxicação ou envenenamento</h3>
+    <ol>
+      <li>Não provoque vômito e não dê leite, óleo nem remédio caseiro.</li>
+      <li>Ligue 0800 722 6001 (Disque-Intoxicação) ou 192, com a embalagem do produto na mão.</li>
+      <li>Produto no olho ou na pele: lave com água corrente por 15 minutos.</li>
+    </ol>
+    <p class="buscar">Na biblioteca, procure: <a href="http://127.0.0.1:8484/search?books.filter.lang=por&amp;pattern=intoxica%C3%A7%C3%A3o">intoxicação</a> · <a href="http://127.0.0.1:8484/search?books.filter.lang=eng&amp;pattern=poisoning%20first%20aid">poisoning first aid</a></p>
+  </section>
+
+  <section class="cartao" id="choque">
+    <h3>Choque elétrico</h3>
+    <ol>
+      <li>Não toque na pessoa antes de desligar a energia no disjuntor. Sem como desligar: afaste o fio com madeira ou plástico secos.</li>
+      <li>Não respira: ligue 192 e comece a RCP. Respira: ligue 192 mesmo assim, porque o coração pode falhar depois.</li>
+    </ol>
+    <p class="buscar">Na biblioteca, procure: <a href="http://127.0.0.1:8484/search?books.filter.lang=por&amp;pattern=choque%20el%C3%A9trico">choque elétrico</a> · <a href="http://127.0.0.1:8484/search?books.filter.lang=eng&amp;pattern=electric%20shock%20first%20aid">electric shock first aid</a></p>
+  </section>
+
+  <footer>
+    <p>Resumo dos primeiros socorros ensinados pelo SAMU e pela Cruz Vermelha. Não substitui o atendimento: ligue 192. Os detalhes estão nas bibliotecas deste pen drive (WikiMed, Medicina de campo e de emergência).</p>
+    <p>Os links “procure” funcionam com a biblioteca aberta neste computador (“Abrir a biblioteca”). No celular, digite as palavras na busca do app Kiwix.</p>
+    <p>Cartão do Cofre de bolso, montado em {{DATA}}.</p>
+  </footer>
+</main>
+</body>
+</html>

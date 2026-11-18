@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Ficha médica da família</title>
+<style>
+  :root { --fundo: #f2f2f7; --cartao: #fff; --texto: #1d1d1f; --sec: #6e6e73; --linha: rgba(60, 60, 67, .14); --vermelho: #d70015; --azul: #0066cc; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fundo: #000; --cartao: #1c1c1e; --texto: #f5f5f7; --sec: #98989d; --linha: rgba(84, 84, 88, .55); --vermelho: #ff453a; --azul: #4da3ff; }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--fundo); color: var(--texto); font: 17px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: max(20px, env(safe-area-inset-top)) 16px 40px; }
+  h1 { font-size: 34px; letter-spacing: -.02em; margin: 0 4px 4px; }
+  .sub { margin: 0 4px 16px; color: var(--sec); }
+  .sub a { color: var(--vermelho); font-weight: 600; text-decoration: none; }
+  .pessoa { background: var(--cartao); border-radius: 18px; padding: 16px 18px; margin: 12px 0; }
+  .pessoa h2 { margin: 0 0 8px; font-size: 22px; letter-spacing: -.01em; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0; }
+  dt { color: var(--sec); }
+  dd { margin: 0; }
+  dd.alergia { color: var(--vermelho); font-weight: 600; }
+  .pessoa a { color: var(--azul); text-decoration: none; }
+  footer { margin: 24px 4px 0; color: var(--sec); font-size: 13px; }
+  @media (max-width: 480px) { dl { grid-template-columns: 1fr; } dt { margin-top: 6px; } }
+  @media print { body { background: #fff; color: #000; } .pessoa { border: 1px solid #999; break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Ficha médica da família</h1>
+  <p class="sub">Emergência: <a href="tel:192">192 SAMU</a> · <a href="tel:193">193 Bombeiros</a> · <a href="tel:190">190 Polícia</a></p>
+  {{CONTEUDO}}
+  <footer>
+    <p>{{ATUALIZADA}} Copiada para o pen drive em {{DATA}} pelo Cofre de IAs. Dado pessoal: se o pen drive se perder, a ficha vai junto.</p>
+  </footer>
+</main>
+</body>
+</html>

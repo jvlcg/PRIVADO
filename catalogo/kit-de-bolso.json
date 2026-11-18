@@ -1,0 +1,31 @@
+{
+  "nota": "Ordem do kit de bolso (scripts\\kit-de-bolso.ps1): o que salva vidas primeiro, depois o que a familia le sem a IA (portugues), agua e comida, consertos e energia. Cada biblioteca entra se couber; a que nao cabe e pulada e a seguinte, menor, ainda pode entrar. O que fica de fora continua no cofre de casa.",
+  "margem_minima_mb": 150,
+  "incluir_o_resto": true,
+  "grupos": [
+    {
+      "nome": "Primeiros socorros e saúde",
+      "ids": ["medicina-campo", "medicina-militar", "nhs-medicamentos", "agua", "wikimed", "cdc-viajante", "se-medicalsciences", "guias-medicina", "libretexts-med"]
+    },
+    {
+      "nome": "Em português",
+      "ids": ["wikibooks-pt", "wikivoyage-pt", "wiktionary-pt", "wikiversity-pt", "gutenberg-pt", "phet-pt"]
+    },
+    {
+      "nome": "Água, comida e abrigo",
+      "ids": ["alimentos", "nos", "wikiciv", "pos-desastre", "se-outdoors", "se-cooking", "se-gardening", "gardenology", "se-homebrew", "se-sustainability", "trueprepper"]
+    },
+    {
+      "nome": "Consertar, energia e construir",
+      "ids": ["restarters", "appropedia", "energypedia", "cd3wd", "se-diy", "se-ham", "se-mechanics", "se-woodworking", "ifixit-pt", "se-bicycles", "libretexts-oficios", "se-electronics"]
+    },
+    {
+      "nome": "Animais",
+      "ids": ["wikivet", "se-pets"]
+    },
+    {
+      "nome": "Se sobrar espaço",
+      "ids": ["ready-gov", "wikipedia-pt"]
+    }
+  ]
+}

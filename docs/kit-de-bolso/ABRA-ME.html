@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Cofre de bolso</title>
+<style>
+  :root {
+    --fundo: #f2f2f7; --cartao: #ffffff; --texto: #1d1d1f; --sec: #6e6e73; --linha: rgba(60, 60, 67, .14);
+    --azul: #0071e3; --vermelho: #d70015; --verde: #248a3d; --chip: rgba(118, 118, 128, .12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fundo: #000; --cartao: #1c1c1e; --texto: #f5f5f7; --sec: #98989d; --linha: rgba(84, 84, 88, .55);
+      --azul: #2997ff; --vermelho: #ff453a; --verde: #30d158; --chip: rgba(118, 118, 128, .24);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--fundo); color: var(--texto);
+    font: 17px/1.47 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: max(24px, env(safe-area-inset-top)) 16px max(48px, env(safe-area-inset-bottom)); }
+  .marca { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--sec); margin: 0 4px; }
+  h1 { font-size: 44px; line-height: 1.04; letter-spacing: -.03em; margin: 6px 4px 8px; }
+  .sub { font-size: 21px; line-height: 1.38; color: var(--sec); margin: 0 4px; }
+  .sub b { color: var(--texto); font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 20px 4px 0; }
+  .chips a { display: inline-block; padding: 8px 15px; border-radius: 999px; background: var(--chip); color: var(--texto); text-decoration: none; font-size: 15px; font-weight: 500; }
+  h2 { font-size: 26px; letter-spacing: -.02em; margin: 40px 4px 12px; }
+  .cartao { background: var(--cartao); border-radius: 20px; padding: 20px; margin: 12px 0; }
+  .cartao > h3 { margin: 0 0 4px; font-size: 21px; letter-spacing: -.015em; }
+  .cartao > .dica { margin: 0 0 14px; color: var(--sec); font-size: 15px; }
+  .sos { background: var(--vermelho); color: #fff; }
+  .sos h3 { color: #fff; }
+  .sos-numeros { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0 14px; }
+  .sos-numeros a { color: #fff; text-decoration: none; background: rgba(255, 255, 255, .16); border-radius: 14px; padding: 10px 6px; text-align: center; }
+  .sos-numeros b { display: block; font-size: 28px; line-height: 1.1; letter-spacing: -.02em; }
+  .sos-numeros span { font-size: 13px; opacity: .92; }
+  .sos .ir { display: inline-block; color: #fff; font-weight: 600; text-decoration: none; padding: 9px 16px; border-radius: 999px; background: rgba(0, 0, 0, .18); }
+  ol.passos { list-style: none; counter-reset: passo; padding: 0; margin: 0; }
+  ol.passos > li { counter-increment: passo; position: relative; padding: 0 0 0 42px; margin: 0 0 14px; min-height: 28px; }
+  ol.passos > li::before {
+    content: counter(passo); position: absolute; left: 0; top: -1px; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--azul); color: #fff; font-size: 15px; font-weight: 600; text-align: center; line-height: 28px;
+  }
+  ol.passos > li:last-child { margin-bottom: 4px; }
+  .nota { color: var(--sec); font-size: 15px; }
+  .extras { list-style: none; padding: 0; margin: 4px 0 0; }
+  .extras li { padding: 12px 0; border-top: 1px solid var(--linha); }
+  .extras li:first-child { border-top: 0; padding-top: 4px; }
+  .extras b { display: block; }
+  code, kbd { font: 15px/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace; background: var(--chip); padding: 1px 6px; border-radius: 6px; }
+  details.cartao { padding: 0; }
+  details.cartao > summary { list-style: none; cursor: pointer; padding: 18px 20px; font-size: 21px; font-weight: 600; letter-spacing: -.015em; display: flex; justify-content: space-between; align-items: center; }
+  details.cartao > summary::-webkit-details-marker { display: none; }
+  details.cartao > summary::after { content: "›"; font-size: 26px; font-weight: 400; color: var(--sec); transition: transform .2s; }
+  details[open].cartao > summary::after { transform: rotate(90deg); }
+  details.cartao > .corpo { padding: 0 20px 18px; }
+  .grupo h3 { margin: 0 0 8px; font-size: 19px; letter-spacing: -.01em; }
+  .grupo h3 small { display: block; margin-top: 2px; font-weight: 400; color: var(--sec); font-size: 15px; letter-spacing: 0; }
+  .itens { list-style: none; margin: 0; padding: 0; }
+  .itens li { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 0; border-top: 1px solid var(--linha); }
+  .itens .nome { font-weight: 500; }
+  .itens .tam { color: var(--sec); font-size: 15px; font-variant-numeric: tabular-nums; text-align: right; }
+  .itens .uso { grid-column: 1 / -1; color: var(--sec); font-size: 15px; }
+  .fora { columns: 2 240px; column-gap: 24px; padding-left: 20px; margin: 6px 0 0; color: var(--sec); font-size: 15px; }
+  .fora li { break-inside: avoid; margin: 3px 0; }
+  .botao { display: inline-block; margin-top: 6px; padding: 10px 18px; border-radius: 999px; background: var(--azul); color: #fff; text-decoration: none; font-weight: 600; }
+  footer { margin: 36px 4px 0; color: var(--sec); font-size: 13px; }
+  @media (max-width: 420px) {
+    h1 { font-size: 38px; }
+    .sos-numeros { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<main>
+  <p class="marca">Cofre de IAs</p>
+  <h1>Cofre de bolso</h1>
+  <p class="sub">{{RESUMO}} Funciona <b>sem internet</b> e <b>sem o computador de casa</b>: no iPhone, no Android ou em qualquer PC.</p>
+  <ul class="chips">
+    <li><a href="#iphone">iPhone</a></li>
+    <li><a href="#windows">Computador</a></li>
+    <li><a href="#android">Android</a></li>
+    <li><a href="#conteudo">O que tem aqui</a></li>
+    <li><a href="Emergencia.html">Emergência</a></li>
+  </ul>
+
+  <section class="cartao sos" aria-labelledby="t-sos">
+    <h3 id="t-sos">Emergência</h3>
+    <div class="sos-numeros">
+      <a href="tel:192"><b>192</b><span>SAMU</span></a>
+      <a href="tel:193"><b>193</b><span>Bombeiros</span></a>
+      <a href="tel:190"><b>190</b><span>Polícia</span></a>
+      <a href="tel:199"><b>199</b><span>Defesa Civil</span></a>
+    </div>
+    <a class="ir" href="Emergencia.html">Primeiros socorros passo a passo ›</a>
+  </section>
+
+  <h2>Como abrir</h2>
+
+  <details class="cartao" id="iphone" open>
+    <summary>No iPhone</summary>
+    <div class="corpo">
+      <p class="nota" style="margin-top:0">iPhone 15 ou mais novo tem entrada USB-C: o pen drive liga direto (pen drive com a ponta larga, USB-A, precisa de um adaptador USB-C).</p>
+      <ol class="passos">
+        <li>Enquanto tiver internet, instale o app <b>Kiwix</b> (grátis, na App Store).</li>
+        <li>Ligue o pen drive no iPhone e abra o app <b>Arquivos</b> › Navegar › <b>COFRE-BOLSO</b> › pasta <b>Bibliotecas</b>.</li>
+        <li>Toque em <b>⋯</b> › <b>Selecionar</b> › <b>Selecionar Tudo</b>, e depois em <b>⋯</b> › <b>Copiar</b>.</li>
+        <li>Volte em Navegar › <b>No meu iPhone</b>, crie a pasta <b>Kiwix</b> (toque e segure num espaço vazio › Nova Pasta), abra a pasta, toque e segure num espaço vazio › <b>Colar</b>. É bastante coisa: deixe o iPhone na tomada até terminar.</li>
+        <li>Abra o <b>Kiwix</b>, toque no botão de abrir arquivo (o da pastinha) e escolha as bibliotecas em No meu iPhone › Kiwix. Pronto: funciona em modo avião.</li>
+        <li>Copie também o <b>Emergencia.html</b> para No meu iPhone: abre sem internet, com os números e os primeiros socorros.</li>
+      </ol>
+      <p class="nota">O Kiwix lê o arquivo no lugar onde ele está: aberto direto do pen drive, só funciona com o pen drive ligado. Por isso o passo 4.</p>
+      <ul class="extras">
+        <li><b>Ficha Médica do iPhone</b>App Saúde › sua foto › Ficha Médica › Editar: alergias, remédios, tipo sanguíneo e contatos de emergência. Ligue “Mostrar com o iPhone bloqueado”: quem socorrer vê na tela bloqueada (Emergência › Ficha Médica).</li>
+        <li><b>SOS de Emergência</b>Segure o botão lateral e um botão de volume até aparecer o controle de SOS: o iPhone liga para a emergência e avisa seus contatos de emergência.</li>
+        <li><b>Traduzir sem internet</b>Muitas bibliotecas estão em inglês. No app Traduzir, baixe o português e o inglês para usar offline; no Kiwix, selecione o texto › Traduzir.</li>
+        <li><b>Wikipédia completa, com imagens</b>Com Wi-Fi, o próprio Kiwix baixa a Wikipédia em português inteira (uns 19 GB). Não cabe neste pen drive, mas cabe no iPhone.</li>
+        <li><b>Hotspot do Kiwix</b>No app, abra o Hotspot, escolha as bibliotecas e inicie: outros celulares e computadores na mesma rede Wi-Fi, mesmo sem internet, leem pelo navegador apontando a câmera para o QR code.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="cartao" id="windows" open>
+    <summary>No computador (Windows)</summary>
+    <div class="corpo">
+      <ol class="passos">
+        <li>Ligue o pen drive e abra-o no Explorador de Arquivos.</li>
+        <li>Dois cliques em <b>Abrir a biblioteca</b>. O navegador abre sozinho com todas as bibliotecas (endereço <code>127.0.0.1:{{PORTA}}</code>).</li>
+        <li>Para fechar, feche a janela preta. Não precisa instalar nada nem ter internet.</li>
+      </ol>
+      <p class="nota">Linux (64 bits): num terminal, na pasta do pen drive, rode <code>sh Programas/abrir-biblioteca-linux.sh</code>. Mac: instale o app Kiwix (App Store) e abra os arquivos da pasta Bibliotecas.</p>
+    </div>
+  </details>
+
+  <details class="cartao" id="android">
+    <summary>No Android</summary>
+    <div class="corpo">
+      <ol class="passos">
+        <li>Enquanto tiver internet, instale o app <b>Kiwix</b> (Play Store ou F-Droid).</li>
+        <li>Ligue o pen drive (USB-C ou adaptador OTG). No app de arquivos do celular, abra o pen drive › <b>Bibliotecas</b>, selecione tudo › <b>Copiar</b> › armazenamento interno › pasta <b>Kiwix</b>.</li>
+        <li>Abra o Kiwix e toque em abrir arquivo (ou procure as bibliotecas do aparelho): ele acha o que você copiou.</li>
+      </ol>
+    </div>
+  </details>
+
+  <h2 id="conteudo">O que tem aqui</h2>
+  {{GRUPOS}}
+
+  <section class="cartao">
+    <h3>Ficou no cofre de casa</h3>
+    {{FORA}}
+  </section>
+
+  <section class="cartao">
+    <h3>Ficha médica da família</h3>
+    {{FICHA}}
+  </section>
+
+  <section class="cartao">
+    <h3>Conferir se nada estragou</h3>
+    <p class="dica">Cada arquivo tem uma impressão digital (SHA-256) anotada na montagem. Se algum estragar, a conferência mostra qual.</p>
+    <p style="margin:0">Windows: pasta Programas › dois cliques em <b>conferir</b>. Linux: <code>sha256sum -c Programas/SHA256SUMS.txt</code>. Mac: <code>shasum -a 256 -c Programas/SHA256SUMS.txt</code> (os dois na pasta do pen drive).</p>
+  </section>
+
+  <footer>
+    <p>{{DISCO}} Montado em {{DATA}} pelo Cofre de IAs.</p>
+    <p>Leitor: Kiwix (software livre, kiwix.org). Cada biblioteca segue a licença livre do seu projeto (Wikipédia, Stack Exchange, iFixit e outros).</p>
+  </footer>
+</main>
+</body>
+</html>

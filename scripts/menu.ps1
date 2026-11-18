@@ -63,6 +63,12 @@ $opcoes = @(
            if ($r -eq 'l') { Nova-Janela 'desligar-ao-terminar.ps1' }
            elseif ($r -eq 'p') { & "$PSScriptRoot\desligar-ao-terminar.ps1" -Parar }
        } }
+
+    @{ n = 20; grupo = 'LEVAR'; nome = 'Kit de bolso: o essencial no pen drive e no iPhone'; tarefa = 'kit-de-bolso'
+       acao = {
+           $f = Read-Host '  Levar também a ficha médica da família? É dado pessoal. (s/N)'
+           if ($f -match '^\s*[sS]') { & "$PSScriptRoot\kit-de-bolso.ps1" -ComFicha } else { & "$PSScriptRoot\kit-de-bolso.ps1" }
+       } }
 )
 # Palavras que acham cada opção quando você digita uma palavra em vez do número.
 $chaves = @{
@@ -72,9 +78,10 @@ $chaves = @{
     10 = 'medir energia consumo watts conta'; 11 = 'fechar parar liberar placa'; 12 = 'jogo jogar game'
     13 = 'status acervo aberto'; 14 = 'verificar novidades atualizacoes atualizar'; 15 = 'sincronizar baixar backup'
     16 = 'integridade sha256 conferir'; 17 = 'catalogo lista modelos'; 18 = 'testar teste testes'; 19 = 'desligar vigia ocioso dormir'
+    20 = 'kit bolso pen drive pendrive usb iphone celular android levar emergencia'
 }
-# No modo jogo só funcionam as opções que não ligam IA nem pesam no PC.
-$livresNoJogo = 1, 10, 11, 12, 13, 17, 18, 19
+# No modo jogo só funcionam as opções que não ligam IA nem pesam no PC (o kit só copia, com prioridade baixa).
+$livresNoJogo = 1, 10, 11, 12, 13, 17, 18, 19, 20
 
 function Sem-Acento([string]$s) {
     $d = $s.ToLowerInvariant().Normalize([Text.NormalizationForm]::FormD)

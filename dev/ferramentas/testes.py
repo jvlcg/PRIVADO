@@ -405,7 +405,8 @@ class SaudeDoCofre(unittest.TestCase):
         (logs / "integridade-2026-10-29.txt").write_text("ok", encoding="utf-8")
         (logs / "verificacao-2026-08-01.txt").write_text("ok", encoding="utf-8")
         self.trocas = [mock.patch.object(central, "PASTA_LOGS", logs),
-                       mock.patch.object(central, "ARQ_SIMULADOS", logs / "simulados.csv")]
+                       mock.patch.object(central, "ARQ_SIMULADOS", logs / "simulados.csv"),
+                       mock.patch.object(central, "ARQ_KIT", logs / "kit-de-bolso.json")]
         for t in self.trocas:
             t.start()
 
@@ -430,6 +431,23 @@ class SaudeDoCofre(unittest.TestCase):
         itens = {i["id"]: i for i in central.saude_do_cofre()["itens"]}
         self.assertTrue(itens["simulado"]["em_dia"])
         self.assertEqual(itens["simulado"]["dias"], 0)
+
+    def test_kit_de_bolso_so_conta_pen_drive_que_terminou_bem(self):
+        hoje = central.date(2026, 11, 17)
+        kit = central.ARQ_KIT
+
+        def item():
+            return {i["id"]: i for i in central.saude_do_cofre(hoje)["itens"]}["kit"]
+        self.assertIsNone(item()["ultima"])                                   # nunca montado
+        kit.write_text('{"montado_em": "2026-11-17T22:10:00", "ok": true, "removivel": false}', encoding="utf-8")
+        self.assertIsNone(item()["ultima"])                                   # pasta de teste nao conta
+        kit.write_text('{"montado_em": "2026-11-17T22:10:00", "ok": false, "removivel": true}', encoding="utf-8")
+        self.assertIsNone(item()["ultima"])                                   # parou no meio
+        kit.write_text('{"montado_em": "2026-08-01T10:00:00", "ok": true, "removivel": true}', encoding="utf-8")
+        self.assertEqual(item()["dias"], 108)
+        self.assertFalse(item()["em_dia"])                                    # a cada 90 dias
+        kit.write_text("nao e json", encoding="utf-8")
+        self.assertIsNone(item()["ultima"])
 
 
 class RegistroDeGasto(unittest.TestCase):

@@ -132,7 +132,7 @@ O que mudou:
 - **Regras de segurança em toda resposta** (com fonte, rápida e conselho): em risco de vida, primeiro ligar 192 ou 193; nunca gerador, churrasqueira ou carvão em lugar fechado; nada de dose inventada. Nos testes do Survival LLM, modelos pequenos erraram justamente nisso.
 - **Guarda contra laço.** Se a IA começa a repetir o mesmo trecho, na resposta ou no raciocínio, o cofre corta na hora: a placa não fica gastando à toa, e a resposta cortada não vai para as guardadas.
 - **Teto de gasto por pergunta** (Perguntar): sem teto, 1 Wh ou 3 Wh. Ao chegar nele, a IA responde com o que já achou, como no Responder agora.
-- **Saúde do cofre** (Serviços): quando foram a conferência dos arquivos, as novidades, a sincronização e o simulado, com o prazo de cada um, e o espaço livre nos discos. O Início avisa o que estiver atrasado.
+- **Saúde do cofre** (Serviços): quando foram a conferência dos arquivos, as novidades, a sincronização, o simulado e o kit de bolso, com o prazo de cada um, e o espaço livre nos discos. O Início avisa o que estiver atrasado.
 - **Simulado sem internet**, uma vez por mês: oito tarefas (primeiros socorros, água, remédio, conserto, tradução, energia). Ao concluir, a data fica anotada em `A:\logs\simulados.csv`.
 
 Ficaram para depois, porque precisam de download grande ou dos modelos ligados: cursos do Khan Academy em português pelo Kolibri; um piso de relevância no reordenador (falta medir as notas dele aqui); e um conjunto de perguntas de emergência para avaliar os modelos.
@@ -204,7 +204,16 @@ Atalhos: **Ctrl+K** abre a procura, como o Spotlight: os resultados vêm em grup
 
 Para imprimir e guardar junto do PC: **`A:\docs\cartao-emergencia.html`** (abra e use Ctrl+P). Numa folha A4: como ligar tudo, os endereços, onde achar cada assunto de emergência, quanto tempo o PC aguenta numa bateria e o que fazer se este PC quebrar.
 
-O menu agrupa as opções em Usar, Criar, Energia e Manter e mostra ao lado de cada uma o gasto estimado na tarifa da Equatorial Goiás (R$ 1,25/kWh, seção "Custo de energia"). Antes de rodar, ele repete a estimativa; os scripts mais longos mostram no fim quanto gastaram de fato. Além do número, ele aceita uma palavra (`biblioteca`, `jogo`, `energia`, `desligar`...): com uma opção só, ela roda; com várias, ele as lista. Três palavras ou mais que não sejam de nenhuma opção viram pergunta.
+**Kit de bolso (pen drive e iPhone).** O essencial do cofre para usar sem este PC: opção 20 do menu, ou `kit-de-bolso.ps1` (com `-Simular`, só mostra o plano). Ele escolhe as bibliotecas na ordem de `catalogo\kit-de-bolso.json` (primeiros socorros e saúde, as em português, água e comida, consertos e energia, animais) até encher o pen drive; a que não cabe é pulada e a seguinte, menor, ainda pode entrar. Cada biblioteca é copiada e relida direto do pen drive, sem passar pela memória do Windows, e comparada com o SHA-256 anotado no download: cópia estragada ou pen drive falsificado (que diz ter mais espaço do que tem) não passa. Junto vão:
+
+- **ABRA-ME.html**: o que tem no pen drive e o passo a passo para iPhone, Android e PC.
+- **Emergencia.html**: os números (192, 193, 190, 199, Disque-Intoxicação 0800 722 6001, CVV 188), o "primeiro, sempre" e os oito casos de primeiros socorros do SOS, em passos curtos. Abre sem internet em qualquer aparelho.
+- **Abrir a biblioteca**: dois cliques em qualquer Windows abrem todas as bibliotecas no navegador (127.0.0.1:8484), sem instalar nada; no Linux, `sh Programas/abrir-biblioteca-linux.sh`.
+- **Programas\conferir**: confere cada arquivo pelo `SHA256SUMS.txt` (no Linux e no Mac, `sha256sum -c`).
+
+A ficha médica só vai junto se você pedir (no menu, "s"; no terminal, `-ComFicha`), porque o pen drive pode se perder; no iPhone, o lugar dela é a Ficha Médica do app Saúde, que aparece na tela bloqueada. Rodar de novo atualiza o kit: pula o que já está conferido, copia o que mudou e põe as versões velhas em `_para-apagar`, no próprio pen drive. O pen drive de 16 GB foi formatado em exFAT, que o iPhone lê e que guarda arquivos de mais de 4 GB (o FAT32 não guarda). Nele couberam 46 bibliotecas (16,4 GB); ficaram de fora o iFixit em português (3,6 GB), o fórum de eletrônica (4,3 GB) e a Wikipédia (20,6 GB), que o iPhone pode baixar inteira pelo próprio app Kiwix. **No iPhone** (USB-C): app Arquivos, copie a pasta Bibliotecas do pen drive para "No meu iPhone" e abra os arquivos no app Kiwix, que funciona em modo avião. O ABRA-ME explica também o SOS de Emergência, traduzir o inglês sem internet e o hotspot do Kiwix, que deixa outros celulares lerem as bibliotecas pela mesma rede Wi-Fi. A saúde do cofre lembra de atualizar o kit a cada 90 dias.
+
+O menu agrupa as opções em Usar, Criar, Energia, Manter e Levar e mostra ao lado de cada uma o gasto estimado na tarifa da Equatorial Goiás (R$ 1,25/kWh, seção "Custo de energia"). Antes de rodar, ele repete a estimativa; os scripts mais longos mostram no fim quanto gastaram de fato. Além do número, ele aceita uma palavra (`biblioteca`, `jogo`, `energia`, `desligar`...): com uma opção só, ela roda; com várias, ele as lista. Três palavras ou mais que não sejam de nenhuma opção viram pergunta.
 
 | Opção | O que faz | Onde abre | Gasto estimado |
 | --- | --- | --- | --- |
@@ -227,6 +236,7 @@ O menu agrupa as opções em Usar, Criar, Energia e Manter e mostra ao lado de c
 | 17. Catálogo | lista os modelos e as bibliotecas | no terminal | quase nada |
 | 18. Testar o projeto | scripts, catálogo, arquivos baixados e segredos no que vai para o GitHub | no terminal | ~0,7 Wh |
 | 19. Vigia de desligar | desliga o PC parado depois que o Claude termina (veja "Para gastar menos") | janela própria | economiza |
+| 20. Kit de bolso | o essencial num pen drive, conferido, para usar sem este PC no iPhone, no Android ou em qualquer computador (veja "Kit de bolso") | no terminal | ~55 Wh ≈ R$ 0,07 por kit de 16 GB |
 
 **Responder agora.** Toda ferramenta que pensa por muito tempo tem como parar e receber a resposta com o que já foi encontrado. No conselho e na Central é o botão **Responder agora**, que aparece enquanto a IA trabalha; no terminal (opções 4 e 5), o primeiro Ctrl+C faz o mesmo e o segundo cancela. A IA que estiver falando para na hora (a placa deixa de gastar), o relator escreve sem raciocinar com o que as outras já disseram e a resposta avisa quantas IAs tinham respondido. Se nada tiver sido achado ainda, vem uma resposta rápida, sem fontes, marcada como tal.
 
