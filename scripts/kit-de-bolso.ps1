@@ -514,6 +514,9 @@ if (-not $Sim) {
     if ($r -notmatch '^\s*[sS]') { Info 'Nada foi copiado.'; exit 0 }
 }
 
+# Um kit por vez: duas copias no mesmo pen drive se atropelariam (e a conferencia acusaria erro de gravacao).
+$script:TravaKit = New-Object System.Threading.Mutex($false, 'Global\SSD-IA-kit-de-bolso')
+if (-not $script:TravaKit.WaitOne(0)) { Aviso 'Ja ha um kit sendo montado (outra janela). Espere ele terminar.'; exit 1 }
 $inicio = Get-Date
 try { (Get-Process -Id $PID).PriorityClass = 'BelowNormal' } catch {}   # o jogo e o resto do PC primeiro
 Manter-Acordado

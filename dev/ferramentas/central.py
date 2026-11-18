@@ -302,6 +302,35 @@ def registrar_simulado(feitos: list, total: int) -> dict:
     return {"ok": True, "feitos": len(ids), "total": int(total)}
 
 
+# ---------- Kit de bolso: montar pela Central ----------
+def pen_drives() -> list[str]:
+    """Letras dos discos removiveis prontos (pen drive, cartao SD)."""
+    k = ctypes.windll.kernel32
+    mascara = k.GetLogicalDrives()
+    return [f"{chr(65 + i)}:" for i in range(26) if mascara >> i & 1 and k.GetDriveTypeW(f"{chr(65 + i)}:\\") == 2]
+
+
+def kit_rodando() -> bool:
+    r = subprocess.run(["powershell", "-NoProfile", "-Command",
+                        "@(Get-CimInstance Win32_Process -Filter \"Name='powershell.exe'\" | Where-Object { $_.CommandLine -like '*kit-de-bolso.ps1*' }).Count"],
+                       capture_output=True, text=True, timeout=30, creationflags=subprocess.CREATE_NO_WINDOW)
+    return (r.stdout or "0").strip() not in ("", "0")
+
+
+def montar_kit() -> dict:
+    """Abre o kit-de-bolso.ps1 numa janela: ele mostra o plano e so copia depois do "s" (a ficha so pelo menu)."""
+    drives = pen_drives()
+    if not drives:
+        return {"ok": False, "texto": "Ligue o pen drive (ou o cartão SD) e tente de novo."}
+    if len(drives) > 1:
+        return {"ok": False, "texto": f"Há {len(drives)} pen drives ligados ({', '.join(drives)}): deixe só o do kit, ou use o menu (opção 20)."}
+    if kit_rodando():
+        return {"ok": False, "texto": "Já há um kit sendo montado: espere ele terminar."}
+    subprocess.Popen(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-NoExit", "-File", str(SCRIPTS / "kit-de-bolso.ps1")],
+                     cwd=str(SCRIPTS), creationflags=subprocess.CREATE_NEW_CONSOLE)
+    return {"ok": True, "texto": f"Abri uma janela com o plano para o pen drive {drives[0]}: confira o que cabe e responda s para copiar."}
+
+
 # ---------- Modelos: quem faz o que (papeis) ----------
 # Atualizar um modelo e trocar o modelo de um papel (catalogo\papeis.json). A troca baixa, confere e testa o modelo
 # novo num processo a parte (trocar-modelo.ps1, janela minimizada) e grava o andamento, que a ilha mostra.
@@ -653,6 +682,8 @@ class Central(BaseHTTPRequestHandler):
                 self._json(200, voltar_modelo(corpo["papel"]))
             elif self.path == "/api/papeis/manter" and ID_PAPEL.match(str(corpo.get("papel") or "")):
                 self._json(200, manter_modelo(corpo["papel"]))
+            elif self.path == "/api/kit":
+                self._json(200, montar_kit())
             elif self.path == "/api/agora":
                 AGORA.set()
                 PEDIU_AGORA.set()

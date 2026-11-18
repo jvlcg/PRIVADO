@@ -449,6 +449,22 @@ class SaudeDoCofre(unittest.TestCase):
         kit.write_text("nao e json", encoding="utf-8")
         self.assertIsNone(item()["ultima"])
 
+    def test_montar_kit_pela_central_so_com_um_pen_drive_e_um_kit_por_vez(self):
+        with mock.patch.object(central.subprocess, "Popen") as popen:
+            with mock.patch.object(central, "pen_drives", return_value=[]):
+                self.assertFalse(central.montar_kit()["ok"])                       # nenhum pen drive
+            with mock.patch.object(central, "pen_drives", return_value=["E:", "F:"]):
+                self.assertIn("2 pen drives", central.montar_kit()["texto"])       # qual deles?
+            with mock.patch.object(central, "pen_drives", return_value=["E:"]), \
+                 mock.patch.object(central, "kit_rodando", return_value=True):
+                self.assertFalse(central.montar_kit()["ok"])                       # um kit por vez
+            popen.assert_not_called()
+            with mock.patch.object(central, "pen_drives", return_value=["E:"]), \
+                 mock.patch.object(central, "kit_rodando", return_value=False):
+                r = central.montar_kit()
+            self.assertTrue(r["ok"])
+            self.assertIn("kit-de-bolso.ps1", " ".join(popen.call_args[0][0]))
+
 
 class RegistroDeGasto(unittest.TestCase):
     def test_registra_e_soma_o_mes(self):

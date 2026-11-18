@@ -1626,12 +1626,24 @@ async function carregarSaude() {
     el('span', { class: 'textos' }, el('b', { texto: i.nome }), el('small', { texto: `${quandoFoi(i.dias)}, a cada ${i.a_cada} dias. ${i.como}` })),
     el('span', { class: 'lado' }, i.id === 'simulado'
       ? el('button', { class: 'botao cinza pequeno', type: 'button', texto: 'Fazer agora', onclick: abrirSimulado })
-      : el('span', { class: 'selo ' + (i.em_dia ? 'verde' : 'laranja'), texto: i.em_dia ? 'Em dia' : i.dias === null ? 'Nunca feito' : 'Atrasado' })))));
+      : i.id === 'kit'
+        ? el('button', { class: 'botao cinza pequeno', type: 'button', texto: i.ultima ? 'Atualizar' : 'Montar', onclick: montarKit })
+        : el('span', { class: 'selo ' + (i.em_dia ? 'verde' : 'laranja'), texto: i.em_dia ? 'Em dia' : i.dias === null ? 'Nunca feito' : 'Atrasado' })))));
   $('#saudeDiscos').textContent = r.discos.length
     ? 'Espaço livre: ' + r.discos.map(d => `${d.nome}, ${tamanho(d.livre_gb)} de ${tamanho(d.total_gb)}`).join('; ') + '.' : '';
   $('#saudeResumo').hidden = !r.pendentes.length;
   for (const e of document.querySelectorAll('[data-emblema="servicos"], [data-emblema="mais"]')) { e.textContent = r.pendentes.length; e.hidden = !r.pendentes.length; }
   $('#saudeResumoTexto').textContent = `Para o cofre seguir confiável: ${juntar(r.pendentes.map(p => p.toLowerCase()))}.`;
+}
+
+async function montarKit() {
+  if (!await confirmar({ titulo: 'Montar o kit de bolso?',
+    texto: 'Abre uma janela com o plano para o pen drive ligado: o que cabe, o tempo e o gasto. Só copia depois que você responder s. Num pen drive comum leva de 30 a 60 minutos; a ficha médica só vai pelo menu (opção 20).',
+    sim: 'Abrir' })) return;
+  try {
+    const r = await api('/api/kit', {});
+    avisar(r.texto, null, r.ok ? null : 'erro');
+  } catch (erro) { avisar(`Não deu para abrir o kit: ${erro.message}`, null, 'erro'); }
 }
 
 function abrirSimulado() {
