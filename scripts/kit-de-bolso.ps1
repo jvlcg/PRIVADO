@@ -332,7 +332,7 @@ function Copiar-Conferindo($item, [string]$final) {
     $sha = [Security.Cryptography.SHA256]::Create()
     $buf = New-Object byte[] $Bloco
     $relogio = [Diagnostics.Stopwatch]::StartNew()
-    [int64]$feito = 0; $proximo = 20
+    [int64]$feito = 0; [int64]$desdeGravar = 0; $proximo = 20
     try {
         $ent = [IO.FileStream]::new($item.origem, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read, 1MB, [IO.FileOptions]::SequentialScan)
         try {
@@ -341,7 +341,10 @@ function Copiar-Conferindo($item, [string]$final) {
                 while (($n = $ent.Read($buf, 0, $buf.Length)) -gt 0) {
                     [void]$sha.TransformBlock($buf, 0, $n, $null, 0)
                     $sai.Write($buf, 0, $n)
-                    $feito += $n
+                    $feito += $n; $desdeGravar += $n
+                    # Grava de verdade no pen drive a cada 64 MB: sem isso o Windows junta gigabytes na memoria e
+                    # o andamento mostra 100% enquanto o pen drive ainda escreve por minutos.
+                    if ($desdeGravar -ge 64MB) { $sai.Flush($true); $desdeGravar = 0 }
                     if ($relogio.Elapsed.TotalSeconds -ge $proximo) { Progresso '    copiando  ' $feito $item.tamanho $relogio; $proximo += 20 }
                 }
                 $sai.Flush($true)   # tudo no pen drive antes de conferir
